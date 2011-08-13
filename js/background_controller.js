@@ -41,7 +41,6 @@ BackgroundController.prototype.onInstall = function() {
       chrome.tabs.sendRequest(tab.id, { method: 'InitialInjection' });
     });
   });
-  chrome.tabs.create({url: 'options.html'});
 };
 
 /**
