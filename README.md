@@ -29,4 +29,4 @@ Donations
 Screenshots
 ----------
 
-![Screenshot of the Chrome Extension](https://github.com/mohamedmansour/my-hangouts-extension/raw/master/screenshot/shareA.png)
+![Screenshot of the Chrome Extension](https://github.com/mohamedmansour/my-hangouts-extension/raw/master/screenshot/screenA.png)
