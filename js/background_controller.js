@@ -82,7 +82,7 @@ BackgroundController.prototype.updateSettings = function() {
  * @param {string} url The URL to check if valid.
  */
 BackgroundController.prototype.isValidURL = function(url) {
-  return url.match('^https://plus.google.com/?(u/[0-9]/)?$') != null;
+  return url.match('^https://plus.google.com/?(u/[0-9]/)?(\\?hl=[a-z]+)?$') != null
 };
 
 /**
