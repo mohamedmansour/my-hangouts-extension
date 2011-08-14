@@ -14,7 +14,7 @@ Injection.STREAM_CONTAINER_ID = '.Wq';
 Injection.STREAM_HANGOUT_ID = '.d-q-p.j-e.j-e-Y.Rq';
 Injection.STREAM_HANGOUT_VISITED_ID = 'gpi-crx-hangout';
 Injection.STREAM_TIME_ID = '.fl.Br';
-Injection.STREAM_NAME_ID = '.Ii';
+Injection.STREAM_NAME_ID = '.IE';
 Injection.STREAM_USER_STATUS_ID = '.Ar';
 Injection.STREAM_USER_IMAGES_ID = '.cz';
 Injection.STREAM_USER_LINKS_ID = '.WB'
@@ -86,7 +86,7 @@ Injection.prototype.renderAllHangouts = function() {
  */
 Injection.prototype.onHangoutItem = function(itemDOM) {
   var hangoutDOM = itemDOM.parentNode.parentNode.parentNode.parentNode.parentNode;
-  var nameData = hangoutDOM.querySelector(Injection.STREAM_NAME_ID).innerText;
+  var nameDataDOM = hangoutDOM.querySelector(Injection.STREAM_NAME_ID + ' a');
   var timeData = hangoutDOM.querySelector(Injection.STREAM_TIME_ID).innerText;
   var idData = Injection.STREAM_HANGOUT_VISITED_ID + this.hangoutArray.length;
   var userData = hangoutDOM.querySelector(Injection.STREAM_USER_STATUS_ID).innerText;
@@ -105,6 +105,9 @@ Injection.prototype.onHangoutItem = function(itemDOM) {
     userLinks[participantLink.innerText] = participantLink.getAttribute('oid');
   }
 
+  var nameData = nameDataDOM.innerText;
+  var nameId = nameDataDOM.getAttribute('oid');
+  
   // Extract user data and place them in a nice format to send.
   var participants = [];
   for (var i = 0; i < participantsImages.length; i++) {
@@ -117,24 +120,64 @@ Injection.prototype.onHangoutItem = function(itemDOM) {
     });
   }
   
-  // I know this is bad, but I don't feel like storing a length structure.
-  // Perhaps do a sorted structure and do a binary search.
-  for (var i = 0; i < this.hangoutArray.length; i++) {
-    var hangout = this.hangoutArray[i];
-    if (hangout.name == nameData) {
-      hangout.id = idData;
-      hangout.ts = timeData;
-      hangout.userCount = userCount;
-      return;
-    }
-  }
-  this.hangoutArray.push({
-    name: nameData, 
-    id: idData, 
-    ts: timeData, 
+  this.filterHangouts({
+    name: nameData,
+    nameid: nameId,
+    id: idData,
+    ts: timeData,
     userCount: userCount,
     participants: participants
   });
+};
+
+/**
+ * Filter the the hangouts so that we merge hangouts that are the same:
+ *
+ *  1) Users can start many hangouts which are different.
+ *  2) Users can share an existing hangout which are the same.
+ *  3) Same user that starts different hangouts could be the same or different.
+ *
+ * @param {Object} newHangoutData The new hangout that became visible/updated on the stream.
+ */
+Injection.prototype.filterHangouts = function(newHangoutData) {
+  // For fast access, store the participants in a map so we can refer to it while iterating.
+  var participants = {}
+  participants[newHangoutData.nameid] = 1;
+  for (var i = 0; i < newHangoutData.participants.length; i++) {
+    participants[newHangoutData.participants[i].id] = 1;
+  }
+  
+  // Iterate through all participants for each hangout to see if our new hangout has been already
+  // suggested. Some attributes to take into account.
+  var found = false;
+  for (var i = 0; i < this.hangoutArray.length; i++) {
+    var hangout = this.hangoutArray[i];
+    
+    // Check if the one who started this hangout exists in the new hangout.
+    if (!participants[hangout.nameid]) {
+      continue;
+    }
+
+    // Lets check if any participants in this hangout exists in the new hangout.
+    for (var j = 0; j < hangout.participants.length; j++) {
+      if (!participants[hangout.participants.id]) {
+        break;
+      }
+    }
+
+    // If the hangouts is from the same name, we merge it directly. We do it at this step because
+    // A user can run more than one hangout at the same time. Note, a user could have already have
+    // been caught duplicating hangouts, so we just find it in the string.
+    if (hangout.name.indexOf(newHangoutData.name) == -1) {
+      hangout.name += ', ' + newHangoutData.name;
+    }
+    found = true;
+  }
+  
+  // If we didn't find a duplicate, we just add it to the list!
+  if (!found) {
+    this.hangoutArray.push(newHangoutData);
+  }
 };
 
 /**
