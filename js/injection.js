@@ -17,7 +17,8 @@ Injection.STREAM_TIME_ID = '.fl.Br';
 Injection.STREAM_NAME_ID = '.IE';
 Injection.STREAM_USER_STATUS_ID = '.Ar';
 Injection.STREAM_USER_IMAGES_ID = '.cz';
-Injection.STREAM_USER_LINKS_ID = '.WB'
+Injection.STREAM_USER_LINKS_ID = '.WB';
+Injection.STREAM_MORE_ID = '.d-k.Ml.Et';
 
 /**
  * Initialize the events that will be listening within this DOM.
@@ -30,6 +31,7 @@ Injection.prototype.init = function() {
     googlePlusContentPane.addEventListener('DOMSubtreeModified',
                                            this.onGooglePlusContentModified.bind(this), false);
     chrome.extension.onRequest.addListener(this.onExternalRequest.bind(this));
+    setTimeout(this.renderMoreStreamItems.bind(this), 5000);
   }
 };
 
@@ -203,9 +205,18 @@ Injection.prototype.onExternalRequest = function(request, sender, sendResponse) 
   else if (request.method == 'OpenHangout') {
     this.simulateClick(document.getElementById(request.data));
   }
+  else if (request.method == 'MoreStream') {
+    this.renderMoreStreamItems();
+  }
   sendResponse({});
 };
 
+/**
+ * Get more items from the stream.
+ */
+Injection.prototype.renderMoreStreamItems = function() {
+  this.simulateClick(document.querySelector(Injection.STREAM_MORE_ID));
+};
 /**
  * Simulate a mouse click event.
  */
