@@ -58,7 +58,7 @@ PopupController.prototype.onWindowLoad = function(e) {
   if (hangouts.length > 0) {
     for (var i = 0; i < hangouts.length; i++) {
       var hangoutItem = hangouts[i];
-      var userCount = hangoutItem.userCount; 
+      var userCount = hangoutItem.participants.length; 
       
       // Hangout Name.
       var hangoutNameDOM = document.createElement('span');

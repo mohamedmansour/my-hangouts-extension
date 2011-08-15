@@ -95,18 +95,18 @@ Injection.prototype.onHangoutItem = function(itemDOM) {
   var participantsImages = hangoutDOM.querySelectorAll(Injection.STREAM_USER_IMAGES_ID + ' img');
   var participantsLinks = hangoutDOM.querySelectorAll(Injection.STREAM_USER_LINKS_ID + ' a');
   var userMatch = userData.match(/(\d+) people right now/);
-  var userCount = 0;
-  if (userMatch) {
-    userCount = parseInt(userMatch[1]);
-  }
+  
+  // Assign an ID for this hangout so we could refer back to it when we click on it.
   itemDOM.id = idData;
   
-  var userLinks = {};
+  // Extract the user Google IDs.
+  var userIDs = {};
   for (var i = 0; i < participantsLinks.length; i++) {
     var participantLink = participantsLinks[i];
-    userLinks[participantLink.innerText] = participantLink.getAttribute('oid');
+    userIDs[participantLink.innerText] = participantLink.getAttribute('oid');
   }
 
+  // Hangout owners name and ID.
   var nameData = nameDataDOM.innerText;
   var nameId = nameDataDOM.getAttribute('oid');
   
@@ -118,7 +118,7 @@ Injection.prototype.onHangoutItem = function(itemDOM) {
     participants.push({
       name: particpantName, 
       image: particpantImage.src, 
-      id: userLinks[particpantName]
+      id: userIDs[particpantName]
     });
   }
   
@@ -127,7 +127,6 @@ Injection.prototype.onHangoutItem = function(itemDOM) {
     nameid: nameId,
     id: idData,
     ts: timeData,
-    userCount: userCount,
     participants: participants
   });
 };
