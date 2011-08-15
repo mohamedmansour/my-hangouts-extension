@@ -7,6 +7,7 @@
 Injection = function() {
   this.availableSettings = [];
   this.hangoutArray = [];
+  this.totalHangoutNotificationCounter = 0;
 };
 
 // Constants that can change.
@@ -70,6 +71,7 @@ Injection.prototype.resetAndRenderAll = function() {
  * hangout item exists.
  */
 Injection.prototype.renderAllHangouts = function() {
+  this.totalHangoutNotificationCounter = 0;
   this.hangoutArray = [];
   var hangouts = document.querySelectorAll(Injection.STREAM_HANGOUT_ID);
   for (var i = 0; i < hangouts.length; i++) {
@@ -90,13 +92,13 @@ Injection.prototype.onHangoutItem = function(itemDOM) {
   var hangoutDOM = itemDOM.parentNode.parentNode.parentNode.parentNode.parentNode;
   var nameDataDOM = hangoutDOM.querySelector(Injection.STREAM_NAME_ID + ' a');
   var timeData = hangoutDOM.querySelector(Injection.STREAM_TIME_ID).innerText;
-  var idData = Injection.STREAM_HANGOUT_VISITED_ID + this.hangoutArray.length;
   var userData = hangoutDOM.querySelector(Injection.STREAM_USER_STATUS_ID).innerText;
   var participantsImages = hangoutDOM.querySelectorAll(Injection.STREAM_USER_IMAGES_ID + ' img');
   var participantsLinks = hangoutDOM.querySelectorAll(Injection.STREAM_USER_LINKS_ID + ' a');
   var userMatch = userData.match(/(\d+) people right now/);
   
   // Assign an ID for this hangout so we could refer back to it when we click on it.
+  var idData = Injection.STREAM_HANGOUT_VISITED_ID + this.totalHangoutNotificationCounter;
   itemDOM.id = idData;
   
   // Extract the user Google IDs.
@@ -179,6 +181,8 @@ Injection.prototype.filterHangouts = function(newHangoutData) {
   if (!found) {
     this.hangoutArray.push(newHangoutData);
   }
+  
+  this.totalHangoutNotificationCounter++;
 };
 
 /**
