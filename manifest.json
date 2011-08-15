@@ -17,7 +17,7 @@
         "https://plus.google.com/u/*/",
         "https://plus.google.com/u/*/?hl=*"
       ],
-      "js": ["js/injection.js"],
+      "js": ["js/my_hangout_injection.js"],
       "run_at": "document_end",
       "all_frames": true
   }],
