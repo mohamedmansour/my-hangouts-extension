@@ -28,7 +28,7 @@ PopupController.prototype.onHangoutJoin = function(e) {
  * Calculate the width of the hover based on the current user count.
  */
 PopupController.prototype.onUserCountHoverStarted = function(e) {
-  e.currentTarget.style.width = (e.currentTarget.userCount + 1) * 32 + 110 + 'px';
+  e.currentTarget.style.width = (e.currentTarget.userCount) * 40 + 85 + 'px';
   e.stopPropagation();
 };
 
