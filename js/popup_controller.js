@@ -54,6 +54,7 @@ PopupController.prototype.onParticipantClick = function(e) {
 PopupController.prototype.onWindowLoad = function(e) {
   var container = document.createElement('div');
   container.id = 'hangout-container';
+  var googlePlusURL = 'https://plus.google.com/';
   var hangouts = this.bkg.getHangouts();
   if (hangouts.length > 0) {
     for (var i = 0; i < hangouts.length; i++) {
@@ -79,7 +80,7 @@ PopupController.prototype.onWindowLoad = function(e) {
       hangoutParticipantsDOM.className = 'hangout-participants';
       for (var j = 0; j < hangoutItem.participants.length; j++) {
         var participant = hangoutItem.participants[j];
-        var userProfile = 'https://plus.google.com/' + participant.id;
+        var userProfile = googlePlusURL + participant.id;
         var participantIcon = document.createElement('img');
         participantIcon.src = participant.image;
         participantIcon.title = participant.name;

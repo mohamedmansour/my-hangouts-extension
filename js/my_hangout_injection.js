@@ -11,15 +11,15 @@ Injection = function() {
 };
 
 // Constants that can change.
-Injection.STREAM_CONTAINER_ID = '.Wq';
-Injection.STREAM_HANGOUT_ID = '.d-q-p.j-e.j-e-Y.Rq';
+Injection.STREAM_CONTAINER_ID = '.pr';
+Injection.STREAM_HANGOUT_ID = '.b-o-l.g-d.g-d-R.fl';
 Injection.STREAM_HANGOUT_VISITED_ID = 'gpi-crx-hangout';
-Injection.STREAM_TIME_ID = '.fl.Br';
-Injection.STREAM_NAME_ID = '.IE';
-Injection.STREAM_USER_STATUS_ID = '.Ar';
-Injection.STREAM_USER_IMAGES_ID = '.cz';
-Injection.STREAM_USER_LINKS_ID = '.WB';
-Injection.STREAM_MORE_ID = '.d-k.Ml.Et';
+Injection.STREAM_TIME_ID = '.fj.fo';
+Injection.STREAM_NAME_ID = '.hC';
+Injection.STREAM_USER_STATUS_ID = '.ui';
+Injection.STREAM_USER_IMAGES_ID = '.YB';
+Injection.STREAM_USER_LINKS_ID = '.Mr';
+Injection.STREAM_MORE_ID = '.b-j.el.bv';
 
 /**
  * Initialize the events that will be listening within this DOM.
@@ -91,7 +91,7 @@ Injection.prototype.renderAllHangouts = function() {
 Injection.prototype.onHangoutItem = function(itemDOM) {
   var hangoutDOM = itemDOM.parentNode.parentNode.parentNode.parentNode.parentNode;
   var nameDataDOM = hangoutDOM.querySelector(Injection.STREAM_NAME_ID + ' a');
-  var timeData = hangoutDOM.querySelector(Injection.STREAM_TIME_ID).innerText;
+  var timeData = hangoutDOM.querySelector(Injection.STREAM_TIME_ID + ' a').innerText;
   var userData = hangoutDOM.querySelector(Injection.STREAM_USER_STATUS_ID).innerText;
   var participantsImages = hangoutDOM.querySelectorAll(Injection.STREAM_USER_IMAGES_ID + ' img');
   var participantsLinks = hangoutDOM.querySelectorAll(Injection.STREAM_USER_LINKS_ID + ' a');
