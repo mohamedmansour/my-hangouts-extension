@@ -11,15 +11,15 @@ Injection = function() {
 };
 
 // Constants that can change.
-Injection.STREAM_CONTAINER_ID = '.pr';
-Injection.STREAM_HANGOUT_ID = '.b-o-l.g-d.g-d-R.fl';
+Injection.STREAM_CONTAINER_ID = '.or';
+Injection.STREAM_HANGOUT_ID = '.c-m-l.g-d.g-d-N.Lh';
 Injection.STREAM_HANGOUT_VISITED_ID = 'gpi-crx-hangout';
-Injection.STREAM_TIME_ID = '.fj.fo';
-Injection.STREAM_NAME_ID = '.hC';
-Injection.STREAM_USER_STATUS_ID = '.ui';
-Injection.STREAM_USER_IMAGES_ID = '.YB';
-Injection.STREAM_USER_LINKS_ID = '.Mr';
-Injection.STREAM_MORE_ID = '.b-j.el.bv';
+Injection.STREAM_TIME_ID = '.Xi.go';
+Injection.STREAM_NAME_ID = '.CC';
+Injection.STREAM_USER_STATUS_ID = '.Gf';
+Injection.STREAM_USER_IMAGES_ID = '.tC';
+Injection.STREAM_USER_LINKS_ID = '.Lr';
+Injection.STREAM_MORE_ID = '.c-j.hl.Fv';
 
 /**
  * Initialize the events that will be listening within this DOM.
