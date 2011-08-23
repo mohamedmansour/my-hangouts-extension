@@ -31,6 +31,7 @@ Injection.prototype.init = function() {
     googlePlusContentPane.addEventListener('DOMSubtreeModified',
                                            this.onGooglePlusContentModified.bind(this), false);
     chrome.extension.onRequest.addListener(this.onExternalRequest.bind(this));
+    setTimeout(this.renderMoreStreamItems.bind(this), 2500);
     setTimeout(this.renderMoreStreamItems.bind(this), 5000);
   }
 };
