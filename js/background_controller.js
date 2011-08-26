@@ -180,6 +180,9 @@ BackgroundController.prototype.getHangouts = function() {
   return this.hangouts;
 };
 
-BackgroundController.prototype.openHangout = function(id) {
-  chrome.tabs.sendRequest(this.plusTabId, {method: 'OpenHangout', data: id});
+/**
+ * Find more hangouts.
+ */
+BackgroundController.prototype.doMoreHangouts = function() {
+  chrome.tabs.sendRequest(this.plusTabId, {method: 'MoreStream'});
 };

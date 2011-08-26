@@ -124,10 +124,26 @@ PopupController.prototype.onWindowLoad = function(e) {
   }
   else {
     container.innerHTML = '<p>Your stream does not contain any hangouts. The reason could be:</p><ul>' + 
-       '<li>You do not have your <a href="https://plus.google.com">stream</a> opened.</li>' +
+       '<li>You do not have your <a href="#" onclick="popupController.open(\'https://plus.google.com\')">stream</a> opened.</li>' +
        '<li>You do not have any hangouts on your stream.</li>' + 
-       '<li>You should press the "more" link in your stream to see if any hangouts happened in the past which are still active.</li>' +
-       '</ul><p>Or there might be a bug, <a href="https://plus.google.com/116805285176805120365/about">+Mohamed Mansour</a> me :)</p>';
+       '<li>You should press the "<a href="#" onclick="popupController.doMoreHangouts()">more</a>" link in your stream to see if any hangouts happened in the past which are still active.</li>' +
+       '</ul><p>Or there might be a bug, <a href="#" onclick="popupController.open(\'https://plus.google.com/116805285176805120365/about\');">+Mohamed Mansour</a> me :)</p>';
   }
   document.body.appendChild(container);
+};
+
+/**
+ * Send a request back to Google+ to see if more hangouts exists. This will press more for you.
+ */
+PopupController.prototype.doMoreHangouts = function()
+{
+  this.bkg.doMoreHangouts();
+};
+
+/**
+ * Open the given URL in a new tab.
+ */
+PopupController.prototype.open = function(url)
+{
+  chrome.tabs.create({url: url});
 };
