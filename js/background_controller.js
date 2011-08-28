@@ -181,6 +181,13 @@ BackgroundController.prototype.getHangouts = function() {
 };
 
 /**
+ * Open Hangout.
+ */
+BackgroundController.prototype.openHangout = function(id) {
+  chrome.tabs.sendRequest(this.plusTabId, {method: 'OpenHangout', data: id});
+};
+
+/**
  * Find more hangouts.
  */
 BackgroundController.prototype.doMoreHangouts = function() {
