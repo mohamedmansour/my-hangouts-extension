@@ -20,13 +20,11 @@ PopupController.prototype.init = function() {
  * dynamically.
  */
 PopupController.prototype.onWindowLoad = function(e) {
-  var collection = this.bkg.getHangouts();
-  var hangouts = collection[0];
-  var public_hangouts = collection[1];
+  var hangouts = this.bkg.getHangouts();
   
-  if (public_hangouts.length > 0) {
-    for (var i = 0; i < public_hangouts.length; i++) {
-      var hangoutItem = public_hangouts[i];
+  if (hangouts.length > 0) {
+    for (var i = 0; i < hangouts.length; i++) {
+      var hangoutItem = hangouts[i];
 
       // Hangout Participants.
       var userCount = 0;
