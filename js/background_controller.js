@@ -7,9 +7,7 @@
 BackgroundController = function() {
   this.onExtensionLoaded();
   this.hangouts = [];
-  this.public_hangouts = [];
   this.plus = new GooglePlusAPI();
-  this.plusTabId = -1;
   this.UPDATE_INTERVAL = 30000;
   this.HANGOUT_SEARCH_QUERY = '"is hanging out with" "right now!"';
 };
@@ -47,15 +45,6 @@ BackgroundController.prototype.updateSettings = function() {
 };
 
 /**
- * Check if the URL is part of plus websites.
- 
- * @param {string} url The URL to check if valid.
- */
-BackgroundController.prototype.isValidURL = function(url) {
-  return url.match('^https://plus.google.com/?(u/[0-9]/)?(\\?hl=[a-zA-Z\-]+)?$') != null
-};
-
-/**
  * Triggered when the extension just uploaded to a new version. DB Migrations
  * notifications, etc should go here.
  *
@@ -76,28 +65,6 @@ BackgroundController.prototype.init = function() {
 
   chrome.browserAction.setBadgeText({ text: '' });
   this.drawBadgeIcon(-1);
-};
-
-/**
- * Listen on requests coming from content scripts.
- *
- * @param {object} request The request object to match data.
- * @param {object} sender The sender object to know what the source it.
- * @param {Function} sendResponse The response callback.
- */
-BackgroundController.prototype.onExternalRequest = function(request, sender, sendResponse) {
-  if (request.method == 'GetSettings') {
-    this.plusTabId = sender.tab.id;
-    sendResponse({data: settings.whitelist});
-  }
-  else if (request.method == 'NewHangoutItem') {
-    //this.drawBadgeIcon(request.data.length, true);
-    this.hangouts = request.data;
-    sendResponse({});
-  }
-  else {
-    sendResponse({});
-  }
 };
 
 /**
@@ -133,21 +100,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
  * @returns 
  */
 BackgroundController.prototype.getHangouts = function() {
-  return [this.hangouts, this.public_hangouts];
-};
-
-/**
- * Open Hangout.
- */
-BackgroundController.prototype.openHangout = function(id) {
-  chrome.tabs.sendRequest(this.plusTabId, {method: 'OpenHangout', data: id});
-};
-
-/**
- * Find more hangouts.
- */
-BackgroundController.prototype.doMoreHangouts = function() {
-  chrome.tabs.sendRequest(this.plusTabId, {method: 'MoreStream'});
+  return this.hangouts;
 };
 
 BackgroundController.prototype.refreshPublicHangouts = function() {
@@ -164,7 +117,7 @@ BackgroundController.prototype.refreshPublicHangouts = function() {
       cache[hangout.data.id] = true;
       hangouts.push(hangout);
     }
-    self.public_hangouts = hangouts;
+    self.hangouts = hangouts;
     self.drawBadgeIcon(hangouts.length, true);
   }, this.HANGOUT_SEARCH_QUERY, {precache: 4, type: 'hangout'});
 };
