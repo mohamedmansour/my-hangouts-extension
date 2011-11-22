@@ -1,94 +1,339 @@
 
-  body, html {
-    font: normal 13px arial,sans-serif;
-  }
-  p {
-    margin: 5px 0;
-  }
-  #hangout-container {
-    width: 500px;
-  }
-  .hangout-item {
-    background-color: #eee;
-    border-radius: 5px;
-    height: 50px;
-    line-height: 50px;
-  }
-  .hangout-item:hover {
-    background-color: #ccc;
-  }
-  .hangout-user-overlay {
-    position: absolute;
-    right: 5px;
-    width: 75px;
-    text-align: right;
-    padding-right: 10px;
-    background-color: #ddd;
-    border-radius: 15px;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-    font-size: 0.75em;
-    -webkit-transition: width 0.3s linear;
-    cursor: pointer;
-    overflow: hidden;
-  }
-  .hangout-user-overlay.full {
-    background-color: #ca333a;
-  }
-  .hangout-participants {
-    display: inline;
-    position: absolute;
-    width: 415px;
-    right: 95px;
-    top: 9px;
-  }
-  .hangout-participants img {
-    border: 2px solid transparent;
-    margin: 0px 1px;
-    border-radius: 2px;
-  }
-  .hangout-participants img:hover {
-    box-shadow:0 0 15px white; 
-    background-color: white;
-  }
-  .hangout-count {
-    display: inline;
-  }
-  .hangout-count::after {
-    content: "";
-    position: absolute;
-    display: block;
-    width: 0;
-    top: 16px;
-    left: -50px;
-    bottom: auto;
-    border-width: 10px 50px 10px 0;
-    border-color: transparent #000;
-  }
-  .hangout-time {
-    font-size: 0.75em;
-    color: #333;
-    margin-left: 5px;
-  }
-  button {
-    cursor: pointer;
-    line-height: 50px;
-    margin: 0px 10px;
-    border: 1px solid #3079ED;
-    color: white;
-    background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
-    font-size: 11px;
-    font-weight: bold;
-    text-align: center;
-    margin-right: 16px;
-    height: 27px;
-    line-height: 27px;
-    min-width: 54px;
-    outline: 0;
-    padding: 0 8px;
-    border-radius: 2px;
-  }
-  button:hover {
-    background-image: -webkit-linear-gradient(top, #2d90fe, #2787ed);
-  }
-  
+body, html {
+  font: normal 13px arial,sans-serif;
+}
+p {
+  margin: 5px 0;
+}
+#hangout-container {
+  width: 500px;
+}
+.hangout-item {
+  background-color: #eee;
+  border-radius: 5px;
+  height: 50px;
+  line-height: 50px;
+}
+.hangout-item:hover {
+  background-color: #ccc;
+}
+.hangout-user-overlay {
+  position: absolute;
+  right: 5px;
+  width: 75px;
+  text-align: right;
+  padding-right: 10px;
+  background-color: #ddd;
+  border-radius: 15px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  font-size: 0.75em;
+  -webkit-transition: width 0.3s linear;
+  cursor: pointer;
+  overflow: hidden;
+}
+.full .hangout-user-overlay {
+  background-color: #ca333a;
+}
+.hangout-participants {
+  display: inline;
+  position: absolute;
+  width: 415px;
+  right: 95px;
+  top: 9px;
+}
+.hangout-participants img {
+  border: 2px solid transparent;
+  margin: 0px 1px;
+  border-radius: 2px;
+}
+.hangout-participants img:hover {
+  box-shadow:0 0 15px white; 
+  background-color: white;
+}
+.hangout-count {
+  display: inline;
+}
+.hangout-count::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  top: 16px;
+  left: -50px;
+  bottom: auto;
+  border-width: 10px 50px 10px 0;
+  border-color: transparent #000;
+}
+.hangout-time {
+  font-size: 0.75em;
+  color: #333;
+  margin-left: 5px;
+}
+.button {
+  display: inline-block;
+  cursor: pointer;
+  line-height: 50px;
+  margin: 0px 10px;
+  border: 1px solid #3079ED;
+  border-radius:3px;
+  -webkit-border-radius:3px;
+  color: white;
+  background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  margin-right: 16px;
+  height: 27px;
+  line-height: 25px;
+  min-width: 54px;
+  outline: 0;
+  padding: 0 8px;
+  -webkit-box-shadow: 0px 0px 6px #dddcff;//bbbbff;
+  box-shadow: 0px 0px 6px #dddcff;
+}
+.button:hover {
+  background-image: -webkit-linear-gradient(top, #2d90fe, #2787ed);
+}
+/*
+.hangout-divider {
+  position: relative;
+  top: -7px;
+  left: -24px;
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 24px;
+}
+.hangout-item {
+  position: relative;
+  background-color: #fff;
+  border-radius: 5px;
+  height: 50px;
+  width: 500px;
+  line-height: 50px;
+  -webkit-box-shadow: 0px 0px 4px #e1e1e1;
+  box-shadow: 0px 0px 4px #e1e1e1;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.hangout-item:hover {
+  background-color: #f7f7f7;
+}
+.hangout-user-overlay {
+  float: right;
+  position: relative;
+  right: 5px;
+  width: 75px;
+  text-align: right;
+  padding-right: 10px;
+  background-color: #ddd;
+  border-radius: 15px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  font-size: 0.75em;
+  -webkit-transition: width 0.3s linear;
+  cursor: pointer;
+  overflow: hidden;
+  display: none;
+}
+.hangout-user-overlay:hover div {
+  width: 275px;
+}
+h1 {
+  font-size: 10px;
+  background-color: #a00;
+  overflow: hidden;
+  position: absolute;
+  left: 360px;
+  top: 10px;
+  -webkit-transform: rotate(45deg);
+  -webkit-box-shadow: 0 0 1em #888;
+  box-shadow: 0 0 1em #888;
+}
+h1 a {
+  border: 1px solid #faa;
+  color: #fff;
+  display: block;
+  font: bold 81.25% 'Helvetiva Neue', Helvetica, Arial, sans-serif;
+  margin: 0.05em 0 0.075em 0;
+  padding: 0.5em 7em;
+  width: 80px;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 0 0 0.5em #444;
+  white-space: nowrap;
+}
+.ribbon-holder {
+  position: absolute;
+  left: 0px;
+  top: -20px;
+}
+.rectangle {
+  float: left;
+  background: #368200;
+  height: 10px;
+  width: 90px;
+  position: relative;
+  left:15px;
+  top: 15px;
+  float: left;
+  padding: 5px 0 0 0;
+  -webkit-box-shadow: 0px 0px 2px #cbddbe;
+  box-shadow: 0px 0px 2px #cbddbe;
+  z-index: 1000;
+}
+.rectangle-small {
+  float: left;
+  background: #368200;
+  height: 8px;
+  width: 15px;
+  position: relative;
+  left:8px;
+  top: 24px;
+  float: left;
+  padding: 5px 0 0 0;
+  -webkit-box-shadow: 0px 0px 2px #cbddbe;
+  box-shadow: 0px 0px 2px #cbddbe;
+  z-index: 998;
+}
+.rectangle h2 {
+  position: relative;
+  left:0px;
+  top: -20px;
+  font-weight: normal;
+  font-size: 11px;
+  text-shadow: 0px 0px 1px #2D6200;
+  color: #fff;
+  padding-top: 6px;
+  text-align: center;
+}
+.triangle-l {
+  float: left;
+  border-color: transparent #80976f transparent transparent;
+  border-style:solid;
+  border-width:7px;
+  height:0px;
+  width:0px;
+  position: absolute;
+  left: 9px;
+  top: 23px;
+  z-index: 999;
+}
+.triangle-r {
+  float: left;
+  border-color: transparent transparent transparent #80976f;
+  border-style:solid;
+  border-width:7px;
+  height:0px;
+  width:0px;
+  position: absolute;
+  left: 98px;
+  top: 23px;
+  z-index: 999;
+}
+.hangout-user-overlay.full {
+  background-color: #ca333a;
+}
+.hangout-participants {
+  display: inline;
+  position: absolute;
+  width: 415px;
+  left: 95px;
+  top: 9px;
+  line-height: 16px;
+}
+.hangout-participants .empty {
+  display: inline-block;
+  margin: 0;
+  width:  32px;
+  height: 32px;
+  background-color: #fff;
+}
+.hangout-participants .empty-spots {
+  display: inline-block;
+  margin: 0 0 0 -4px;
+}
+.hangout-participants img {
+  margin: 0px 4px 0 0;
+  width:  32px;
+  height: 32px;
+}
+.hangout-participants img:hover {
+  box-shadow:0 0 15px white;
+  background-color: white;
+}
+.hangout-count {
+  display: inline;
+}
+.hangout-count::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  top: 16px;
+  left: -50px;
+  bottom: auto;
+  border-width: 10px 50px 10px 0;
+  border-color: transparent #000;
+}
+.hangout-time {
+  font-size: 0.75em;
+  color: #333;
+  margin-left: 5px;
+}
+.button {
+  display: inline-block;
+  cursor: pointer;
+  line-height: 50px;
+  margin: 0px 10px;
+  border: 1px solid #3079ED;
+  border-radius:3px;
+  -webkit-border-radius:3px;
+  color: white;
+  background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  margin-right: 16px;
+  height: 27px;
+  line-height: 25px;
+  min-width: 54px;
+  outline: 0;
+  padding: 0 8px;
+  -webkit-box-shadow: 0px 0px 6px #dddcff;//bbbbff;
+  box-shadow: 0px 0px 6px #dddcff;
+}
+.button:hover {
+  background-image: -webkit-linear-gradient(top, #2d90fe, #2787ed);
+}
+.button.full {
+  border: 1px solid #727272;
+  -webkit-box-shadow: 0px 0px 6px #e1e1e1;
+  box-shadow: 0px 0px 6px #e1e1e1;
+  background-image: -webkit-linear-gradient(top, #838383, #616161);
+}
+.button.full:hover {
+  background-image: -webkit-linear-gradient(top, #727272, #515151);
+}
+.number-participants {
+  position:relative;
+  top: -12px;
+  left: -25px;
+  width:16px;
+  height:16px;
+  display:inline-block;
+  font-weight: 900;
+  -webkit-box-shadow: 0px 0px 2px #fff;
+  box-shadow: 0px 0px 2px #fff;
+  border-radius:8px;
+  -webkit-border-radius:8px;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#838383), to(#616161));
+  font-size:14px;
+  color:#fff;
+  line-height:16px;
+  text-align:center;
+  z-index: 1000;
+}
+.number-participants.full {
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cc0000), to(#990000));
+}
+*/

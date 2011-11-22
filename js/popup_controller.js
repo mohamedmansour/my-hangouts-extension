@@ -16,31 +16,6 @@ PopupController.prototype.init = function() {
 };
 
 /**
- * Joins the hangout by sending a visit back to the background page and then to
- * the plus page to click on the Join Hangout link.
- */
-PopupController.prototype.onHangoutJoin = function(e) {
-  this.bkg.openHangout(e.target.id);
-  window.close();
-};
-
-/**
- * Calculate the width of the hover based on the current user count.
- */
-PopupController.prototype.onUserCountHoverStarted = function(e) {
-  e.currentTarget.style.width = (e.currentTarget.userCount) * 40 + 85 + 'px';
-  e.stopPropagation();
-};
-
-/**
- * Revert the width back to normal state when finished.
- */
-PopupController.prototype.onUserCountHoverCompleted = function(e) {
-  e.currentTarget.style.width = '75px';
-  e.stopPropagation();
-};
-
-/**
  * When a participant is being clicked, open their profile.
  */
 PopupController.prototype.onParticipantClick = function(e) {
@@ -52,10 +27,78 @@ PopupController.prototype.onParticipantClick = function(e) {
  * dynamically.
  */
 PopupController.prototype.onWindowLoad = function(e) {
-  var container = document.createElement('div');
-  container.id = 'hangout-container';
+  var collection = this.bkg.getHangouts();
+  var hangouts = collection[0];
+  var public_hangouts = collection[1];
+  
+  if (public_hangouts.length > 0) {
+    for (var i = 0; i < public_hangouts.length; i++) {
+      var hangoutItem = public_hangouts[i];
+
+      // Hangout Participants.
+      var userCount = 0;
+      for (var j = 0; j < hangoutItem.data.participants.length; j++) {
+        var participant = hangoutItem.data.participants[j];
+        if (participant.status) {
+          userCount++;
+
+          // Active Participant
+        }
+      }
+      hangoutItem.activeCount = userCount;
+      hangoutItem.isFull = userCount == 9;
+      hangoutItem.time = $.timeago(new Date(hangoutItem.time));
+
+      this.renderHangoutItem(hangoutItem);
+    }
+
+    $('a').click(this.onLinkClicked);
+    $('.hangout-user-overlay').hover(this.onHangoutHoverOver, this.onHangoutHoverOut);
+  }
+};
+ 
+/**
+ * Event when hangout hovered was over.
+ */
+PopupController.prototype.onHangoutHoverOver = function(e) {
+  e.currentTarget.style.width = parseInt($('span', e.currentTarget).text()) * 40 + 85 + 'px';
+  e.stopPropagation();
+};
+
+/**
+ * Event when hangout hovered was out.
+ */
+PopupController.prototype.onHangoutHoverOut = function(e) {
+  e.currentTarget.style.width = '75px';
+  e.stopPropagation();
+};
+
+/**
+ * Forward click events to the extension.
+ *
+ * @param{MouseEvent} e The link which was clicked.
+ */
+PopupController.prototype.onLinkClicked = function(e) {
+  e.preventDefault();
+  var href = $(e.target).attr('href');
+  if (!href) {
+    href = $(e.target).parent().attr('href');
+  }
+  chrome.tabs.create({url: href});
+};
+
+/**
+ * Rendering each hangout.
+ *
+ * @param {Object} hangout The hangout item in a JSON format.
+ */
+PopupController.prototype.renderHangoutItem = function(hangout) {
+  $('#hangout-item-template').tmpl(hangout).appendTo('#hangout-container');
+};
+
+PopupController.prototype.renderHangouts = function(hangouts) {
+  var container = document.querySelector('#hangout-container');
   var googlePlusURL = 'https://plus.google.com/';
-  var hangouts = this.bkg.getHangouts();
   if (hangouts.length > 0) {
     for (var i = 0; i < hangouts.length; i++) {
       var hangoutItem = hangouts[i];
@@ -76,8 +119,7 @@ PopupController.prototype.onWindowLoad = function(e) {
       }
       
       // Hangout Participants.
-      var hangoutParticipantsDOM = document.createElement('div');
-      hangoutParticipantsDOM.className = 'hangout-participants';
+      var hangoutParticipantsDOM = document.querySelector('.hangout-participants');
       for (var j = 0; j < hangoutItem.participants.length; j++) {
         var participant = hangoutItem.participants[j];
         var userProfile = googlePlusURL + participant.id;
@@ -107,7 +149,7 @@ PopupController.prototype.onWindowLoad = function(e) {
       timeDOM.innerHTML = hangoutItem.ts;
       
       // Lay them out on the popup.
-      var hangoutDOM = document.createElement('p');
+      var hangoutDOM = document.createElement('div');
       hangoutDOM.appendChild(hangoutUserDOM);
       hangoutDOM.appendChild(hangoutButtonJoinDOM);
       hangoutDOM.appendChild(hangoutNameDOM);
@@ -130,6 +172,31 @@ PopupController.prototype.onWindowLoad = function(e) {
        '</ul><p>Or there might be a bug, <a href="#" onclick="popupController.open(\'https://plus.google.com/116805285176805120365/about\');">+Mohamed Mansour</a> me :)</p>';
   }
   document.body.appendChild(container);
+};
+
+/**
+ * Joins the hangout by sending a visit back to the background page and then to
+ * the plus page to click on the Join Hangout link.
+ */
+PopupController.prototype.onHangoutJoin = function(e) {
+  this.bkg.openHangout(e.target.id);
+  window.close();
+};
+
+/**
+ * Calculate the width of the hover based on the current user count.
+ */
+PopupController.prototype.onUserCountHoverStarted = function(e) {
+  e.currentTarget.style.width = (e.currentTarget.userCount) * 40 + 85 + 'px';
+  e.stopPropagation();
+};
+
+/**
+ * Revert the width back to normal state when finished.
+ */
+PopupController.prototype.onUserCountHoverCompleted = function(e) {
+  e.currentTarget.style.width = '75px';
+  e.stopPropagation();
 };
 
 /**

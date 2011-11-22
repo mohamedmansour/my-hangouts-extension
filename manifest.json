@@ -1,26 +1,15 @@
 {
   "name": "My Hangouts for Google Plus",
-  "version": "1.1.8.1",
-  "description": "Quick view of all the active hangouts in your stream.",
+  "version": "2.0.2",
+  "description": "Quick view of all the active hangouts in your stream. Doesn't send any of your information to outside servers.",
   "icons": {
     "16": "img/icon16.png",
     "32": "img/icon32.png",
     "48": "img/icon48.png",
     "128": "img/icon128.png"
   },
-  "permissions": ["tabs", "notifications", "https://plus.google.com/*"],
+  "permissions": ["notifications", "https://plus.google.com/*"],
   "background_page": "background.html",
-  "content_scripts": [{
-      "matches": [
-        "https://plus.google.com/",
-        "https://plus.google.com/?hl=*",
-        "https://plus.google.com/u/*/",
-        "https://plus.google.com/u/*/?hl=*"
-      ],
-      "js": ["js/my_hangout_injection.js"],
-      "run_at": "document_end",
-      "all_frames": true
-  }],
   "browser_action": {
     "default_title": "My Hangouts",
     "default_popup": "popup.html"

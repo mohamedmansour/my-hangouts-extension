@@ -7,7 +7,11 @@
 BackgroundController = function() {
   this.onExtensionLoaded();
   this.hangouts = [];
+  this.public_hangouts = [];
+  this.plus = new GooglePlusAPI();
   this.plusTabId = -1;
+  this.UPDATE_INTERVAL = 30000;
+  this.HANGOUT_SEARCH_QUERY = '"is hanging out with" "right now!"';
 };
 
 /**
@@ -32,48 +36,14 @@ BackgroundController.prototype.onExtensionLoaded = function() {
  * Triggered when the extension just installed.
  */
 BackgroundController.prototype.onInstall = function() {
-  this.doWorkTabs(function(tab) {
-    chrome.tabs.executeScript(tab.id, { file: 'js/my_hangout_injection.js',
-                              allFrames: true }, function() {
-      // This is needed because all the DOM is already inserted, no events
-      // would have been fired. This will force the events to fire after
-      // initial injection.
-      chrome.tabs.sendRequest(tab.id, { method: 'InitialInjection' });
-    });
-  });
 };
 
-/**
- * Do some work on all tabs that are on Google Plus.
- *
- * @param {Function<Tab>} callback The callback with the tab results.
- */
-BackgroundController.prototype.doWorkTabs = function(callback) {
-  self = this;
-  chrome.windows.getAll({ populate: true }, function(windows) {
-    for (var w = 0; w < windows.length; w++) {
-      var tabs = windows[w].tabs;
-      for (var t = 0; t < tabs.length; t++) {
-        var tab = tabs[t];
-        if (self.isValidURL(tab.url)) { 
-          callback(tab);
-        }
-      }
-    }
-  });
-};
 
 /**
  * Inform all Content Scripts that new settings are available.
  */
 BackgroundController.prototype.updateSettings = function() {
   self = this;
-  this.doWorkTabs(function(tab) {
-    chrome.tabs.sendRequest(tab.id, {
-        method: 'SettingsUpdated',
-        data: settings.whitelist
-    });
-  });
 };
 
 /**
@@ -99,27 +69,13 @@ BackgroundController.prototype.onUpdate = function(previous, current) {
  * Initialize the main Background Controller
  */
 BackgroundController.prototype.init = function() {
-  // Listens on new tab updates. Google+ uses new sophisticated HTML5 history
-  // push API, so content scripts don't get recognized always. We inject
-  // the content script once, and listen for URL changes.
-  chrome.tabs.onUpdated.addListener(this.tabUpdated.bind(this));
-  chrome.extension.onRequest.addListener(this.onExternalRequest.bind(this));
+  this.plus.init(function(status) {
+    window.setInterval(this.refreshPublicHangouts.bind(this), this.UPDATE_INTERVAL);
+    this.refreshPublicHangouts();
+  }.bind(this));
+
   chrome.browserAction.setBadgeText({ text: '' });
   this.drawBadgeIcon(-1);
-};
-
-/**
- * Listens on new tab URL updates. We use this make sure we capture history
- * push API for asynchronous page reloads.
- *
- * @param {number} tabId Tab identifier that changed.
- * @param {object} changeInfo lists the changes of the states.
- * @param {object<Tab>} tab The state of the tab that was updated.
- */
-BackgroundController.prototype.tabUpdated = function(tabId, changeInfo, tab) {
-  if (changeInfo.status == 'complete' && this.isValidURL(tab.url)) {
-    chrome.tabs.sendRequest(tabId, { method: 'RenderItems' });
-  }
 };
 
 /**
@@ -135,7 +91,7 @@ BackgroundController.prototype.onExternalRequest = function(request, sender, sen
     sendResponse({data: settings.whitelist});
   }
   else if (request.method == 'NewHangoutItem') {
-    this.drawBadgeIcon(request.data.length, true);
+    //this.drawBadgeIcon(request.data.length, true);
     this.hangouts = request.data;
     sendResponse({});
   }
@@ -177,7 +133,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
  * @returns 
  */
 BackgroundController.prototype.getHangouts = function() {
-  return this.hangouts;
+  return [this.hangouts, this.public_hangouts];
 };
 
 /**
@@ -192,4 +148,23 @@ BackgroundController.prototype.openHangout = function(id) {
  */
 BackgroundController.prototype.doMoreHangouts = function() {
   chrome.tabs.sendRequest(this.plusTabId, {method: 'MoreStream'});
+};
+
+BackgroundController.prototype.refreshPublicHangouts = function() {
+  var self = this;
+  this.plus.search(function(data) {
+  
+    var cache = {};
+    var hangouts = [];
+    for (var i = 0; i < data.length; i++) {
+      var hangout = data[i];
+      if (!hangout.data.active || cache[hangout.data.id]) {
+        continue;
+      }
+      cache[hangout.data.id] = true;
+      hangouts.push(hangout);
+    }
+    self.public_hangouts = hangouts;
+    self.drawBadgeIcon(hangouts.length, true);
+  }, this.HANGOUT_SEARCH_QUERY, {precache: 4, type: 'hangout'});
 };
