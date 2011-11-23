@@ -14,8 +14,12 @@ switch over to the new hangout.
 Active hangouts will have a blue icon while inactive hangouts will have a grey
 icon with a question mark.
 
-Add me to Google+ (https://plus.google.com/116805285176805120365/about)
 
+Contributors
+-----------
+
+- Mohamed Mansour (https://plus.google.com/116805285176805120365/about)
+- John Barrington Craggs (https://plus.google.com/117791034087176894458/about)
 
 Screenshots
 ----------
