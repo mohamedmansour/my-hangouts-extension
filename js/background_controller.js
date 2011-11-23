@@ -10,6 +10,7 @@ BackgroundController = function() {
   this.plus = new GooglePlusAPI();
   this.UPDATE_INTERVAL = 30000;
   this.HANGOUT_SEARCH_QUERY = '"is hanging out with" "right now!"';
+  this.HANGOUT_HX_SEARCH_QUERY = '"hangout named"';
 };
 
 /**
@@ -105,19 +106,24 @@ BackgroundController.prototype.getHangouts = function() {
 
 BackgroundController.prototype.refreshPublicHangouts = function() {
   var self = this;
-  this.plus.search(function(data) {
+  var cache = {};
+  self.hangouts.length = 0;
   
-    var cache = {};
-    var hangouts = [];
-    for (var i = 0; i < data.length; i++) {
-      var hangout = data[i];
-      if (!hangout.data.active || cache[hangout.data.id]) {
-        continue;
+  // Search for the query.
+  var search = function(query, isExtra) {
+    self.plus.search(function(data) {
+      for (var i = 0; i < data.length; i++) {
+        var hangout = data[i];
+        if (!hangout.data.active || cache[hangout.data.id]) {
+          continue;
+        }
+        cache[hangout.data.id] = true;
+        hangout.data.extra = isExtra;
+        self.hangouts.push(hangout);
       }
-      cache[hangout.data.id] = true;
-      hangouts.push(hangout);
-    }
-    self.hangouts = hangouts;
-    self.drawBadgeIcon(hangouts.length, true);
-  }, this.HANGOUT_SEARCH_QUERY, {precache: 4, type: 'hangout'});
+      self.drawBadgeIcon(self.hangouts.length, true);
+    }, query, {precache: 3, type: 'hangout'});
+  };
+  search(this.HANGOUT_SEARCH_QUERY, false);
+  search(this.HANGOUT_HX_SEARCH_QUERY, true);
 };

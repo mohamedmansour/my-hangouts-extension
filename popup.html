@@ -21,7 +21,7 @@
         </div>
         <div><span>${activeCount}</span> participants</div>
       </div>
-      <a class="button" href="http://plus.google.com/hangouts/${data.id}">Join</a>
+      <a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a>
       <span class="hangout-title">${owner.name}</span>
     </div>
   </script>
