@@ -8,7 +8,7 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.hangouts = [];
   this.plus = new GooglePlusAPI();
-  this.UPDATE_INTERVAL = 30000;
+  this.UPDATE_INTERVAL = 60000;
   this.HANGOUT_SEARCH_QUERY = '"is hanging out with" "right now!"';
   this.HANGOUT_HX_SEARCH_QUERY = '"hangout named"';
 };
@@ -122,7 +122,7 @@ BackgroundController.prototype.refreshPublicHangouts = function() {
         self.hangouts.push(hangout);
       }
       self.drawBadgeIcon(self.hangouts.length, true);
-    }, query, {precache: 3, type: 'hangout'});
+    }, query, {precache: 2, type: 'hangout'});
   };
   search(this.HANGOUT_SEARCH_QUERY, false);
   search(this.HANGOUT_HX_SEARCH_QUERY, true);
