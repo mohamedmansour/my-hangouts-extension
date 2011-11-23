@@ -6,11 +6,9 @@
  */
 BackgroundController = function() {
   this.onExtensionLoaded();
-  this.hangouts = [];
   this.plus = new GooglePlusAPI();
-  this.UPDATE_INTERVAL = 60000;
-  this.HANGOUT_SEARCH_QUERY = '"is hanging out with" "right now!"';
-  this.HANGOUT_HX_SEARCH_QUERY = '"hangout named"';
+  this.updater = new UpdaterHangoutProcessor(this);
+  this.UPDATE_INTERVAL = 30000;
 };
 
 /**
@@ -101,29 +99,95 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
  * @returns 
  */
 BackgroundController.prototype.getHangouts = function() {
-  return this.hangouts;
+  return this.updater.getHangouts();
 };
 
 BackgroundController.prototype.refreshPublicHangouts = function() {
-  var self = this;
-  var cache = {};
-  self.hangouts.length = 0;
+  this.updater.doNext();
+};
+
+/**
+ * Updater State Machine to execute different states each iteration.
+ *
+ * @param {BackgroundController} controller The background controller.
+ */
+UpdaterHangoutProcessor = function(controller) {
+  this.controller = controller;
+  this.currentState = 0;
+  this.maxState = 2;
   
-  // Search for the query.
-  var search = function(query, isExtra) {
-    self.plus.search(function(data) {
-      for (var i = 0; i < data.length; i++) {
-        var hangout = data[i];
-        if (!hangout.data.active || cache[hangout.data.id]) {
-          continue;
-        }
-        cache[hangout.data.id] = true;
-        hangout.data.extra = isExtra;
-        self.hangouts.push(hangout);
-      }
-      self.drawBadgeIcon(self.hangouts.length, true);
-    }, query, {precache: 2, type: 'hangout'});
+  this.cache = {};
+  this.hangouts = [];
+  
+  this.HANGOUT_SEARCH_QUERY = {
+    query: '"is hanging out with" "right now!"',
+    extra: false
   };
-  search(this.HANGOUT_SEARCH_QUERY, false);
-  search(this.HANGOUT_HX_SEARCH_QUERY, true);
+  this.HANGOUT_HX_SEARCH_QUERY = {
+    query: '"hangout named"',
+    extra: true
+  };
+};
+
+/**
+ * @return List of hangouts.
+ */
+UpdaterHangoutProcessor.prototype.getHangouts = function() {
+  return this.hangouts;
+};
+
+/**
+ * @param {Object} obj The search object where keys are "query" and "extra"
+ */
+UpdaterHangoutProcessor.prototype.search = function(obj) {
+  var self = this;
+  self.controller.plus.search(function(data) {
+    for (var i = 0; i < data.length; i++) {
+      var hangout = data[i];
+      if (!hangout.data.active || self.cache[hangout.data.id]) {
+        continue;
+      }
+      self.cache[hangout.data.id] = true;
+      hangout.data.extra = obj.extra;
+      self.hangouts.push(hangout);
+    }
+    self.controller.drawBadgeIcon(self.hangouts.length, true);
+  }, obj.query, {precache: 3, type: 'hangout'});
+};
+  
+/**
+ * Executes the next state.
+ */
+UpdaterHangoutProcessor.prototype.doNext = function() {
+  this['state' + this.currentState]();
+  if (this.currentState >= this.maxState) {
+    this.currentState = 0;
+  }
+  else {
+    this.currentState++;
+  }
+};
+
+/**
+ * Reset the state after the third iteration and query all searches.
+ */
+UpdaterHangoutProcessor.prototype.state0 = function() {
+  this.hangouts.length = 0;
+  this.cache = {};
+  this.search(this.HANGOUT_SEARCH_QUERY);
+  this.search(this.HANGOUT_HX_SEARCH_QUERY);
+};
+
+/**
+ * Execute the Normal Hangout Search Query
+ */
+UpdaterHangoutProcessor.prototype.state1 = function() {
+  this.search(this.HANGOUT_SEARCH_QUERY);
+};
+
+/**
+ * Execute the Named Hangout Search Query
+ */
+UpdaterHangoutProcessor.prototype.state2 = function() {
+  this.search(this.HANGOUT_HX_SEARCH_QUERY);
 };
