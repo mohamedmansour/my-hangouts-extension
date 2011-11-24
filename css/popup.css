@@ -3,14 +3,14 @@ body, html {
   font: normal 13px arial,sans-serif;
 }
 #hangout-container {
-  width: 500px;
+  width: 600px;
 }
 .hangout-item {
   background-color: #eee;
   border-radius: 5px;
   height: 50px;
-  line-height: 50px;
   margin: 5px 0;
+  clear: both;
 }
 .hangout-item:hover {
   background-color: #ccc;
@@ -30,24 +30,35 @@ body, html {
   cursor: pointer;
   overflow: hidden;
 }
+.hangout-button {
+  float: left;
+  margin-top: 10px;
+}
 .full .hangout-user-overlay {
   background-color: #ca333a;
 }
 .hangout-participants {
-  display: inline;
-  position: absolute;
-  width: 415px;
-  right: 95px;
-  top: 9px;
+  float: left;
+  margin-top: 7px;
+}
+.hangout-participants a {
+  display: block;
 }
 .hangout-participants img {
   border: 2px solid transparent;
-  margin: 0px 1px;
+  margin: 0px;
   border-radius: 2px;
 }
 .hangout-participants img:hover {
-  box-shadow:0 0 15px white; 
+  box-shadow: 0 0 15px white; 
   background-color: white;
+}
+.hangout-participants ul {
+  margin: 0;
+  padding: 0;
+}
+.hangout-participants li {
+  display: inline-block;
 }
 .hangout-count {
   display: inline;

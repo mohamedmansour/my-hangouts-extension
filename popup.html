@@ -12,17 +12,19 @@
   <script type="text/x-jquery-tmpl" id="hangout-item-template">
     <div class="hangout-item{{if isFull}} full{{/if}}">
       <div class="hangout-user-overlay">
-        <div class="hangout-participants">
-          {{each(i, participant) data.participants}}
-            {{if participant.status}}
-            <a href="https://plus.google.com/${id}/about"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>
-            {{/if}}
-          {{/each}}
-        </div>
+        <div class="hangout-title">${owner.name}</div>
         <div><span>${activeCount}</span> participants</div>
       </div>
-      <a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a>
-      <span class="hangout-title">${owner.name}</span>
+      <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a></div>
+      <div class="hangout-participants">
+        <ul>
+        {{each(i, participant) data.participants}}
+          {{if participant.status}}
+          <li><a href="https://plus.google.com/${id}/about"><img src="${participant.image}?sz=32" title="${participant.name}" /></a></li>
+          {{/if}}
+        {{/each}}
+        </ul>
+      </div>
     </div>
   </script>
   <script type="text/javascript">
