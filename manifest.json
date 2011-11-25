@@ -1,6 +1,6 @@
 {
   "name": "My Hangouts for Google Plus",
-  "version": "2.2.0",
+  "version": "2.3.1",
   "description": "Quick view of all the active hangouts in your stream. Doesn't send any of your information to outside servers.",
   "icons": {
     "16": "img/icon16.png",
