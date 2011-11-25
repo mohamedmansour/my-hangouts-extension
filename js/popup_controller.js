@@ -37,31 +37,14 @@ PopupController.prototype.onWindowLoad = function(e) {
         }
       }
       hangoutItem.activeCount = userCount;
-      hangoutItem.isFull = userCount == 10;
+      hangoutItem.isFull = userCount >= 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
 
       this.renderHangoutItem(hangoutItem);
     }
 
     $('a').click(this.onLinkClicked);
-    $('.hangout-user-overlay').hover(this.onHangoutHoverOver, this.onHangoutHoverOut);
   }
-};
- 
-/**
- * Event when hangout hovered was over.
- */
-PopupController.prototype.onHangoutHoverOver = function(e) {
-  e.currentTarget.style.width = parseInt($('span', e.currentTarget).text()) * 40 + 85 + 'px';
-  e.stopPropagation();
-};
-
-/**
- * Event when hangout hovered was out.
- */
-PopupController.prototype.onHangoutHoverOut = function(e) {
-  e.currentTarget.style.width = '75px';
-  e.stopPropagation();
 };
 
 /**

@@ -15,10 +15,11 @@ body, html {
 .hangout-item:hover {
   background-color: #ccc;
 }
-.hangout-user-overlay {
+.hangout-overlay {
   position: absolute;
   right: 5px;
   width: 75px;
+  height: 50px;
   text-align: right;
   padding-right: 10px;
   background-color: #ddd;
@@ -30,11 +31,14 @@ body, html {
   cursor: pointer;
   overflow: hidden;
 }
+.hangout-overlay:hover {
+  width: 500px;
+}
 .hangout-button {
   float: left;
   margin-top: 10px;
 }
-.full .hangout-user-overlay {
+.full .hangout-overlay {
   background-color: #ca333a;
 }
 .hangout-participants {
