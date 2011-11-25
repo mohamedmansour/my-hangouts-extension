@@ -12,10 +12,13 @@
   <script type="text/x-jquery-tmpl" id="hangout-item-template">
     <div class="hangout-item{{if isFull}} full{{/if}}">
       <div class="hangout-overlay">
-        <div class="hangout-show">${activeCount}</div>
+        <div class="hangout-show">
+          <span class="hangout-show-count">${activeCount}</span>
+          <span class="hangout-show-visibility">{{if public}}public{{else}}limited{{/if}}</span>
+        </div>
         <div class="hangout-extra">
-          ${owner.name}
           <a href="${url}">Original post</a>
+          ${html}
         </div>
       </div>
       <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a></div>

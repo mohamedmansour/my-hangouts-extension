@@ -33,23 +33,38 @@ body, html {
   overflow: hidden;
 }
 .hangout-overlay:hover {
-  width: 500px;
+  width: 400px;
+  box-shadow: -5px 0px 10px rgba(0,0,0,0.2);
+}
+.full .hangout-overlay {
+  background-color: #ca333a;
 }
 .hangout-extra {
   width: 500px;
+  height: 50px;
+  line-height: 50px;
+  margin-right: 75px;
 }
 .hangout-show {
   float: right;
   width: 50px;
   text-align: center;
   display: block;
-  line-height: 50px;
+  height: 50px;
   font-weight: bold;
-  font-size: 30px;
+  color: #777;
+}
+.full .hangout-show  {
   color: #eee;
 }
-.full .hangout-overlay {
-  background-color: #ca333a;
+.hangout-show-count {
+  display: block;
+  font-size: 30px;
+  line-height: 35px;
+}
+.hangout-show-visibility {
+  display: block;
+  line-height: 10px;
 }
 .hangout-participants {
   float: left;
