@@ -27,7 +27,7 @@ PopupController.prototype.onWindowLoad = function(e) {
       var hangoutItem = hangouts[i];
 
       // Hangout Participants.
-      var userCount = 0;
+      var userCount = 1;
       for (var j = 0; j < hangoutItem.data.participants.length; j++) {
         var participant = hangoutItem.data.participants[j];
         if (participant.status) {
@@ -37,7 +37,7 @@ PopupController.prototype.onWindowLoad = function(e) {
         }
       }
       hangoutItem.activeCount = userCount;
-      hangoutItem.isFull = userCount == 9;
+      hangoutItem.isFull = userCount == 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
 
       this.renderHangoutItem(hangoutItem);
