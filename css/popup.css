@@ -33,21 +33,20 @@ body, html {
   overflow: hidden;
 }
 .hangout-overlay:hover {
-  width: 400px;
+  width: 500px;
   box-shadow: -5px 0px 10px rgba(0,0,0,0.2);
 }
 .full .hangout-overlay {
   background-color: #ca333a;
 }
 .hangout-extra {
-  width: 500px;
+  width: 450px;
   height: 50px;
   line-height: 50px;
-  margin-right: 75px;
 }
 .hangout-show {
   float: right;
-  width: 50px;
+  width: 70px;
   text-align: center;
   display: block;
   height: 50px;
