@@ -36,6 +36,7 @@ PopupController.prototype.onWindowLoad = function(e) {
           // Active Participant
         }
       }
+      hangoutItem.html = this.stripHTML(hangoutItem.html);
       hangoutItem.activeCount = userCount;
       hangoutItem.isFull = userCount >= 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
@@ -47,6 +48,14 @@ PopupController.prototype.onWindowLoad = function(e) {
   }
 };
 
+/**
+ * From http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
+ */
+PopupController.prototype.stripHTML = function(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText;
+}
 /**
  * Forward click events to the extension.
  *
