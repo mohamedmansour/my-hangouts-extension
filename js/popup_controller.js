@@ -21,10 +21,13 @@ PopupController.prototype.init = function() {
  */
 PopupController.prototype.onWindowLoad = function(e) {
   var hangouts = this.bkg.getHangouts();
-  
-  if (hangouts.length > 0) {
+ 
+  if (hangouts.length > 0) {    
     for (var i = 0; i < hangouts.length; i++) {
       var hangoutItem = hangouts[i];
+
+      // Slice everything that we don't need.
+      hangoutItem.data.participants = hangoutItem.data.participants.slice(0, 9);
 
       // Hangout Participants.
       var userCount = 1;
