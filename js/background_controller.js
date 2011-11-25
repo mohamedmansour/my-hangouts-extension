@@ -144,10 +144,13 @@ UpdaterHangoutProcessor.prototype.search = function(obj) {
   self.controller.plus.search(function(data) {
     for (var i = 0; i < data.length; i++) {
       var hangout = data[i];
-      if (!hangout.data.active || self.cache[hangout.data.id]) {
+      var cache = self.cache[hangout.data.id];
+      if (!hangout.data.active || cache) {
+        // Preserve public status. It weighs more than limited.
+        if (cache == 'true') hangout.public = cache;
         continue;
       }
-      self.cache[hangout.data.id] = true;
+      self.cache[hangout.data.id] = hangout.public.toString();
       hangout.data.extra = obj.extra;
       self.hangouts.push(hangout);
     }
