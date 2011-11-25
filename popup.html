@@ -13,8 +13,10 @@
     <div class="hangout-item{{if isFull}} full{{/if}}">
       <div class="hangout-overlay">
         <div class="hangout-show">${activeCount}</div>
-        <div class="hangout-extra">${owner.name}</div>
-        <div class="hangout-extra"><a href="${url}">Original post</a></div>
+        <div class="hangout-extra">
+          ${owner.name}
+          <a href="${url}">Original post</a>
+        </div>
       </div>
       <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a></div>
       <div class="hangout-participants">

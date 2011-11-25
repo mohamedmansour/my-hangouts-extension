@@ -11,14 +11,15 @@ body, html {
   height: 50px;
   margin: 5px 0;
   clear: both;
+  position: relative;
 }
 .hangout-item:hover {
   background-color: #ccc;
 }
 .hangout-overlay {
   position: absolute;
-  right: 5px;
-  width: 75px;
+  right: 0px;
+  width: 70px;
   height: 50px;
   text-align: right;
   padding-right: 10px;
@@ -34,9 +35,18 @@ body, html {
 .hangout-overlay:hover {
   width: 500px;
 }
-.hangout-button {
-  float: left;
-  margin-top: 10px;
+.hangout-extra {
+  width: 500px;
+}
+.hangout-show {
+  float: right;
+  width: 50px;
+  text-align: center;
+  display: block;
+  line-height: 50px;
+  font-weight: bold;
+  font-size: 30px;
+  color: #eee;
 }
 .full .hangout-overlay {
   background-color: #ca333a;
@@ -67,24 +77,9 @@ body, html {
 .hangout-participants li {
   display: inline-block;
 }
-.hangout-count {
-  display: inline;
-}
-.hangout-count::after {
-  content: "";
-  position: absolute;
-  display: block;
-  width: 0;
-  top: 16px;
-  left: -50px;
-  bottom: auto;
-  border-width: 10px 50px 10px 0;
-  border-color: transparent #000;
-}
-.hangout-time {
-  font-size: 0.75em;
-  color: #333;
-  margin-left: 5px;
+.hangout-button {
+  float: left;
+  margin-top: 10px;
 }
 .button {
   display: inline-block;
