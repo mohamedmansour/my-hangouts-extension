@@ -21,7 +21,8 @@ CaptureEntity.prototype.tableDefinition = function() {
  * Backend that is responsible of handling captures.
  * @constructor
  */
-MomentCaptureBackend = function(db) {
+MomentCaptureBackend = function() {
+  var db = openDatabase('My Hangouts', '1.0', 'circle-manager', 10 * 1024 * 1024);
   this.captureEntity = new CaptureEntity(db);
 };
 
@@ -38,4 +39,8 @@ MomentCaptureBackend.prototype.findAll = function(callback) {
 MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
   // We do extra stuff here such as thumbnails.
   this.captureEntity.create(imageObj, callback);
+};
+
+MomentCaptureBackend.prototype.findCapture = function(id, callback) {
+  this.captureEntity.find({_id: id}, callback);
 };

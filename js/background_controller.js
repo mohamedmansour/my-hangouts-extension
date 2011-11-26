@@ -8,7 +8,7 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updater = new UpdaterHangoutProcessor(this);
-  this.moments = new MomentCaptureBackend(this.plus.getDatabase().db);
+  this.moments = new MomentCaptureBackend();
   this.UPDATE_INTERVAL = 30000;
 };
 
@@ -69,9 +69,12 @@ BackgroundController.prototype.init = function() {
 };
 
 BackgroundController.prototype.onMessageListener = function(request, sender, sendResponse) {
-  switch (request.method) {
-    case 'ProcessCapture':
-      this.moments.processCapture(request.data, sendResponse);
+  switch (request.service) {
+    case 'Capture':
+      var args = [];
+      if (request.arguments) args = args.concat(request.arguments);
+      args.push(sendResponse);
+      this.moments[request.method].apply(this.moments, args);
       break;
     default:
       sendResponse('hello');

@@ -1,5 +1,16 @@
+function sendRequest(method, args, callback) {
+  chrome.extension.sendRequest({
+    service: 'Capture', 
+    method: method,
+    arguments: args
+  }, callback);
+}
+
 function showPreview(data) {
   console.log('Showing', data);
+  sendRequest('findCapture', [data.id], function(resp) {
+    console.log('Capture found', resp);
+  });
 }
 
 function onPlusClicked(e) {
@@ -7,15 +18,12 @@ function onPlusClicked(e) {
   var client = document.querySelector('object').client;
   var dataURL = client.toDataURL();
   var image64 = dataURL.replace(/data:image\/png;base64,/, '');
-  chrome.extension.sendRequest({
-    method: 'ProcessCapture', 
-    data: {
-      hangout: document.location.href,
-      time: new Date(),
-      description: 'nil',
-      raw: image64
-    } 
-  }, showPreview);
+  sendRequest('processCapture', [{
+    hangout: document.location.href,
+    time: new Date(),
+    description: 'nil',
+    raw: image64
+  }], showPreview);
 }
 
 function renderHangoutExtraUI() {
