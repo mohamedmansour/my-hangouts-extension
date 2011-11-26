@@ -8,6 +8,7 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updater = new UpdaterHangoutProcessor(this);
+  this.moments = new MomentCaptureBackend(this.plus.getDatabase().db);
   this.UPDATE_INTERVAL = 30000;
 };
 
@@ -62,8 +63,20 @@ BackgroundController.prototype.init = function() {
     this.refreshPublicHangouts();
   }.bind(this));
 
+  chrome.extension.onRequest.addListener(this.onMessageListener.bind(this));
   chrome.browserAction.setBadgeText({ text: '' });
   this.drawBadgeIcon(-1);
+};
+
+BackgroundController.prototype.onMessageListener = function(request, sender, sendResponse) {
+  switch (request.method) {
+    case 'ProcessCapture':
+      this.moments.processCapture(request.data, sendResponse);
+      break;
+    default:
+      sendResponse('hello');
+      break;
+  }
 };
 
 /**

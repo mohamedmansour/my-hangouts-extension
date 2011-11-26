@@ -1,0 +1,5 @@
+MomentCaptureController = function() {
+};
+
+MomentCaptureController = function() {
+};

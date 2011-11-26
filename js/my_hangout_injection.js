@@ -1,5 +1,5 @@
 function showPreview(data) {
-  console.log('Showing');
+  console.log('Showing', data);
 }
 
 function onPlusClicked(e) {
@@ -7,8 +7,15 @@ function onPlusClicked(e) {
   var client = document.querySelector('object').client;
   var dataURL = client.toDataURL();
   var image64 = dataURL.replace(/data:image\/png;base64,/, '');
-  
-  chrome.extension.sendRequest({method: 'ProcessCapture', data: image64}, showPreview);
+  chrome.extension.sendRequest({
+    method: 'ProcessCapture', 
+    data: {
+      hangout: document.location.href,
+      time: new Date(),
+      description: 'nil',
+      raw: image64
+    } 
+  }, showPreview);
 }
 
 function renderHangoutExtraUI() {
