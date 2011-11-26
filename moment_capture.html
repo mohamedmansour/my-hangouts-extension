@@ -3,10 +3,21 @@
 <head>
   <link rel="stylesheet" type="text/css" href="/css/moment_capture.css" />
   <script type="text/javascript" src="/js/libs/jquery-1.6.3.min.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script> 
   <script type="text/javascript" src="/js/moment_capture_controller.js"></script>
 </head>
 <body>
-  <h1></h1>
+<div id="crx_myhangouts">
+  <div id="crx_myhangouts_area">
+    <div id="crx_myhangouts_preview">
+      <h1>Moments</h1>
+      <canvas id="canvas"></canvas>
+      <button id="close">Close</button>
+    </div>
+  </div>
+</div>
+<script>
+var controller = new MomentCaptureController();
+controller.init();
+</script>
 </body>
 </html>

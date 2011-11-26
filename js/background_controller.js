@@ -76,6 +76,9 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
       args.push(sendResponse);
       this.moments[request.method].apply(this.moments, args);
       break;
+    case 'RemoveOverlay':
+      chrome.tabs.sendRequest(sender.tab.id, {method: 'RemoveOverlayUI'});
+      break;
     default:
       sendResponse('hello');
       break;

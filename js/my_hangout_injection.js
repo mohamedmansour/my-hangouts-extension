@@ -1,29 +1,33 @@
-function sendRequest(method, args, callback) {
-  chrome.extension.sendRequest({
-    service: 'Capture', 
-    method: method,
-    arguments: args
-  }, callback);
-}
-
 function showPreview(data) {
   console.log('Showing', data);
-  sendRequest('findCapture', [data.id], function(resp) {
-    console.log('Capture found', resp);
-  });
+  var overlayDOM = document.createElement('iframe');
+  overlayDOM.setAttribute('id', 'crx-my-hangouts-overlay');
+  overlayDOM.setAttribute('src', chrome.extension.getURL('moment_capture.html') + '#' + data.id);
+  overlayDOM.setAttribute('frameBorder', '0');
+  overlayDOM.setAttribute('width', '99.90%');
+  overlayDOM.setAttribute('height', '100%');
+  overlayDOM.setAttribute('style', 'position: fixed; top: 0; left: 0; overflow: hidden; z-index: 99999');
+  document.body.appendChild(overlayDOM);
+  document.body.appendChild(overlayDOM);
 }
 
 function onPlusClicked(e) {
   e.preventDefault();
   var client = document.querySelector('object').client;
   var dataURL = client.toDataURL();
-  var image64 = dataURL.replace(/data:image\/png;base64,/, '');
-  sendRequest('processCapture', [{
-    hangout: document.location.href,
-    time: new Date(),
-    description: 'nil',
-    raw: image64
-  }], showPreview);
+  //var image64 = dataURL.replace(/data:image\/png;base64,/, '');
+  chrome.extension.sendRequest({
+    service: 'Capture', 
+    method: 'processCapture',
+    arguments: [{
+      hangout: document.location.href,
+      time: new Date(),
+      description: 'nil',
+      raw: dataURL,
+      height: client.height,
+      width: client.width
+    }]
+  }, showPreview);
 }
 
 function renderHangoutExtraUI() {
@@ -89,8 +93,13 @@ function renderHangoutNormalUI() {
   }
 }
 
+function onApiExternalMessage(request, sender, sendResponse) {
+  document.body.removeChild(document.querySelector("iframe#crx-my-hangouts-overlay"));
+}
+
 function onApiReady(isHangoutExtra) {
   isHangoutExtra ? renderHangoutExtraUI() : renderHangoutNormalUI();
+  chrome.extension.onRequest.addListener(onApiExternalMessage);
 }
 
 function discoverVideo() {

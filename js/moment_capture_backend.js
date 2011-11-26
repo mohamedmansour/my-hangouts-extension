@@ -13,7 +13,9 @@ CaptureEntity.prototype.tableDefinition = function() {
     time: 'DATE',
     description: 'TEXT',
     raw: 'TEXT',
-    thumbnail: 'TEXt'
+    thumbnail: 'TEXT',
+    height: 'INTEGER',
+    width: 'INTEGER'
   };
 };
 
@@ -42,5 +44,13 @@ MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
 };
 
 MomentCaptureBackend.prototype.findCapture = function(id, callback) {
-  this.captureEntity.find({_id: id}, callback);
+  this.captureEntity.find({_id: id}, function(obj) {
+    var status = obj.status && obj.data.length > 0;
+    var result = status ? obj.data[0] : obj.data;
+    var res = {
+      status: status,
+      data: result
+    }
+    callback(res);
+  });
 };
