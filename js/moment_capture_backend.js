@@ -27,7 +27,7 @@ CaptureEntity.prototype.tableDefinition = function() {
  * @constructor
  */
 MomentCaptureBackend = function() {
-  var db = openDatabase('My Hangouts', '1.0', 'circle-manager', 10 * 1024 * 1024);
+  var db = openDatabase('My Hangouts', '1.0', 'my-hangouts', 10 * 1024 * 1024);
   this.captureEntity = new CaptureEntity(db);
 };
 
