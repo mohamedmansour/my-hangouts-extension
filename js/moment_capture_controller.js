@@ -16,11 +16,11 @@ MomentCaptureController.prototype.renderPreview = function() {
   };
   var searchData = { service: 'Capture', method: 'findCapture', arguments: [this.captureID] };
   chrome.extension.sendRequest(searchData, function(res) {
-    imgLoader.width = res.data.width;
-    imgLoader.height = res.data.height;
-    imgLoader.src = res.data.raw;
-    canvasDOM.width = res.data.width;
-    canvasDOM.height = res.data.height;
+    imgLoader.width = res.data.thumbnail_width;
+    imgLoader.height = res.data.thumbnail_height;
+    imgLoader.src = res.data.thumbnail;
+    canvasDOM.width = res.data.thumbnail_width;
+    canvasDOM.height = res.data.thumbnail_height;
   });
 };
 

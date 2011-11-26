@@ -1,5 +1,11 @@
-function showPreview(data) {
-  console.log('Showing', data);
+/**
+ * Hangout Injection. Makes sense to abstract it out here, but keep it simpler.
+ */
+MyHangoutInjection = function() {
+  this.isHangoutExtra = window.location.pathname.indexOf('/hangouts/extras/') == 0;
+};
+
+MyHangoutInjection.prototype.showPreview = function(data) {
   var overlayDOM = document.createElement('iframe');
   overlayDOM.setAttribute('id', 'crx-my-hangouts-overlay');
   overlayDOM.setAttribute('src', chrome.extension.getURL('moment_capture.html') + '#' + data.id);
@@ -9,12 +15,13 @@ function showPreview(data) {
   overlayDOM.setAttribute('style', 'position: fixed; top: 0; left: 0; overflow: hidden; z-index: 99999');
   document.body.appendChild(overlayDOM);
   document.body.appendChild(overlayDOM);
-}
+};
 
-function onPlusClicked(e) {
+MyHangoutInjection.prototype.onPlusClicked = function(e) {
   e.preventDefault();
-  var client = document.querySelector('object').client;
-  var dataURL = client.toDataURL();
+  var videos = document.querySelectorAll('object');
+  var activeVideo = videos[0].client;
+  var thumbnailVideo = videos[1].client;
   //var image64 = dataURL.replace(/data:image\/png;base64,/, '');
   chrome.extension.sendRequest({
     service: 'Capture', 
@@ -23,14 +30,18 @@ function onPlusClicked(e) {
       hangout: document.location.href,
       time: new Date(),
       description: 'nil',
-      raw: dataURL,
-      height: client.height,
-      width: client.width
+      active: activeVideo.toDataURL(),
+      active_height: activeVideo.height,
+      active_width: activeVideo.width,
+      thumbnail: thumbnailVideo.toDataURL(),
+      thumbnail_height: thumbnailVideo.height,
+      thumbnail_width: thumbnailVideo.width,
+      type: this.isHangoutExtra ? 1 : 0
     }]
-  }, showPreview);
-}
+  }, this.showPreview);
+};
 
-function renderHangoutExtraUI() {
+MyHangoutInjection.prototype.renderHangoutExtraUI = function() {
   var captureButtonStyle = 'background-color: whiteSmoke; border: 1px solid rgba(0, 0, 0, 0.1);' +
     ' color: #444;box-shadow: inset 0 1px 2px rgba(0,0,0,.1); margin-right: 17px;' +
     ' background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);text-align: center;' +
@@ -43,7 +54,7 @@ function renderHangoutExtraUI() {
   plusDOM.setAttribute('style', captureButtonStyle);
   plusDOM.setAttribute('class', 'goog-inline-block crx-capture-moment-button');
   plusDOM.appendChild(plusTextDOM);
-  plusDOM.addEventListener('click', onPlusClicked, false);
+  plusDOM.addEventListener('click', this.onPlusClicked.bind(this), false);
   plusDOM.addEventListener('mouseover', function() {
     plusDOM.style.borderColor = '#C6C6C6';
     plusDOM.style.color = '#333';
@@ -53,9 +64,9 @@ function renderHangoutExtraUI() {
     plusDOM.style.color = '#444';
   }, false);
   barDOM.appendChild(plusDOM);
-}
+};
 
-function renderHangoutNormalUI() {
+MyHangoutInjection.prototype.renderHangoutNormalUI = function() {
   var discoverDOM = document.querySelectorAll('div[style*="opacity: 1"] div[role="button"] div');
   var plusDOM = null;
   for (var i = 0; i < discoverDOM.length; i++) {
@@ -67,7 +78,7 @@ function renderHangoutNormalUI() {
       plusDOM = document.createElement('div');
       plusDOM.setAttribute('class', 'crx-capture-moment-button');
       plusDOM.setAttribute('style', captureButtonStyle);
-      plusDOM.addEventListener('click', onPlusClicked, false);
+      plusDOM.addEventListener('click', this.onPlusClicked.bind(this), false);
 
       var plusImageDOM = document.createElement('div');
       plusImageDOM.setAttribute('class', 'crx-capture-moment-image');
@@ -91,25 +102,25 @@ function renderHangoutNormalUI() {
       break;
     }
   }
-}
+};
 
-function onApiExternalMessage(request, sender, sendResponse) {
-  document.body.removeChild(document.querySelector("iframe#crx-my-hangouts-overlay"));
-}
+MyHangoutInjection.prototype.onApiExternalMessage = function(request, sender, sendResponse) {
+  document.body.removeChild(document.querySelector('iframe#crx-my-hangouts-overlay'));
+};
 
-function onApiReady(isHangoutExtra) {
-  isHangoutExtra ? renderHangoutExtraUI() : renderHangoutNormalUI();
-  chrome.extension.onRequest.addListener(onApiExternalMessage);
-}
+MyHangoutInjection.prototype.onApiReady = function() {
+  this.isHangoutExtra ? this.renderHangoutExtraUI() : this.renderHangoutNormalUI();
+  chrome.extension.onRequest.addListener(this.onApiExternalMessage.bind(this));
+};
 
-function discoverVideo() {
-  var isHangoutExtra = window.location.pathname.indexOf('/hangouts/extras/') == 0;
+MyHangoutInjection.prototype.discoverVideo = function() {
   setTimeout(function() {
     var obj = document.querySelector('object');
-    var ui = document.querySelector(isHangoutExtra ? '.gcomm-logo' : 'div[style*="opacity: 1"]');
-    obj && ui ? onApiReady(isHangoutExtra) : discoverVideo();
-  }, 1000);
-}
+    var ui = document.querySelector(this.isHangoutExtra ? '.gcomm-logo' : 'div[style*="opacity: 1"]');
+    obj && ui ? this.onApiReady() : this.discoverVideo();
+  }.bind(this), 1000);
+};
 
 // Start discovery.
-discoverVideo();
+var injection = new MyHangoutInjection();
+injection.discoverVideo();

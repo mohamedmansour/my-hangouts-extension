@@ -12,10 +12,13 @@ CaptureEntity.prototype.tableDefinition = function() {
     hangout: 'TEXT',
     time: 'DATE',
     description: 'TEXT',
-    raw: 'TEXT',
+    active: 'TEXT',
+    active_height: 'INTEGER',
+    active_width: 'INTEGER',
     thumbnail: 'TEXT',
-    height: 'INTEGER',
-    width: 'INTEGER'
+    thumbnail_height: 'INTEGER',
+    thumbnail_width: 'INTEGER',
+    type: 'INTEGER'
   };
 };
 
