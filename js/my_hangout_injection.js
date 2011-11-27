@@ -5,10 +5,10 @@ MyHangoutInjection = function() {
   this.isHangoutExtra = window.location.pathname.indexOf('/hangouts/extras/') == 0;
 };
 
-MyHangoutInjection.prototype.showPreview = function(data) {
+MyHangoutInjection.prototype.showPreview = function() {
   var overlayDOM = document.createElement('iframe');
   overlayDOM.setAttribute('id', 'crx-my-hangouts-overlay');
-  overlayDOM.setAttribute('src', chrome.extension.getURL('moment_capture.html') + '#' + data.id);
+  overlayDOM.setAttribute('src', chrome.extension.getURL('moment_capture.html'));
   overlayDOM.setAttribute('frameBorder', '0');
   overlayDOM.setAttribute('width', '99.90%');
   overlayDOM.setAttribute('height', '100%');
@@ -25,7 +25,7 @@ MyHangoutInjection.prototype.onPlusClicked = function(e) {
   //var image64 = dataURL.replace(/data:image\/png;base64,/, '');
   chrome.extension.sendRequest({
     service: 'Capture', 
-    method: 'processCapture',
+    method: 'storeTemporaryCapture',
     arguments: [{
       hangout: document.location.href,
       time: new Date(),

@@ -29,6 +29,7 @@ CaptureEntity.prototype.tableDefinition = function() {
 MomentCaptureBackend = function() {
   var db = openDatabase('My Hangouts', '1.0', 'my-hangouts', 10 * 1024 * 1024);
   this.captureEntity = new CaptureEntity(db);
+  this.tempCapture = {};
 };
 
 MomentCaptureBackend.prototype.init = function() {
@@ -39,6 +40,15 @@ MomentCaptureBackend.prototype.init = function() {
 
 MomentCaptureBackend.prototype.findAll = function(callback) {
   this.captureEntity.findAll(callback);
+};
+
+MomentCaptureBackend.prototype.storeTemporaryCapture = function(imageObj, callback) {
+  this.tempCapture = imageObj;
+  callback();
+};
+
+MomentCaptureBackend.prototype.previewTemporaryCapture = function(callback) {
+  callback(this.tempCapture);
 };
 
 MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
