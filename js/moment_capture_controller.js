@@ -139,6 +139,8 @@ MomentCaptureController.prototype.bindUIControls = function() {
   saveButton.addEventListener('click', this.onSaveClicked.bind(this), false);
   var discardButton = document.getElementById('discard');
   discardButton.addEventListener('click', this.onDiscardClicked.bind(this), false);
+  var publishButton = document.getElementById('publish');
+  publishButton.addEventListener('click', this.onPublishClicked.bind(this), false);
 };
 
 MomentCaptureController.prototype.onSaveClicked = function() {
@@ -149,6 +151,10 @@ MomentCaptureController.prototype.onSaveClicked = function() {
 };
 
 MomentCaptureController.prototype.onDiscardClicked = function() {
+  this.closeOverlay();
+};
+
+MomentCaptureController.prototype.onPublishClicked = function() {
   this.closeOverlay();
 };
 
