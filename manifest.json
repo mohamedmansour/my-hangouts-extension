@@ -15,7 +15,7 @@
     "default_popup": "popup.html"
   },
   "content_scripts": [{
-    "matches": ["https://plus.google.com/hangouts/*"],
+    "matches": ["https://plus.google.com/hangouts/*", "https://talkgadget.google.com/hangouts/*"],
     "js": ["js/my_hangout_injection.js"],
     "run_at": "document_end",
     "all_frames": true

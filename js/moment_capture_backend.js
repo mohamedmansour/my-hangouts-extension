@@ -46,6 +46,12 @@ MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
   this.captureEntity.create(imageObj, callback);
 };
 
+MomentCaptureBackend.prototype.deleteCapture = function(id, callback) {
+  this.captureEntity.destroy(id, function(obj) {
+    callback({status: obj.status});
+  });
+};
+
 MomentCaptureBackend.prototype.findCapture = function(id, callback) {
   this.captureEntity.find({_id: id}, function(obj) {
     var status = obj.status && obj.data.length > 0;
