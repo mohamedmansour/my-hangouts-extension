@@ -1,5 +1,6 @@
 /**
  * Database backend for capturing storing.
+ *
  * @constructor
  */
 CaptureEntity = function(db) {
@@ -7,6 +8,9 @@ CaptureEntity = function(db) {
 };
 JSAPIHelper.inherits(CaptureEntity, AbstractEntity);
 
+/**
+ * @see AbstractEntity.tableDefinition
+ */
 CaptureEntity.prototype.tableDefinition = function() {
   return {
     hangout: 'TEXT',
@@ -32,36 +36,48 @@ MomentCaptureBackend = function() {
   this.tempCapture = {};
 };
 
-MomentCaptureBackend.prototype.init = function() {
-  this.captureEntity.count({}, function(count) {
-    alert(count);
-  });
-};
-
+/**
+ * Find all captures in the database.
+ */
 MomentCaptureBackend.prototype.findAll = function(callback) {
   this.captureEntity.findAll(callback);
 };
 
+/**
+ * Store the image data temporary in memory. So we can manipulate it.
+ */
 MomentCaptureBackend.prototype.storeTemporaryCapture = function(imageObj, callback) {
   this.tempCapture = imageObj;
   callback();
 };
 
+/**
+ * Get the image data temporary from memory.
+ */
 MomentCaptureBackend.prototype.previewTemporaryCapture = function(callback) {
   callback(this.tempCapture);
 };
 
+/**
+ * Process the capture by creating thumbnails and persisting it to disk.
+ */
 MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
   // We do extra stuff here such as thumbnails.
   this.captureEntity.create(imageObj, callback);
 };
 
+/**
+ * Delete capture from the db.
+ */
 MomentCaptureBackend.prototype.deleteCapture = function(id, callback) {
   this.captureEntity.destroy(id, function(obj) {
     callback({status: obj.status});
   });
 };
 
+/**
+ * Find the capture by id.
+ */
 MomentCaptureBackend.prototype.findCapture = function(id, callback) {
   this.captureEntity.find({_id: id}, function(obj) {
     var status = obj.status && obj.data.length > 0;

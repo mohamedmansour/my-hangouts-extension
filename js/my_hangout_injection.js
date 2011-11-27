@@ -1,10 +1,15 @@
 /**
  * Hangout Injection. Makes sense to abstract it out here, but keep it simpler.
+ *
+ * @constructor
  */
 MyHangoutInjection = function() {
   this.isHangoutExtra = window.location.pathname.indexOf('/hangouts/extras/') == 0;
 };
 
+/**
+ * Finally, everything has been sent correctly, show the preview.
+ */
 MyHangoutInjection.prototype.showPreview = function() {
   var overlayDOM = document.createElement('iframe');
   overlayDOM.setAttribute('id', 'crx-my-hangouts-overlay');
@@ -17,12 +22,16 @@ MyHangoutInjection.prototype.showPreview = function() {
   document.body.appendChild(overlayDOM);
 };
 
+/**
+ * Event when the UI Control for the hangout has been clicked.
+ */
 MyHangoutInjection.prototype.onPlusClicked = function(e) {
   e.preventDefault();
   var videos = document.querySelectorAll('object');
   var activeVideo = videos[0].client;
   var thumbnailVideo = videos[1].client;
-  //var image64 = dataURL.replace(/data:image\/png;base64,/, '');
+
+  // Store the image in temporary cache, so the iframe could recieve it.
   chrome.extension.sendRequest({
     service: 'Capture', 
     method: 'storeTemporaryCapture',
@@ -41,6 +50,9 @@ MyHangoutInjection.prototype.onPlusClicked = function(e) {
   }, this.showPreview);
 };
 
+/**
+ * Render the Hangout Extra controls.
+ */
 MyHangoutInjection.prototype.renderHangoutExtraUI = function() {
   var captureButtonStyle = 'background-color: whiteSmoke; border: 1px solid rgba(0, 0, 0, 0.1);' +
     ' color: #444;box-shadow: inset 0 1px 2px rgba(0,0,0,.1); margin-right: 17px;' +
@@ -66,6 +78,9 @@ MyHangoutInjection.prototype.renderHangoutExtraUI = function() {
   barDOM.appendChild(plusDOM);
 };
 
+/**
+ * Render the Normal Hangout UI controls.
+ */
 MyHangoutInjection.prototype.renderHangoutNormalUI = function() {
   var discoverDOM = document.querySelectorAll('div[style*="opacity: 1"] div[role="button"] div');
   var plusDOM = null;
@@ -104,15 +119,27 @@ MyHangoutInjection.prototype.renderHangoutNormalUI = function() {
   }
 };
 
+/**
+ * When we get an external message, dispose the iframe. We definitely don't
+ * it. Removing it will dispose all canvases.
+ */
 MyHangoutInjection.prototype.onApiExternalMessage = function(request, sender, sendResponse) {
   document.body.removeChild(document.querySelector('iframe#crx-my-hangouts-overlay'));
 };
 
+/**
+ * When the content been discovered, we are ready. Render the UI for the each
+ * hangout separately.
+ */
 MyHangoutInjection.prototype.onApiReady = function() {
   this.isHangoutExtra ? this.renderHangoutExtraUI() : this.renderHangoutNormalUI();
   chrome.extension.onRequest.addListener(this.onApiExternalMessage.bind(this));
 };
 
+/**
+ * We don't want to deal with style classes since they change over time.
+ * so we discover the content every second. When we find it, we process it.
+ */
 MyHangoutInjection.prototype.discoverVideo = function() {
   setTimeout(function() {
     var obj = document.querySelector('object');

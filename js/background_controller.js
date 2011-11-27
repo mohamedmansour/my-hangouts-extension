@@ -68,6 +68,9 @@ BackgroundController.prototype.init = function() {
   this.drawBadgeIcon(-1);
 };
 
+/**
+ * Message Listener for extension.
+ */
 BackgroundController.prototype.onMessageListener = function(request, sender, sendResponse) {
   switch (request.service) {
     case 'Capture':
@@ -115,12 +118,15 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
 }
 
 /**
- * @returns 
+ * @returns a list of hangouts.
  */
 BackgroundController.prototype.getHangouts = function() {
   return this.updater.getHangouts();
 };
 
+/**
+ * Get the next hangout update from the list.
+ */
 BackgroundController.prototype.refreshPublicHangouts = function() {
   this.updater.doNext();
 };

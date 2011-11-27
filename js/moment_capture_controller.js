@@ -1,12 +1,25 @@
+/**
+ * Capture Moment controller to display the preview
+ * for the hangout.
+ *
+ * @constructor
+ */
 MomentCaptureController = function() {
   this.previewData = {};
 };
 
+/**
+ * Initialize the UI and preview.
+ */
 MomentCaptureController.prototype.init = function() {
   this.bindUIControls();
   this.renderPreview();
 };
 
+/**
+ * From the source dimension, it will calculate an image close to the destination
+ * dimension. Used to scale sizes.
+ */
 MomentCaptureController.prototype.getDestinationDimensionFromSource = function(source, destination) {
   var width = source.width;
   var height = source.height;
@@ -30,8 +43,9 @@ MomentCaptureController.prototype.getDestinationDimensionFromSource = function(s
   };
 };
 
-
-// Imports images to the canvas by drawing on that context asynchronously.
+/**
+ * Imports images to the canvas by drawing on that image asynchronously.
+ */
 MomentCaptureController.prototype.importImageIntoCanvas = function(ctx, base64image, source, opt_destination, callback) {
   var destination = opt_destination || source;
   var img = new Image;
@@ -143,23 +157,32 @@ MomentCaptureController.prototype.bindUIControls = function() {
   publishButton.addEventListener('click', this.onPublishClicked.bind(this), false);
 };
 
+/**
+ * Persists the preview to the local database for later processing.
+ */
 MomentCaptureController.prototype.onSaveClicked = function() {
-  // TODO: 1) create full frame for photo.
-  //       2) create the thumbnail for the photo.
-  //       3) persist the thumbnail and full frame into the database.
   this.closeOverlay();
 };
 
+/**
+ * Discarding the image only requires us to close the window since
+ * everything is just in memory. We don't wipe the mem location
+ * because it makes debugging easier.
+ */
 MomentCaptureController.prototype.onDiscardClicked = function() {
   this.closeOverlay();
 };
 
+/**
+ * Publish the photo to Picasa so we could do some editing and
+ * sharing to our circles!
+ */
 MomentCaptureController.prototype.onPublishClicked = function() {
   this.closeOverlay();
 };
 
 /**
- * Tell our bac
+ * Tell our extension to close this iframe.
  */
 MomentCaptureController.prototype.closeOverlay = function() {
   chrome.extension.sendRequest({service: 'RemoveOverlay'});
