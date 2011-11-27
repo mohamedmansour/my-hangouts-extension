@@ -1,6 +1,8 @@
 <!DOCTYPE html> 
 <html>
 <head>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/css/common.css" />
   <link rel="stylesheet" type="text/css" href="/css/moment_capture.css" />
   <script type="text/javascript" src="/js/libs/jquery-1.6.3.min.js"></script>
   <script type="text/javascript" src="/js/moment_capture_controller.js"></script>
@@ -9,12 +11,17 @@
 <div id="crx_myhangouts">
   <div id="crx_myhangouts_area">
     <div id="crx_myhangouts_preview">
-      <h1>Moments</h1>
-      <div>
-        <button id="discard">Discard</button>
-        <button id="save">Save</button>
+      <div id="crx_myhangouts_header">
+        <h1>Hangout Moment Captured!</h1>
+        <em>What would you like to do with this photo?</em>
       </div>
-      <canvas id="canvas"></canvas>
+      <div id="crx_myhangouts_controls">
+        <button id="discard">Discard image</button>
+        <button id="save">Save image</button>
+      </div>
+      <div id="crx_myhangouts_canvas">
+        <canvas id="canvas"></canvas>
+      </div>
     </div>
   </div>
 </div>

@@ -12,7 +12,7 @@ MyHangoutInjection.prototype.showPreview = function() {
   overlayDOM.setAttribute('frameBorder', '0');
   overlayDOM.setAttribute('width', '99.90%');
   overlayDOM.setAttribute('height', '100%');
-  overlayDOM.setAttribute('style', 'position: fixed; top: 0; left: 0; overflow: hidden; z-index: 99999');
+  overlayDOM.setAttribute('style', 'background-color: transparent; position: fixed; top: 0; left: 0; overflow: hidden; z-index: 99999');
   document.body.appendChild(overlayDOM);
   document.body.appendChild(overlayDOM);
 };
