@@ -60,11 +60,17 @@ MyHangoutInjection.prototype.renderHangoutExtraUI = function() {
     ' height: 27px; line-height: 27px; min-width: 54px; outline: 0; padding: 0 8px;' +
     ' border-radius: 2px; cursor: default; font-size: 11px; font-weight: bold; ';
   var barDOM = document.querySelector('.gcomm-logo').parentNode.parentNode;
+  var plusImageDOM = document.createElement('div');
+  plusImageDOM.setAttribute('class', 'goog-inline-block');
+  plusImageDOM.setAttribute('style', 'vertical-align: top;margin-top: 4px;' + 
+    'background: no-repeat url(' + chrome.extension.getURL('/img/hangout-extras.png') + ') 0 4px;' +
+    'height: 21px; width: 21px; margin-right: 5px;');
   var plusTextDOM = document.createElement('span');
   plusTextDOM.innerText = 'Capture moment';
   var plusDOM = document.createElement('div');
   plusDOM.setAttribute('style', captureButtonStyle);
   plusDOM.setAttribute('class', 'goog-inline-block crx-capture-moment-button');
+  plusDOM.appendChild(plusImageDOM);
   plusDOM.appendChild(plusTextDOM);
   plusDOM.addEventListener('click', this.onPlusClicked.bind(this), false);
   plusDOM.addEventListener('mouseover', function() {
@@ -98,7 +104,7 @@ MyHangoutInjection.prototype.renderHangoutNormalUI = function() {
       var plusImageDOM = document.createElement('div');
       plusImageDOM.setAttribute('class', 'crx-capture-moment-image');
       plusImageDOM.setAttribute('style', 'height: 60px; width: 85px;' +
-        'background: no-repeat url(' + chrome.extension.getURL('/img/camera.png') +') 0 -60px;');
+        'background: no-repeat url(' + chrome.extension.getURL('/img/hangout-normal.png') +') 0 -60px;');
       var plusTextDOM = document.createElement('div');
       plusTextDOM.setAttribute('class', 'crx-capture-moment-text');
       plusTextDOM.innerText = 'Capture Moment';
