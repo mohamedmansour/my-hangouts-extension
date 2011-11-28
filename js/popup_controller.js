@@ -5,7 +5,7 @@
  * @constructor
  */
 PopupController = function() {
-  this.bkg = chrome.extension.getBackgroundPage().backgroundController;
+  this.bkg = chrome.extension.getBackgroundPage();
 };
 
 /**
@@ -13,6 +13,7 @@ PopupController = function() {
  */
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.onWindowLoad.bind(this), false);
+  document.getElementById('version').innerHTML = this.bkg.settings.version;
 };
 
 /**
@@ -20,7 +21,7 @@ PopupController.prototype.init = function() {
  * dynamically.
  */
 PopupController.prototype.onWindowLoad = function(e) {
-  var hangouts = this.bkg.getHangouts();
+  var hangouts = this.bkg.controller.getHangouts();
  
   if (hangouts.length > 0) {    
     for (var i = 0; i < hangouts.length; i++) {

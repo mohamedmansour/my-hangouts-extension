@@ -1,6 +1,8 @@
 <!DOCTYPE html> 
 <html>
 <head>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/css/common.css" />
   <link rel="stylesheet" type="text/css" href="/css/popup.css" />
   <script type="text/javascript" src="/js/libs/jquery-1.6.3.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
@@ -8,6 +10,11 @@
   <script type="text/javascript" src="/js/popup_controller.js"></script>
 </head>
 <body>
+  <div id="hangout-bar">
+    <img src="/img/hangout-extras-white.png"/>
+    <span>+<a href="https://plus.google.com/116935358560979346551/about" title="My Hangouts Google+ Page">My Hangouts</a> </span>
+    <span id="version"></span>
+  </div>
   <div id="hangout-container"></div>
   <script type="text/x-jquery-tmpl" id="hangout-item-template">
     <div class="hangout-item{{if isFull}} full{{/if}}">

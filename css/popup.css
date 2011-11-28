@@ -1,6 +1,23 @@
 
 body, html {
   font: normal 13px arial,sans-serif;
+  margin-top: 0;
+}
+#hangout-bar {
+  background-color: #444;
+  height: 20px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 3px 0 0 10px;
+}
+#hangout-bar span {
+  font-family: 'Droid Sans', sans-serif;
+  color: #eee;
+}
+#hangout-bar a, #hangout-bar a:active, #hangout-bar a:visited, #hangout-bar a:link {
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px dotted #eee;
 }
 #hangout-container {
   width: 600px;
