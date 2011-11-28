@@ -2,24 +2,28 @@ My Hangouts for Google+ Chrome Extension
 ---------------------------------------
 
 Are you looking for an extension that will allow you to see all the active hangouts
-in your stream? Then this is the extension for you.
+in your stream? With this extension, not only you get to see public and limited
+hangouts, you get to capture their moments really quickly. It will take a screenshot
+of the hangout (including the plugin) and allows you to save it for later or publish
+it to Picaso under a folder called "My Hangouts".
 
-It will allow you to quickly view all of the active hangouts just by clicking the
-browser action icon that will be located in the toolbar on the corner next to the
-wrench. Just click the icon, and a list will then appear with all of the active
-hangouts. Then you just hover over the total number of participants to see who
-is active in the hangout. Finally, click on the blue "Join" button to automatically
-switch over to the new hangout.
+People may ask what are the main differences from the *other* extensions out there:
 
-Active hangouts will have a blue icon while inactive hangouts will have a grey
-icon with a question mark.
-
+ - This extension does not use external servers, it uses the Google+ Search API
+ - This extension does not send your hangouts to any external server.
+ - This extension does not receive updates from other clients,
+ - This extension does not use Google Analytics to track your every move.
+ - This extension is 100% Open Source.
+ - This extension is fast, secure, and simple to use.
+ - This extension cannot leak any information, your information stays with you.
 
 Contributors
 -----------
 
 - Mohamed Mansour (https://plus.google.com/116805285176805120365/about)
 - John Barrington Craggs (https://plus.google.com/117791034087176894458/about)
+- Jake McCuistion (https://plus.google.com/105275638908165446414/about)
+- Mike Searle (https://plus.google.com/117344786984788205452/about)
 
 Screenshots
 ----------
