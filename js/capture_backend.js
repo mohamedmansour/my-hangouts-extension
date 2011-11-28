@@ -30,7 +30,7 @@ CaptureEntity.prototype.tableDefinition = function() {
  * Backend that is responsible of handling captures.
  * @constructor
  */
-MomentCaptureBackend = function() {
+CaptureBackend = function() {
   var db = openDatabase('My Hangouts', '1.0', 'my-hangouts', 10 * 1024 * 1024);
   this.captureEntity = new CaptureEntity(db);
   this.tempCapture = {};
@@ -39,14 +39,14 @@ MomentCaptureBackend = function() {
 /**
  * Find all captures in the database.
  */
-MomentCaptureBackend.prototype.findAll = function(callback) {
+CaptureBackend.prototype.findAll = function(callback) {
   this.captureEntity.findAll(callback);
 };
 
 /**
  * Store the image data temporary in memory. So we can manipulate it.
  */
-MomentCaptureBackend.prototype.storeTemporaryCapture = function(imageObj, callback) {
+CaptureBackend.prototype.storeTemporaryCapture = function(imageObj, callback) {
   this.tempCapture = imageObj;
   callback();
 };
@@ -54,21 +54,21 @@ MomentCaptureBackend.prototype.storeTemporaryCapture = function(imageObj, callba
 /**
  * Get the image data temporary from memory.
  */
-MomentCaptureBackend.prototype.previewTemporaryCapture = function(callback) {
+CaptureBackend.prototype.previewTemporaryCapture = function(callback) {
   callback(this.tempCapture);
 };
 
 /**
  * Process the capture by creating thumbnails and persisting it to disk.
  */
-MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
+CaptureBackend.prototype.processCapture = function(imageObj, callback) {
   this.captureEntity.create(imageObj, callback);
 };
 
 /**
  * Delete capture from the db.
  */
-MomentCaptureBackend.prototype.deleteCapture = function(id, callback) {
+CaptureBackend.prototype.deleteCapture = function(id, callback) {
   this.captureEntity.destroy(id, function(obj) {
     callback({status: obj.status});
   });
@@ -77,7 +77,7 @@ MomentCaptureBackend.prototype.deleteCapture = function(id, callback) {
 /**
  * Find the capture by id.
  */
-MomentCaptureBackend.prototype.findCapture = function(id, callback) {
+CaptureBackend.prototype.findCapture = function(id, callback) {
   this.captureEntity.find({_id: id}, function(obj) {
     var status = obj.status && obj.data.length > 0;
     var result = status ? obj.data[0] : obj.data;

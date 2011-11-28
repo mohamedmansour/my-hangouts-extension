@@ -8,7 +8,7 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updater = new UpdaterHangoutProcessor(this);
-  this.moments = new MomentCaptureBackend();
+  this.captureBackend = new CaptureBackend();
   this.UPDATE_INTERVAL = 30000;
 };
 
@@ -77,7 +77,7 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
       var args = [];
       if (request.arguments) args = args.concat(request.arguments);
       args.push(sendResponse);
-      this.moments[request.method].apply(this.moments, args);
+      this.captureBackend[request.method].apply(this.captureBackend, args);
       break;
     case 'RemoveOverlay':
       chrome.tabs.sendRequest(sender.tab.id, {method: 'RemoveOverlayUI'});

@@ -4,7 +4,7 @@
  *
  * @constructor
  */
-MomentCaptureController = function() {
+CapturePreviewController = function() {
   this.originalData = {};
   this.previewDimension = { width: 900, height: 600 };
   this.thumbnailDimension = { width: 375, height: 250 };
@@ -13,7 +13,7 @@ MomentCaptureController = function() {
 /**
  * Initialize the UI and preview.
  */
-MomentCaptureController.prototype.init = function() {
+CapturePreviewController.prototype.init = function() {
   this.bindUIControls();
   this.renderPreview();
 };
@@ -22,7 +22,7 @@ MomentCaptureController.prototype.init = function() {
  * From the source dimension, it will calculate an image close to the destination
  * dimension. Used to scale sizes.
  */
-MomentCaptureController.prototype.getDestinationDimensionFromSource = function(source, destination) {
+CapturePreviewController.prototype.getDestinationDimensionFromSource = function(source, destination) {
   var width = source.width;
   var height = source.height;
 
@@ -48,7 +48,7 @@ MomentCaptureController.prototype.getDestinationDimensionFromSource = function(s
 /**
  * Imports images to the canvas by drawing on that image asynchronously.
  */
-MomentCaptureController.prototype.importImageIntoCanvas = function(ctx, base64image, source, opt_destination, callback) {
+CapturePreviewController.prototype.importImageIntoCanvas = function(ctx, base64image, source, opt_destination, callback) {
   var destination = opt_destination || source;
   var img = new Image;
   img.onload = function() {
@@ -68,7 +68,7 @@ MomentCaptureController.prototype.importImageIntoCanvas = function(ctx, base64im
  * @param {Object} maxDimension The maximum dimension size to use.
  * @param {Function(string)} callback Optional callback to fire.
  */
-MomentCaptureController.prototype.resizeImageFromCanvasToContext = function(fromCanvas, toContext, maxDimension, callback) {
+CapturePreviewController.prototype.resizeImageFromCanvasToContext = function(fromCanvas, toContext, maxDimension, callback) {
   var finalDestination = this.getDestinationDimensionFromSource({
     width: fromCanvas.width,
     height: fromCanvas.height
@@ -86,7 +86,7 @@ MomentCaptureController.prototype.resizeImageFromCanvasToContext = function(from
  *  If the type is 1, the thumbnail should position on the right. When it is
  *  0 it should position below.
  */
-MomentCaptureController.prototype.renderPreview = function() {
+CapturePreviewController.prototype.renderPreview = function() {
   // Merge.
   var tempCanvas = document.createElement('canvas');
   var tempContext = tempCanvas.getContext('2d');
@@ -162,7 +162,7 @@ MomentCaptureController.prototype.renderPreview = function() {
  *
  * @param {Function(string)} callback - The callback when the thumbnail has created.
  */
-MomentCaptureController.prototype.renderThumbnail = function(callback) {
+CapturePreviewController.prototype.renderThumbnail = function(callback) {
   var tempCanvas = document.createElement('canvas');
   var tempContext = tempCanvas.getContext('2d');
   this.resizeImageFromCanvasToContext(document.getElementById('canvas'),
@@ -175,7 +175,7 @@ MomentCaptureController.prototype.renderThumbnail = function(callback) {
 /**
  * Bind UI Controls to the controller.
  */
-MomentCaptureController.prototype.bindUIControls = function() {
+CapturePreviewController.prototype.bindUIControls = function() {
   var saveButton = document.getElementById('save');
   saveButton.addEventListener('click', this.onSaveClicked.bind(this), false);
   var discardButton = document.getElementById('discard');
@@ -187,7 +187,7 @@ MomentCaptureController.prototype.bindUIControls = function() {
 /**
  * Persists the preview to the local database for later processing.
  */
-MomentCaptureController.prototype.onSaveClicked = function() {
+CapturePreviewController.prototype.onSaveClicked = function() {
   this.renderThumbnail(function(base64image, width, height) {
     this.originalData.thumbnail = base64image;
     this.originalData.thumbnail_width = width;
@@ -207,7 +207,7 @@ MomentCaptureController.prototype.onSaveClicked = function() {
  * everything is just in memory. We don't wipe the mem location
  * because it makes debugging easier.
  */
-MomentCaptureController.prototype.onDiscardClicked = function() {
+CapturePreviewController.prototype.onDiscardClicked = function() {
   this.closeOverlay();
 };
 
@@ -215,13 +215,13 @@ MomentCaptureController.prototype.onDiscardClicked = function() {
  * Publish the photo to Picasa so we could do some editing and
  * sharing to our circles!
  */
-MomentCaptureController.prototype.onPublishClicked = function() {
+CapturePreviewController.prototype.onPublishClicked = function() {
   this.closeOverlay();
 };
 
 /**
  * Tell our extension to close this iframe.
  */
-MomentCaptureController.prototype.closeOverlay = function() {
+CapturePreviewController.prototype.closeOverlay = function() {
   chrome.extension.sendRequest({service: 'RemoveOverlay'});
 };

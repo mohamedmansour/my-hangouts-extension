@@ -13,7 +13,7 @@ MyHangoutInjection = function() {
 MyHangoutInjection.prototype.showPreview = function() {
   var overlayDOM = document.createElement('iframe');
   overlayDOM.setAttribute('id', 'crx-my-hangouts-overlay');
-  overlayDOM.setAttribute('src', chrome.extension.getURL('moment_capture.html'));
+  overlayDOM.setAttribute('src', chrome.extension.getURL('capture_preview.html'));
   overlayDOM.setAttribute('frameBorder', '0');
   overlayDOM.setAttribute('width', '99.90%');
   overlayDOM.setAttribute('height', '100%');
