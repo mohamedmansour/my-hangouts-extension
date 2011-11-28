@@ -23,6 +23,7 @@ PopupController.prototype.init = function() {
 PopupController.prototype.updateHangouts = function() {
   var hangouts = this.bkg.controller.getHangouts();
   if (hangouts.length == 0) {
+    $('#hangout-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);
   }
   else {
