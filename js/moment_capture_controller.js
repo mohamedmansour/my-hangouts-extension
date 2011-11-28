@@ -5,7 +5,9 @@
  * @constructor
  */
 MomentCaptureController = function() {
-  this.previewData = {};
+  this.originalData = {};
+  this.previewDimension = { width: 900, height: 600 };
+  this.thumbnailDimension = { width: 375, height: 250 };
 };
 
 /**
@@ -59,6 +61,27 @@ MomentCaptureController.prototype.importImageIntoCanvas = function(ctx, base64im
 };
 
 /**
+ * Resizes the canvas into an existing context with a given maximum dimension.
+ *
+ * @param {Object} fronCanvas The canvas to copy the image from.
+ * @param {Object} toContext The context to copy in.
+ * @param {Object} maxDimension The maximum dimension size to use.
+ * @param {Function(string)} callback Optional callback to fire.
+ */
+MomentCaptureController.prototype.resizeImageFromCanvasToContext = function(fromCanvas, toContext, maxDimension, callback) {
+  var finalDestination = this.getDestinationDimensionFromSource({
+    width: fromCanvas.width,
+    height: fromCanvas.height
+  }, maxDimension);
+  toContext.canvas.width = finalDestination.width;
+  toContext.canvas.height = finalDestination.height;
+  toContext.drawImage(fromCanvas, 0, 0, fromCanvas.width, fromCanvas.height, 0, 0, finalDestination.width, finalDestination.height);
+  if (callback) {
+    callback(toContext.canvas.toDataURL(), finalDestination.width, finalDestination.height);
+  }
+};
+
+/**
  *  We need to render two images side by side depending on the type.
  *  If the type is 1, the thumbnail should position on the right. When it is
  *  0 it should position below.
@@ -76,26 +99,17 @@ MomentCaptureController.prototype.renderPreview = function() {
   var searchData = { service: 'Capture', method: 'previewTemporaryCapture' };
   chrome.extension.sendRequest(searchData, function(res) {
 
-    // Resulting image should to this size.
-    var destinationDimension =  {width: 900, height: 600};
-
     // We need to figure out when we are done loading the images so we can copy
     // it to a different canvas.
     var i = 0;
     var onImageLoaded = function() {
       if (++i == 2) {
-        this.previewData = {
-          data: tempCanvas.toDataURL(),
-          width: tempCanvas.width,
-          height: tempCanvas.height
-        };
-        var finalDestination = this.getDestinationDimensionFromSource({
-          width: tempCanvas.width,
-          height: tempCanvas.height
-        }, destinationDimension);
-        mainCanvas.width = finalDestination.width;
-        mainCanvas.height = finalDestination.height;
-        mainContext.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, finalDestination.width, finalDestination.height);
+        this.originalData = res;
+        this.originalData.active = tempCanvas.toDataURL();
+        this.originalData.active_width = tempCanvas.width;
+        this.originalData.active_height = tempCanvas.height;
+        this.resizeImageFromCanvasToContext(tempCanvas, mainContext,
+                                            this.previewDimension);
       }
     }.bind(this);
 
@@ -112,8 +126,7 @@ MomentCaptureController.prototype.renderPreview = function() {
         tempCanvas.height = dimension.height;
         // Top.
         this.importImageIntoCanvas(tempContext, res.active, 
-          {x: 0, y: 0, width: res.active_width, height: res.active_height},
-          {x: 0, y: 0, width: res.active_width, height: res.active_height},
+          {x: 0, y: 0, width: res.active_width, height: res.active_height}, null,
           onImageLoaded);
         // Bottom.
         this.importImageIntoCanvas(tempContext, res.thumbnail, 
@@ -132,8 +145,7 @@ MomentCaptureController.prototype.renderPreview = function() {
         tempCanvas.height = dimension.height;
         // Left.
         this.importImageIntoCanvas(tempContext, res.active,
-          {x: 0, y: 0, width: res.active_width, height: res.active_height},
-          {x: 0, y: 0, width: res.active_width, height: res.active_height},
+          {x: 0, y: 0, width: res.active_width, height: res.active_height}, null,
           onImageLoaded);
         // Right.
         this.importImageIntoCanvas(tempContext, res.thumbnail,
@@ -144,6 +156,21 @@ MomentCaptureController.prototype.renderPreview = function() {
     }
   }.bind(this));
 };
+
+/**
+ * Render the thumbnail so we can have a smaller image to present in the viewer.
+ *
+ * @param {Function(string)} callback - The callback when the thumbnail has created.
+ */
+MomentCaptureController.prototype.renderThumbnail = function(callback) {
+  var tempCanvas = document.createElement('canvas');
+  var tempContext = tempCanvas.getContext('2d');
+  this.resizeImageFromCanvasToContext(document.getElementById('canvas'),
+                                      tempContext,
+                                      this.thumbnailDimension,
+                                      callback);
+};
+
 
 /**
  * Bind UI Controls to the controller.
@@ -161,10 +188,21 @@ MomentCaptureController.prototype.bindUIControls = function() {
  * Persists the preview to the local database for later processing.
  */
 MomentCaptureController.prototype.onSaveClicked = function() {
-  this.closeOverlay();
+  this.renderThumbnail(function(base64image, width, height) {
+    this.originalData.thumbnail = base64image;
+    this.originalData.thumbnail_width = width;
+    this.originalData.thumbnail_height = height;
+    chrome.extension.sendRequest({
+      service: 'Capture',
+      method: 'processCapture',
+      arguments: [this.originalData]
+    }, function(res) {
+      this.closeOverlay();
+    }.bind(this));
+  }.bind(this));
 };
 
-/**
+/**data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACWCAYAAABkW7XSAAAEYklEQVR4Xu3UAQkAAAwCwdm/9HI83BLIOdw5AgQIRAQWySkmAQIEzmB5AgIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlAABg+UHCBDICBisTFWCEiBgsPwAAQIZAYOVqUpQAgQMlh8gQCAjYLAyVQlKgIDB8gMECGQEDFamKkEJEDBYfoAAgYyAwcpUJSgBAgbLDxAgkBEwWJmqBCVAwGD5AQIEMgIGK1OVoAQIGCw/QIBARsBgZaoSlACBB1YxAJfjJb2jAAAAAElFTkSuQmCC
  * Discarding the image only requires us to close the window since
  * everything is just in memory. We don't wipe the mem location
  * because it makes debugging easier.

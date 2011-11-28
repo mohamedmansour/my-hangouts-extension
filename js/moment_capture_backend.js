@@ -62,7 +62,6 @@ MomentCaptureBackend.prototype.previewTemporaryCapture = function(callback) {
  * Process the capture by creating thumbnails and persisting it to disk.
  */
 MomentCaptureBackend.prototype.processCapture = function(imageObj, callback) {
-  // We do extra stuff here such as thumbnails.
   this.captureEntity.create(imageObj, callback);
 };
 
