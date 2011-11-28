@@ -12,18 +12,34 @@ PopupController = function() {
  * Initialize the Popup Controller.
  */
 PopupController.prototype.init = function() {
-  window.addEventListener('load', this.onWindowLoad.bind(this), false);
-  document.getElementById('version').innerHTML = this.bkg.settings.version;
+  window.addEventListener('load', this.updateHangouts.bind(this), false);
+  $('#version').innerHTML = this.bkg.settings.version;
+};
+
+/**
+ * Update hangouts in interval so we never get an empty
+ * box of data.
+ */
+PopupController.prototype.updateHangouts = function() {
+  var hangouts = this.bkg.controller.getHangouts();
+  if (hangouts.length == 0) {
+    setTimeout(this.updateHangouts.bind(this), 1000);
+  }
+  else {
+    this.loadHangouts(hangouts);
+    setTimeout(this.updateHangouts.bind(this), 15000);
+  }
 };
 
 /**
  * When the window loads, render the User Interface by creating the widgets
  * dynamically.
  */
-PopupController.prototype.onWindowLoad = function(e) {
-  var hangouts = this.bkg.controller.getHangouts();
- 
-  if (hangouts.length > 0) {    
+PopupController.prototype.loadHangouts = function(hangouts) {
+  console.log('Hangouts refreshed! ' + new Date());
+  $('#hangout-container').html('');
+  
+  if (hangouts.length > 0) {
     for (var i = 0; i < hangouts.length; i++) {
       var hangoutItem = hangouts[i];
 
