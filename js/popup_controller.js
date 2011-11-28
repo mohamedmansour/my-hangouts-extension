@@ -13,7 +13,7 @@ PopupController = function() {
  */
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
-  $('#version').innerHTML = this.bkg.settings.version;
+  $('#version').text(this.bkg.settings.version);
 };
 
 /**

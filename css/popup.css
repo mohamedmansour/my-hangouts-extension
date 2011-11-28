@@ -10,6 +10,13 @@ body, html {
   border-bottom-right-radius: 10px;
   padding: 3px 0 0 10px;
 }
+#hangout-bar-left {
+  float: left;
+}
+#hangout-bar-right {
+  float: right;
+  padding-right: 10px;
+}
 #hangout-bar span {
   font-family: 'Droid Sans', sans-serif;
   color: #eee;
