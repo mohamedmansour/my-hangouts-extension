@@ -36,10 +36,10 @@
       <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a></div>
       <div class="hangout-participants">
         <ul>
-        <li><a href="https://plus.google.com/${owner.id}/about"><img src="${owner.image}?sz=32" title="${owner.name}" /></a></li>
+        <li{{if owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about"><img src="${owner.image}?sz=32" title="${owner.name}" /></a>{{if owner.circles}}<span>${owner.circles}</span>{{/if}}</li>
         {{each(i, participant) data.participants}}
           {{if participant.status}}
-          <li><a href="https://plus.google.com/${participant.id}/about"><img src="${participant.image}?sz=32" title="${participant.name}" /></a></li>
+          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>{{if participant.circles}}<span>${participant.circles}</span>{{/if}}</li>
           {{/if}}
         {{/each}}
         </ul>

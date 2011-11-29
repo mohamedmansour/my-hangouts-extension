@@ -9,7 +9,9 @@ BackgroundController = function() {
   this.plus = new GooglePlusAPI();
   this.updater = new UpdaterHangoutProcessor(this);
   this.captureBackend = new CaptureBackend();
-  this.UPDATE_INTERVAL = 30000;
+  this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
+  this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000 // Every hour and 15 seconds;
+  this.myFollowersMap = {};
 };
 
 /**
@@ -60,7 +62,9 @@ BackgroundController.prototype.onUpdate = function(previous, current) {
 BackgroundController.prototype.init = function() {
   this.plus.init(function(status) {
     window.setInterval(this.refreshPublicHangouts.bind(this), this.UPDATE_INTERVAL);
+    window.setInterval(this.refreshCircles.bind(this), this.UPDATE_CIRCLES_INTERVAL);
     this.refreshPublicHangouts();
+    this.refreshCircles();
   }.bind(this));
 
   chrome.extension.onRequest.addListener(this.onMessageListener.bind(this));
@@ -129,6 +133,32 @@ BackgroundController.prototype.getHangouts = function() {
  */
 BackgroundController.prototype.refreshPublicHangouts = function() {
   this.updater.doNext();
+};
+
+/**
+ * Refresh internal circles database. Then add them to some internal map.
+ */
+BackgroundController.prototype.refreshCircles = function() {
+  var self = this;
+  this.plus.getDatabase().clearAll(function(clearStatus) {
+    self.plus.refreshCircles(function(status) {
+      self.plus.getDatabase().getPersonEntity().findMap(function(res) {
+        if (res.status) {
+          self.myFollowersMap = res.data;
+        }
+      });
+    });
+  });
+};
+
+/**
+ * Checks the internal cache to see if the user is in your circles and receives.
+ * the user object from them.
+ *
+ * @return the follower object, null if doesn't exist.
+ */
+BackgroundController.prototype.getPerson = function(id) {
+  return this.myFollowersMap[id];
 };
 
 /**

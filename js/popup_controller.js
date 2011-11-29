@@ -53,8 +53,7 @@ PopupController.prototype.loadHangouts = function(hangouts) {
         var participant = hangoutItem.data.participants[j];
         if (participant.status) {
           userCount++;
-
-          // Active Participant
+          this.fillCircleInfo(participant);
         }
       }
       hangoutItem.html = this.stripHTML(hangoutItem.html);
@@ -62,12 +61,21 @@ PopupController.prototype.loadHangouts = function(hangouts) {
       hangoutItem.isFull = userCount >= 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
 
+      this.fillCircleInfo(hangoutItem.owner);
       this.renderHangoutItem(hangoutItem);
     }
 
     $('a').click(this.onLinkClicked);
   }
 };
+
+PopupController.prototype.fillCircleInfo = function(user) {
+  var person = this.bkg.controller.getPerson(user.id);
+  if (person) {
+    user.circles = person.circles.length;
+  }
+};
+
 
 /**
  * From http://stackoverflow.com/questions/822452/strip-html-from-text-javascript

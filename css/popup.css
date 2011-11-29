@@ -55,6 +55,7 @@ body, html {
   -webkit-transition: width 0.3s linear;
   cursor: pointer;
   overflow: hidden;
+  z-index: 9999;
 }
 .hangout-overlay:hover {
   width: 500px;
@@ -143,4 +144,37 @@ body, html {
 }
 .button:hover {
   background-image: -webkit-linear-gradient(top, #2d90fe, #2787ed);
+}
+.in_my_circle{
+  position: relative;
+  z-index: 5;
+}
+.in_my_circle span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  display: block;
+  top: 2px;
+  left: 2px;
+  background-color: #444;
+  font-size: 8px;
+  color: #eee;
+  text-align: center;
+  font-weight: bold;
+  opacity: 0.75;
+}
+
+.hangout-participants .in_my_circle img {
+  border: 2px solid #444;
+}
+
+.hangout-participants .in_my_circle img:hover {
+  border: 2px solid transparent;
+}
+
+.hangout-participants .in_my_circle:hover span {
+  opacity: 1;
+  background-color: #fff;
+  color: #444;
+  
 }
