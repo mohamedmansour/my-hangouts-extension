@@ -171,6 +171,8 @@ UpdaterHangoutProcessor = function(controller) {
   this.currentState = 0;
   this.maxState = 2;
   
+  this.errorCount = 0;
+  this.error = false;
   this.cache = {};
   this.hangouts = [];
   
@@ -185,6 +187,13 @@ UpdaterHangoutProcessor = function(controller) {
 };
 
 /**
+ * @return the error code for the processor.
+ */
+UpdaterHangoutProcessor.prototype.hasError = function() {
+  return this.error;
+};
+
+/**
  * @return List of hangouts.
  */
 UpdaterHangoutProcessor.prototype.getHangouts = function() {
@@ -196,7 +205,13 @@ UpdaterHangoutProcessor.prototype.getHangouts = function() {
  */
 UpdaterHangoutProcessor.prototype.search = function(obj) {
   var self = this;
-  self.controller.plus.search(function(data) {
+  self.controller.plus.search(function(res) {
+    var data = res.data;
+    
+    // Capture the error 
+    self.error = data.status;
+    
+    // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
       var hangout = data[i];
       var cache = self.cache[hangout.data.id];
@@ -217,6 +232,19 @@ UpdaterHangoutProcessor.prototype.search = function(obj) {
  * Executes the next state.
  */
 UpdaterHangoutProcessor.prototype.doNext = function() {
+  if (this.hasError()) {
+    this.errorCount++;
+    if (this.errorCount % 10) {
+      this.controller.plus.init(); // Reinitialize the session.
+    }
+    else {
+      return;
+    }
+  }
+  else {
+    this.errorCount = 0;
+  }
+  
   this['state' + this.currentState]();
   if (this.currentState >= this.maxState) {
     this.currentState = 0;
