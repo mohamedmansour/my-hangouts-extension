@@ -20,6 +20,7 @@ CaptureGalleryController.prototype.init = function() {
  */
 CaptureGalleryController.prototype.bindUIControls = function() {
   $('.delete').click(this.deleteCapture.bind(this));
+  $('.download').click(this.downloadCapture.bind(this));
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {
@@ -55,5 +56,16 @@ CaptureGalleryController.prototype.deleteCapture = function(e) {
     container.fadeOut('slow', function() {
       container.remove();
     });
+  });
+};
+
+CaptureGalleryController.prototype.downloadCapture = function(e) {
+  var container = $(e.target).parent().parent().parent();
+  chrome.extension.sendRequest({
+    service: 'Capture',
+    method: 'findCapture',
+    arguments: [container.attr('id')]
+  }, function(res) {
+      window.open(res.data.active);
   });
 };
