@@ -12,14 +12,20 @@
 <body>
 <div id="container">
   <div id="header">
-    <h1>My Hangout Moments Gallery</h1>
+    <h1>My Hangout Moments Gallery<span>by +<a href="https://plus.google.com/116805285176805120365/about">Mohamed Mansour</a></span></h1>
   </div>
   <ul class="gallery">
   </ul>
 </div>
 <script type="text/x-jquery-tmpl" id="moments-item-template">
   <li id="${_id}">
-    <a href="" title="${time}"><img src="${thumbnail}" alt="${time}" /></a>
+    <div>
+      <img src="${thumbnail}" alt="${time}" />
+      <span>${time}</span>
+      <span class="controls">
+        <span class="delete"></span>
+      </span>
+    </div>
   </li>
 </script>
 <script>

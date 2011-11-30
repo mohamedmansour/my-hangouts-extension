@@ -12,7 +12,6 @@ CaptureGalleryController = function() {
  * Initialize the UI..
  */
 CaptureGalleryController.prototype.init = function() {
-  this.bindUIControls();
   this.renderGallery();
 };
 
@@ -20,6 +19,7 @@ CaptureGalleryController.prototype.init = function() {
  * Bind the UI controlls from the view to their events.
  */
 CaptureGalleryController.prototype.bindUIControls = function() {
+  $('.delete').click(this.deleteCapture.bind(this));
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {
@@ -37,9 +37,23 @@ CaptureGalleryController.prototype.renderGallery = function() {
         self.momentsTemplate.tmpl(moment).appendTo('.gallery');
       });
       console.log('Done', (new Date().getTime() - start) / 1000);
+      self.bindUIControls();
     }
     else {
       alert('Error happened ' + res.data);
     }
+  });
+};
+
+CaptureGalleryController.prototype.deleteCapture = function(e) {
+  var container = $(e.target).parent().parent().parent();
+  chrome.extension.sendRequest({
+    service: 'Capture',
+    method: 'deleteCapture',
+    arguments: [container.attr('id')]
+  }, function(res) {
+    container.fadeOut('slow', function() {
+      container.remove();
+    });
   });
 };

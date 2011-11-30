@@ -19,6 +19,11 @@ body {
   padding: 10px 48px;
   background: url(/img/icon32.png) center left no-repeat;
 }
+
+#header h1 span, #header h1 span  a {
+  font-size: 10px;
+  color: white;
+}
 #footer { 
   padding: 0 0 36px; 
 }
@@ -39,8 +44,9 @@ ul.gallery {
 }
 ul.gallery li { 
   display: inline-block;
+  position: relative;
 }
-ul.gallery a {
+ul.gallery div {
   background: #fff; 
   display: inline; 
   float: left; 
@@ -61,48 +67,62 @@ ul.gallery img {
   width: 190px; 
   margin-bottom: 12px;
 }
-ul.gallery a:after { 
+ul.gallery div:after { 
   content: attr(title);
 }
 
-ul.gallery li:nth-child(even) a { 
+ul.gallery li:nth-child(even) div { 
   -webkit-transform: rotate(2deg);
 }
-ul.gallery li:nth-child(3n) a { 
+ul.gallery li:nth-child(3n) div { 
   -webkit-transform: none; 
   position: relative; 
   top: -5px;
 }
-ul.gallery li:nth-child(5n) a { 
+ul.gallery li:nth-child(5n) div { 
   -webkit-transform: rotate(5deg);
   position: relative; 
   right: 5px;
 }
-ul.gallery li:nth-child(8n) a { 
+ul.gallery li:nth-child(8n) div { 
   position: relative; 
   right: 5px; top: 8px;
 }
-ul.gallery li:nth-child(11n) a { 
+ul.gallery li:nth-child(11n) div { 
   position: relative; 
   left: -5px; top: 3px;
 }
 
-ul.gallery li.messy a { 
+ul.gallery li.messy div { 
   margin-top: -375px; 
   margin-left: 160px; 
   -webkit-transform: rotate(-5deg);
 }
 
-ul.gallery li a:hover { 
+ul.gallery li div:hover { 
   -webkit-transform: scale(1.25); 
   -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.5); 
   position: relative; z-index: 5; 
 }
 
-code { 
-  background: rgba(0,0,0,.5);
-  padding: 2px 3px; 
-  color: #fff; 
-  text-shadow: 0 1px 1px rgba(0,0,0,.75); 
-  -webkit-border-radius: 3px;
+ul.gallery  li div .controls {
+  visibility: hidden;
+  font-size: 10px;
+  display: block;
+  cursor: pointer;
+}
+
+
+ul.gallery  li div:hover .controls {
+  visibility: visible;
+}
+
+.delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: url(/img/trash.png) center center no-repeat;
 }
