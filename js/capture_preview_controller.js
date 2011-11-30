@@ -171,17 +171,28 @@ CapturePreviewController.prototype.renderThumbnail = function(callback) {
                                       callback);
 };
 
-
 /**
  * Bind UI Controls to the controller.
  */
 CapturePreviewController.prototype.bindUIControls = function() {
-  var saveButton = document.getElementById('save');
-  saveButton.addEventListener('click', this.onSaveClicked.bind(this), false);
-  var discardButton = document.getElementById('discard');
-  discardButton.addEventListener('click', this.onDiscardClicked.bind(this), false);
-  var publishButton = document.getElementById('publish');
-  publishButton.addEventListener('click', this.onPublishClicked.bind(this), false);
+  var saveButton = $('.save');
+  saveButton.click(this.onSaveClicked.bind(this));
+  var discardButton = $('.discard');
+  discardButton.click(this.onDiscardClicked.bind(this));
+  var visitButton = $('.visit');
+  visitButton.click(this.onViewClicked.bind(this));
+  //var publishButton = document.querySelector('.publish');
+  //publishButton.addEventListener('click', this.onPublishClicked.bind(this), false);
+};
+
+/**
+ * On view clicked.
+ */
+CapturePreviewController.prototype.onViewClicked = function() {
+  chrome.extension.sendRequest({
+      service: 'OpenURL',
+      data: 'capture_gallery.html'
+  });
 };
 
 /**
@@ -197,7 +208,10 @@ CapturePreviewController.prototype.onSaveClicked = function() {
       method: 'processCapture',
       arguments: [this.originalData]
     }, function(res) {
-      this.closeOverlay();
+      $('#crx_myhangouts_controls').hide();
+      $('#crx_myhangouts_status').fadeIn('slow', function() {
+        // Animation complete
+      });
     }.bind(this));
   }.bind(this));
 };
