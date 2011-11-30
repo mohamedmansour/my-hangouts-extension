@@ -24,6 +24,7 @@ CaptureGalleryController.prototype.bindUIControls = function() {
 
 CaptureGalleryController.prototype.renderGallery = function() {
   var self = this;
+  var start = new Date().getTime();
   chrome.extension.sendRequest({
     service: 'Capture',
     method: 'findAll'
@@ -31,11 +32,11 @@ CaptureGalleryController.prototype.renderGallery = function() {
     if (res.status) {
       res.data.forEach(function(moment, index) {
         // DO some preprocessing
-        console.log(moment);
         moment.time = $.timeago(new Date(moment.time));
         // Render the template.
         self.momentsTemplate.tmpl(moment).appendTo('.gallery');
       });
+      console.log('Done', (new Date().getTime() - start) / 1000);
     }
     else {
       alert('Error happened ' + res.data);
