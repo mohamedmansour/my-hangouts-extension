@@ -172,7 +172,7 @@ BackgroundController.prototype.getPerson = function(id) {
 UpdaterHangoutProcessor = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 2;
+  this.maxState = 3;
   
   this.errorCount = 0;
   this.error = false;
@@ -182,6 +182,10 @@ UpdaterHangoutProcessor = function(controller) {
   this.HANGOUT_SEARCH_QUERY = {
     query: '"is hanging out with" "right now!"',
     extra: false
+  };
+  this.HANGOUT_SEARCH_WITH_NO_ONE = {
+    query: '"is hanging out."',
+    extra: true
   };
   this.HANGOUT_HX_SEARCH_QUERY = {
     query: '"hangout named"',
@@ -265,6 +269,7 @@ UpdaterHangoutProcessor.prototype.state0 = function() {
   this.cache = {};
   this.search(this.HANGOUT_SEARCH_QUERY);
   this.search(this.HANGOUT_HX_SEARCH_QUERY);
+  this.search(this.HANGOUT_SEARCH_WITH_NO_ONE);
 };
 
 /**
@@ -279,4 +284,11 @@ UpdaterHangoutProcessor.prototype.state1 = function() {
  */
 UpdaterHangoutProcessor.prototype.state2 = function() {
   this.search(this.HANGOUT_HX_SEARCH_QUERY);
+};
+
+/**
+ * Execute the with no one
+ */
+UpdaterHangoutProcessor.prototype.state3= function() {
+  this.search(this.HANGOUT_WITH_NO_ONE);
 };
