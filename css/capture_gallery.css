@@ -1,8 +1,25 @@
 body { 
   background: #fff url(/img/wood-bg.jpg);
+  font: normal 13px arial,sans-serif;
 }
 
-div#footer { 
+#header { 
+  background: rgba(0,0,0,.75); 
+  border: solid rgba(0,0,0,.75); 
+  border-width: 1px 1px 0; 
+  -webkit-border-radius: 3px; 
+  -webkit-box-shadow: 0 1px 1px rgba(255,255,255,.5);
+}
+#header h1 {
+  font-weight: bold;
+  font-size: 30px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .75);
+  color: #999;
+  margin: 0px 32px;
+  padding: 10px 48px;
+  background: url(/img/icon32.png) center left no-repeat;
+}
+#footer { 
   padding: 0 0 36px; 
 }
 
@@ -17,10 +34,11 @@ pre {
 }
 
 ul.gallery {
+  -webkit-user-select: none;
   margin: 0 0 18px -30px;
 }
 ul.gallery li { 
-  display: inline;
+  display: inline-block;
 }
 ul.gallery a {
   background: #fff; 
@@ -87,19 +105,4 @@ code {
   color: #fff; 
   text-shadow: 0 1px 1px rgba(0,0,0,.75); 
   -webkit-border-radius: 3px;
-}
-
-ol.code { 
-  background: rgba(0,0,0,.75); 
-  margin-bottom: 18px; 
-  border: solid rgba(0,0,0,.75); 
-  border-width: 1px 1px 0; 
-  -webkit-border-radius: 3px; 
-  -webkit-box-shadow: 0 1px 1px rgba(255,255,255,.5);
-}
-ol.code li, ol.code li code { 
-  font-size: 14px !important; 
-}
-ol.code code { 
-  background: none; 
 }
