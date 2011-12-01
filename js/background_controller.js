@@ -110,10 +110,14 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
     ctx.fillStyle = 'rgba(208, 208, 208, 1)';
   }
   ctx.fillRect(0, 0, 19, 19);
-  ctx.font = 'bold 13px arial, sans-serif';
+  ctx.font = 'bold 11px arial, sans-serif';
   ctx.fillStyle = '#fff';
-  if (count > 9){
-    ctx.fillText('9+', 3, 14);
+
+  if (count > 19){
+    ctx.fillText('19+', 1, 14);
+  }
+  else if (count > 9){
+    ctx.fillText(count + '', 3, 14);
   }
   else if (count > 0) {
     ctx.fillText(count + '', 6, 14);
