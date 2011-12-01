@@ -2,6 +2,7 @@
 body, html {
   font: normal 13px arial,sans-serif;
   margin-top: 0;
+  overflow-x: hidden;
 }
 #hangout-bar {
   background-color: #444;
@@ -9,6 +10,11 @@ body, html {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   padding: 3px 0 0 10px;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 9999;
+  width: 98%;
 }
 #hangout-bar-left {
   float: left;
@@ -28,6 +34,7 @@ body, html {
 }
 #hangout-container {
   width: 600px;
+  margin-top: 28px;
 }
 .hangout-item {
   background-color: #eee;
@@ -55,7 +62,7 @@ body, html {
   -webkit-transition: width 0.3s linear;
   cursor: pointer;
   overflow: hidden;
-  z-index: 9999;
+  z-index: 100;
 }
 .hangout-overlay:hover {
   width: 500px;
