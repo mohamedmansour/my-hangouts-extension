@@ -185,7 +185,7 @@ UpdaterHangoutProcessor = function(controller) {
   };
   this.HANGOUT_SEARCH_WITH_NO_ONE = {
     query: '"is hanging out."',
-    extra: true
+    extra: false
   };
   this.HANGOUT_HX_SEARCH_QUERY = {
     query: '"hangout named"',
