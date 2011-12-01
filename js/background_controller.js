@@ -187,7 +187,7 @@ UpdaterHangoutProcessor = function(controller) {
     query: '"is hanging out with" "right now!"',
     extra: false
   };
-  this.HANGOUT_SEARCH_WITH_NO_ONE = {
+  this.HANGOUT_SEARCH_NO_ONE_QUERY = {
     query: '"is hanging out."',
     extra: false
   };
@@ -273,7 +273,7 @@ UpdaterHangoutProcessor.prototype.state0 = function() {
   this.cache = {};
   this.search(this.HANGOUT_SEARCH_QUERY);
   this.search(this.HANGOUT_HX_SEARCH_QUERY);
-  this.search(this.HANGOUT_SEARCH_WITH_NO_ONE);
+  this.search(this.HANGOUT_SEARCH_NO_ONE_QUERY);
 };
 
 /**
@@ -294,5 +294,5 @@ UpdaterHangoutProcessor.prototype.state2 = function() {
  * Execute the with no one
  */
 UpdaterHangoutProcessor.prototype.state3= function() {
-  this.search(this.HANGOUT_WITH_NO_ONE);
+  this.search(this.HANGOUT_SEARCH_NO_ONE_QUERY);
 };
