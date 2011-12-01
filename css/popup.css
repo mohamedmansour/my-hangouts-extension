@@ -158,20 +158,21 @@ body, html {
 }
 .in_my_circle span {
   position: absolute;
-  width: 34px;
+  width: 32px;
   height: 10px;
   display: block;
   top: 2px;
   left: 2px;
-  background-color: #444;
+  background-color: #ca333a;
   font-size: 8px;
   color: #eee;
   text-align: center;
   font-weight: bold;
   opacity: 0.75;
+  cursor: pointer;
 }
 .hangout-participants .in_my_circle img {
-  border: 2px solid #444;
+  border: 2px solid transparent;
   box-shadow: 0 0 15px f8cc38; 
 }
 .hangout-participants .in_my_circle img:hover {

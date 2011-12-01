@@ -72,7 +72,7 @@ PopupController.prototype.loadHangouts = function(hangouts) {
 PopupController.prototype.fillCircleInfo = function(user) {
   var person = this.bkg.controller.getPerson(user.id);
   if (person) {
-    user.circles = person.circles.length;
+    user.circles = person.circles.map(function(e) {return  ' ' + e.name});
   }
 };
 
