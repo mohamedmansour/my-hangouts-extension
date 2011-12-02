@@ -176,7 +176,7 @@ BackgroundController.prototype.getPerson = function(id) {
 UpdaterHangoutProcessor = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 3;
+  this.maxState = 2;
   
   this.errorCount = 0;
   this.error = false;
@@ -184,16 +184,14 @@ UpdaterHangoutProcessor = function(controller) {
   this.hangouts = [];
   
   this.HANGOUT_SEARCH_QUERY = {
-    query: '"is hanging out with" "right now!"',
+    query: '"is hanging out with * right now!" | "is hanging out."',
     extra: false
   };
-  this.HANGOUT_SEARCH_NO_ONE_QUERY = {
-    query: '"is hanging out."',
-    extra: false
-  };
+  // TODO: Should remove this flag as we ought to be able to determine 
+  // its value from the returned data. If we do that we only need a single query.
   this.HANGOUT_HX_SEARCH_QUERY = {
     query: '"hangout named"',
-    extra: true
+    extra: true 
   };
 };
 
@@ -273,7 +271,6 @@ UpdaterHangoutProcessor.prototype.state0 = function() {
   this.cache = {};
   this.search(this.HANGOUT_SEARCH_QUERY);
   this.search(this.HANGOUT_HX_SEARCH_QUERY);
-  this.search(this.HANGOUT_SEARCH_NO_ONE_QUERY);
 };
 
 /**
@@ -288,11 +285,4 @@ UpdaterHangoutProcessor.prototype.state1 = function() {
  */
 UpdaterHangoutProcessor.prototype.state2 = function() {
   this.search(this.HANGOUT_HX_SEARCH_QUERY);
-};
-
-/**
- * Execute the with no one
- */
-UpdaterHangoutProcessor.prototype.state3= function() {
-  this.search(this.HANGOUT_SEARCH_NO_ONE_QUERY);
 };
