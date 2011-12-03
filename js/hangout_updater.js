@@ -6,7 +6,7 @@
 HangoutUpdater = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 0;
+  this.maxState = 1;
   
   this.errorCount = 0;
   this.error = false;
@@ -43,37 +43,53 @@ HangoutUpdater.prototype.search = function(obj) {
     // Capture the error 
     self.error = data.status;
 
-    // go through the hangouts we have and remove any that were returned not active
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].data.active === false) {
-        var hgIndexToDelete = -1;      
-        for (var j = 0; j < self.hangouts.length; j++) {
-          if (data[i].data.id === self.hangouts[j].data.id) {
-            hgIndexToDelete = j;
-            break;
-          }
-        }
-
-        // delete the dead hang out
-        if (hgIndexToDelete > -1) {
-          self.hangouts.splice(hgIndexToDelete, 1);
-        }
-      }
-    }
-
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
       var hangout = data[i];
       hangout.jbc = res;
-      var cache = self.cache[hangout.data.id];
-      if (!hangout.data.active || cache) {
-        // Preserve public status. It weighs more than limited.
-        if (cache == 'true') hangout.public = cache;
+      
+      // If it is inactive, just continue to the next.
+      if (!hangout.data.active) {
         continue;
       }
-      self.cache[hangout.data.id] = hangout.public.toString();
+      
+      var cache = self.cache[hangout.data.id];
+      if (cache) {
+        // Preserve public status. It weighs more than limited.
+        if (cache.public) hangout.public = cache;
+
+        // Update the hangouts collection.
+        self.hangouts[cache.index] = hangout;
+
+        continue;
+      }
       hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >=0;
       self.hangouts.push(hangout);
+      
+      // Preserve in the cache the visibility status and the index in the collection.
+      self.cache[hangout.data.id] = {
+        index: self.hangouts.length - 1,
+        public: hangout.public
+      };
+    }
+
+    // Go through the hangouts we have and remove any that were returned not active.
+    // This should be defined at the end since our cache index is not being used at this point.
+    for (var i = 0; i < data.length; i++) {
+      var hangout = data[i];
+      if (hangout.data.active === false) {
+        var hgIndexToDelete = -1; 
+        var cache = self.cache[hangout.data.id];
+        if (cache) {
+          hgIndexToDelete = cache.index;
+        }
+        
+        // Delete the dead hang out
+        if (hgIndexToDelete > -1) {
+          self.hangouts.splice(hgIndexToDelete, 1);
+          delete self.cache[hangout.data.id];
+        }
+      }
     }
 
     self.controller.drawBadgeIcon(self.hangouts.length, true);
@@ -107,8 +123,18 @@ HangoutUpdater.prototype.doNext = function() {
 };
 
 /**
- * Reset the state after the third iteration and query all searches.
+ * Reset the state after 3rd try to keep results fresh.
  */
 HangoutUpdater.prototype.state0 = function() {
+  this.hangouts.length = 0;
+  this.cache = {};
+  this.search(this.HANGOUT_SEARCH_QUERY);
+};
+
+
+/**
+ * Requery the hangouts list
+ */
+HangoutUpdater.prototype.state1 = function() {
   this.search(this.HANGOUT_SEARCH_QUERY);
 };

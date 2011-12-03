@@ -38,7 +38,6 @@ PopupController.prototype.updateHangouts = function() {
  */
 PopupController.prototype.loadHangouts = function(hangouts) {
   console.log('Hangouts refreshed! ' + new Date());
-  $('#hangout-container').html('');
 
   if (hangouts.length > 0) {
     for (var i = 0; i < hangouts.length; i++) {
@@ -117,5 +116,5 @@ PopupController.prototype.onLinkClicked = function(e) {
  * @param {Array(Object)} hangouts The hangout item in a JSON format.
  */
 PopupController.prototype.renderHangouts = function(hangouts) {
-  $('#hangouts-template').tmpl({hangouts: hangouts}).appendTo('#hangout-container');
+  $('#hangout-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
 };
