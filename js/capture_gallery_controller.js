@@ -109,7 +109,6 @@ CaptureGalleryController.prototype.showEffectsWindow = function(e) {
 }
 
 CaptureGalleryController.prototype.replaceEffectsCanvas = function() {
-  //$("#canvasPreview").empty();
   $("#canvasPreview").append(controller.glfxCanvas);
   controller.glfxCanvas.update();
 }
@@ -129,8 +128,6 @@ CaptureGalleryController.prototype.onSaveClicked = function() {
     originalData.time = new Date();
     originalData.description = "Applied Filter to existing image.";
     
-  // maybe refactor to use send request
-  //previewController = new CapturePreviewController();
   var thumbnailDimensions = {width: controller.currentThumbnail.width, 
     height:controller.currentThumbnail.height};
     
@@ -152,7 +149,8 @@ CaptureGalleryController.prototype.onSaveClicked = function() {
       $('#light').hide();
       $('#fade').hide();
       $(controller.glfxCanvas).remove();
-      controller.refreshGallery();
+      
+      document.location = document.location;
     });
     
   }
@@ -171,8 +169,3 @@ CaptureGalleryController.prototype.onSaveClicked = function() {
       processCapture(ctx.canvas.toDataURL());    
     }                                    
 }
-
-CaptureGalleryController.prototype.refreshGallery = function() {
-  $('.gallery').empty();
-  this.renderGallery();
-};
