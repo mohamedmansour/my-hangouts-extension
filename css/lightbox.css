@@ -19,8 +19,8 @@
 			left: 5%;
 			width: 75%;
 			height: 75%;
-			padding: 16px;
-			border: 16px solid gray;
+			padding: 12px;
+			border: 12px solid gray;
 			background-color: white;
 			z-index:1002;
 			overflow: auto;
