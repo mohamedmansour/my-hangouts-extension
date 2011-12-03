@@ -58,12 +58,14 @@ PopupController.prototype.loadHangouts = function(hangouts) {
           }
         }
       }
+      if (this.fillCircleInfo(hangoutItem.owner)) {
+        circleCount++;
+      }
       hangoutItem.html = this.stripHTML(hangoutItem.html);
       hangoutItem.activeCount = userCount;
       hangoutItem.isFull = userCount >= 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
       hangoutItem.rank = circleCount;
-      this.fillCircleInfo(hangoutItem.owner);
     }
 
     // Sort by rank.
