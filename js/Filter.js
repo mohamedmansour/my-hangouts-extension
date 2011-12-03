@@ -1,3 +1,5 @@
+// Applies filters to images
+// @author James Williams 2011 (http://jameswilliams.be)
 // Adapted from http://evanw.github.com/glfx.js/media/demo.js
 
 function Filter(name, func, init, update, imageData) {
