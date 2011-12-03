@@ -8,11 +8,6 @@
  */
 CaptureGalleryController = function() {
   this.momentsTemplate = $('#moments-item-template');
-  try {
-    this.glfxCanvas = fx.canvas();
-    } catch(e) {
-      alert(e);
-    }
   
 };
 

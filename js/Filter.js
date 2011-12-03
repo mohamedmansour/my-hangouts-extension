@@ -114,7 +114,7 @@ function init() {
     $('#filters').change(function() {
         switchToFilter(select.selectedIndex);
     });
-    switchToFilter(1);
+    switchToFilter(0);
 
     // Allow the URL hash to jump to a specific demo
     var hash;

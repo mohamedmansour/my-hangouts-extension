@@ -164,6 +164,6 @@ BackgroundController.prototype.refreshCircles = function() {
  *
  * @return the follower object, null if doesn't exist.
  */
-BackgroundController.prototype.getPerson = function(id) {
+BackgroundController.prototype.getPerson = function(id) {  
   return this.myFollowersMap[id];
 };
