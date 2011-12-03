@@ -213,25 +213,23 @@ UpdaterHangoutProcessor.prototype.search = function(obj) {
     // Capture the error 
     self.error = data.status;
 
-   // go through the hangouts we have and remove any that were returned not active
-	for(var i = 0; i < data.length; i++) {
-		if ( data[i].data.active === false ) {
-			var hgIndexToDelete = -1;			
-			for(var j = 0; j < self.hangouts.length; j++) {
-				if (
-					data[i].data.id === self.hangouts[j].data.id) {
-					hgIndexToDelete = j;
-					break;
-				}
-			}
-			
-			// delete the dead hang out
-			if ( hgIndexToDelete > -1 ){
-				self.hangouts.splice(hgIndexToDelete,1);
-			}
-		}
-	}
+    // go through the hangouts we have and remove any that were returned not active
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].data.active === false) {
+        var hgIndexToDelete = -1;      
+        for (var j = 0; j < self.hangouts.length; j++) {
+          if (data[i].data.id === self.hangouts[j].data.id) {
+            hgIndexToDelete = j;
+            break;
+          }
+        }
 
+        // delete the dead hang out
+        if (hgIndexToDelete > -1) {
+          self.hangouts.splice(hgIndexToDelete, 1);
+        }
+      }
+    }
 
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
@@ -247,10 +245,7 @@ UpdaterHangoutProcessor.prototype.search = function(obj) {
       hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >=0;
       self.hangouts.push(hangout);
     }
-    
-   
-    
-    
+
     self.controller.drawBadgeIcon(self.hangouts.length, true);
   }, obj.query, {precache: 3, type: 'hangout'});
 };
