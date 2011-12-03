@@ -39,7 +39,7 @@ PopupController.prototype.updateHangouts = function() {
 PopupController.prototype.loadHangouts = function(hangouts) {
   console.log('Hangouts refreshed! ' + new Date());
   $('#hangout-container').html('');
-  
+
   if (hangouts.length > 0) {
     for (var i = 0; i < hangouts.length; i++) {
       var hangoutItem = hangouts[i];
@@ -49,21 +49,31 @@ PopupController.prototype.loadHangouts = function(hangouts) {
 
       // Hangout Participants.
       var userCount = 1;
+      var circleCount = 0;
       for (var j = 0; j < hangoutItem.data.participants.length; j++) {
         var participant = hangoutItem.data.participants[j];
         if (participant.status) {
           userCount++;
-          this.fillCircleInfo(participant);
+          if (this.fillCircleInfo(participant)) {
+            circleCount++;
+          }
         }
       }
       hangoutItem.html = this.stripHTML(hangoutItem.html);
       hangoutItem.activeCount = userCount;
       hangoutItem.isFull = userCount >= 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
-
+      hangoutItem.rank = circleCount;
       this.fillCircleInfo(hangoutItem.owner);
-      this.renderHangoutItem(hangoutItem);
     }
+
+    // Sort by rank.
+    hangouts.sort(function(a, b) {
+      if (a.rank > b.rank) return -1;
+      else if (a.rank < b.rank) return 1;
+      else return 0;
+    });
+    this.renderHangouts(hangouts);
 
     $('a').click(this.onLinkClicked);
   }
@@ -73,7 +83,9 @@ PopupController.prototype.fillCircleInfo = function(user) {
   var person = this.bkg.controller.getPerson(user.id);
   if (person) {
     user.circles = person.circles.map(function(e) {return  ' ' + e.name});
+    return true;
   }
+  return false;
 };
 
 
@@ -102,8 +114,8 @@ PopupController.prototype.onLinkClicked = function(e) {
 /**
  * Rendering each hangout.
  *
- * @param {Object} hangout The hangout item in a JSON format.
+ * @param {Array(Object)} hangouts The hangout item in a JSON format.
  */
-PopupController.prototype.renderHangoutItem = function(hangout) {
-  $('#hangout-item-template').tmpl(hangout).appendTo('#hangout-container');
+PopupController.prototype.renderHangouts = function(hangouts) {
+  $('#hangouts-template').tmpl({hangouts: hangouts}).appendTo('#hangout-container');
 };

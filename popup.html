@@ -21,23 +21,24 @@
     </div>
   </div>
   <div id="hangout-container"></div>
-  <script type="text/x-jquery-tmpl" id="hangout-item-template">
-    <div class="hangout-item{{if isFull}} full{{/if}}">
+  <script type="text/x-jquery-tmpl" id="hangouts-template">
+    {{each(i, hangout) hangouts}}
+    <div class="hangout-item{{if hangout.isFull}} full{{/if}}">
       <div class="hangout-overlay">
         <div class="hangout-show">
-          <span class="hangout-show-count">${activeCount}</span>
-          <span class="hangout-show-visibility">{{if public}}public{{else}}limited{{/if}}</span>
+          <span class="hangout-show-count">${hangout.activeCount}</span>
+          <span class="hangout-show-visibility">{{if hangout.public}}public{{else}}limited{{/if}}</span>
         </div>
         <div class="hangout-extra">
-          <a href="${url}"><img src="/img/link.png" alt="Original post"/></a>
+          <a href="${hangout.url}"><img src="/img/link.png" alt="Original post"/></a>
           ${html}
         </div>
       </div>
-      <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if data.extra}}extras/{{/if}}${data.id}">Join</a></div>
+      <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
       <div class="hangout-participants">
         <ul>
-        <li{{if owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about"><img src="${owner.image}?sz=32" title="${owner.name}" /></a>{{if owner.circles}}<span title="Circles: ${owner.circles}">${owner.circles.length}</span>{{/if}}</li>
-        {{each(i, participant) data.participants}}
+        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
+        {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
           <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
           {{/if}}
@@ -45,6 +46,7 @@
         </ul>
       </div>
     </div>
+    {{/each}}
   </script>
   <script type="text/javascript">
     var popupController = new PopupController();
