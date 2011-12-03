@@ -10,7 +10,7 @@ BackgroundController = function() {
   this.updater = new UpdaterHangoutProcessor(this);
   this.captureBackend = new CaptureBackend();
   this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
-  this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000 // Every hour and 15 seconds;
+  this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
   this.myFollowersMap = {};
 };
 
@@ -126,7 +126,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
     ctx.fillText('?', 6, 14);
   }
   chrome.browserAction.setIcon({imageData: ctx.getImageData(0,0,19,19)});
-}
+};
 
 /**
  * @returns a list of hangouts.
@@ -176,22 +176,15 @@ BackgroundController.prototype.getPerson = function(id) {
 UpdaterHangoutProcessor = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 2;
+  this.maxState = 0;
   
   this.errorCount = 0;
   this.error = false;
   this.cache = {};
   this.hangouts = [];
-  
+  this.NAMED_HANGOUT_ID_STRING = "join a hangout named";
   this.HANGOUT_SEARCH_QUERY = {
-    query: '"is hanging out with * right now!" | "is hanging out."',
-    extra: false
-  };
-  // TODO: Should remove this flag as we ought to be able to determine 
-  // its value from the returned data. If we do that we only need a single query.
-  this.HANGOUT_HX_SEARCH_QUERY = {
-    query: '"hangout named"',
-    extra: true 
+    query: '"is hanging out with * right now!" | "is hanging out." | "hangout named"'
   };
 };
 
@@ -219,10 +212,31 @@ UpdaterHangoutProcessor.prototype.search = function(obj) {
     
     // Capture the error 
     self.error = data.status;
-    
+
+   // go through the hangouts we have and remove any that were returned not active
+	for(var i = 0; i < data.length; i++) {
+		if ( data[i].data.active === false ) {
+			var hgIndexToDelete = -1;			
+			for(var j = 0; j < self.hangouts.length; j++) {
+				if (
+					data[i].data.id === self.hangouts[j].data.id) {
+					hgIndexToDelete = j;
+					break;
+				}
+			}
+			
+			// delete the dead hang out
+			if ( hgIndexToDelete > -1 ){
+				self.hangouts.splice(hgIndexToDelete,1);
+			}
+		}
+	}
+
+
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
       var hangout = data[i];
+      hangout.jbc = res;
       var cache = self.cache[hangout.data.id];
       if (!hangout.data.active || cache) {
         // Preserve public status. It weighs more than limited.
@@ -230,9 +244,13 @@ UpdaterHangoutProcessor.prototype.search = function(obj) {
         continue;
       }
       self.cache[hangout.data.id] = hangout.public.toString();
-      hangout.data.extra = obj.extra;
+      hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >=0;
       self.hangouts.push(hangout);
     }
+    
+   
+    
+    
     self.controller.drawBadgeIcon(self.hangouts.length, true);
   }, obj.query, {precache: 3, type: 'hangout'});
 };
@@ -267,22 +285,5 @@ UpdaterHangoutProcessor.prototype.doNext = function() {
  * Reset the state after the third iteration and query all searches.
  */
 UpdaterHangoutProcessor.prototype.state0 = function() {
-  this.hangouts.length = 0;
-  this.cache = {};
   this.search(this.HANGOUT_SEARCH_QUERY);
-  this.search(this.HANGOUT_HX_SEARCH_QUERY);
-};
-
-/**
- * Execute the Normal Hangout Search Query
- */
-UpdaterHangoutProcessor.prototype.state1 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY);
-};
-
-/**
- * Execute the Named Hangout Search Query
- */
-UpdaterHangoutProcessor.prototype.state2 = function() {
-  this.search(this.HANGOUT_HX_SEARCH_QUERY);
 };
