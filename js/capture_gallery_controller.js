@@ -8,7 +8,7 @@
  */
 CaptureGalleryController = function() {
   this.momentsTemplate = $('#moments-item-template');
-  
+  this.effectsController = new CaptureEffectsController();
   // TODO: Make this a proper error message.
   //       Would be nice if Effects was in its own controller.
   try {
@@ -23,6 +23,7 @@ CaptureGalleryController = function() {
  */
 CaptureGalleryController.prototype.init = function() {
   this.renderGallery();
+  this.effectsController.init();
 };
 
 /**
@@ -94,16 +95,16 @@ CaptureGalleryController.prototype.showEffectsWindow = function(e) {
     arguments: [container.attr('id')]
   }, function(res) {
     controller.glfxCanvas = fx.canvas();
-      var src = res.data.active;
-      controller.tempImage = new Image();
-      controller.tempImage.src = src;
-      controller.tempImage.onload = function() {
-        controller.texture = controller.glfxCanvas.texture(controller.tempImage);
-        controller.glfxCanvas.draw(controller.texture);
-         $('#canvasPreview').append(controller.glfxCanvas);
-        controller.glfxCanvas.update();
-        $('#light').css('display', 'block');
-        $('#fade').css('display', 'block');
+    var src = res.data.active;
+    controller.tempImage = new Image();
+    controller.tempImage.src = src;
+    controller.tempImage.onload = function() {
+      controller.texture = controller.glfxCanvas.texture(controller.tempImage);
+      controller.glfxCanvas.draw(controller.texture);
+       $('#canvasPreview').append(controller.glfxCanvas);
+      controller.glfxCanvas.update();
+      $('#light').css('display', 'block');
+      $('#fade').css('display', 'block');
     };
   });
 }
