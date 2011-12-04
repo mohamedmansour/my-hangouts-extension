@@ -12,9 +12,10 @@ HangoutUpdater = function(controller) {
   this.error = false;
   this.cache = {};
   this.hangouts = [];
-  this.NAMED_HANGOUT_ID_STRING = "join a hangout named";
+  this.NAMED_HANGOUT_ID_STRING = 'join a hangout named';
+  this.IS_HANGING_OUT_ID_STRING = 'is hanging out';
   this.HANGOUT_SEARCH_QUERY = {
-    query: '"is hanging out with * right now!" | "is hanging out." | "hangout named"'
+    query: '"is hanging out" | "hangout named"'
   };
 };
 
@@ -39,7 +40,7 @@ HangoutUpdater.prototype.search = function(obj) {
   var self = this;
   self.controller.plus.search(function(res) {
     var data = res.data;
-    
+
     // Capture the error 
     self.error = data.status;
 
@@ -93,7 +94,7 @@ HangoutUpdater.prototype.search = function(obj) {
     }
 
     self.controller.drawBadgeIcon(self.hangouts.length, true);
-  }, obj.query, {precache: 3, type: 'hangout'});
+  }, obj.query, {precache: 4, type: 'hangout', burst: true});
 };
   
 /**
