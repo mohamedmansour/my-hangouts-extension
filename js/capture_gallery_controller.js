@@ -8,12 +8,14 @@
  */
 CaptureGalleryController = function() {
   this.momentsTemplate = $('#moments-item-template');
+  
+  // TODO: Make this a proper error message.
+  //       Would be nice if Effects was in its own controller.
   try {
     this.glfxCanvas = fx.canvas();
-    } catch(e) {
-      alert(e);
-    }
-  
+  } catch(e) {
+    alert(e);
+  }
 };
 
 /**
@@ -96,45 +98,45 @@ CaptureGalleryController.prototype.showEffectsWindow = function(e) {
       controller.tempImage = new Image();
       controller.tempImage.src = src;
       controller.tempImage.onload = function() {
-      
-          controller.texture = controller.glfxCanvas.texture(controller.tempImage);
-          controller.glfxCanvas.draw(controller.texture);
-           $("#canvasPreview").append(controller.glfxCanvas);
-          controller.glfxCanvas.update();
-      
-          $('#light').css('display','block');
-          $('#fade').css('display','block');
+        controller.texture = controller.glfxCanvas.texture(controller.tempImage);
+        controller.glfxCanvas.draw(controller.texture);
+         $('#canvasPreview').append(controller.glfxCanvas);
+        controller.glfxCanvas.update();
+        $('#light').css('display', 'block');
+        $('#fade').css('display', 'block');
     };
-    });
+  });
 }
 
 CaptureGalleryController.prototype.replaceEffectsCanvas = function() {
-  $("#canvasPreview").append(controller.glfxCanvas);
+  $('#canvasPreview').append(controller.glfxCanvas);
   controller.glfxCanvas.update();
 }
 
 CaptureGalleryController.prototype.hideEffectsWindow = function() {
   console.log($(controller.glfxCanvas));
   $(controller.glfxCanvas).remove();
-  $('#light').css('display','none');
-  $('#fade').css('display','none');
+  $('#light').css('display', 'none');
+  $('#fade').css('display', 'none');
 };
 
 CaptureGalleryController.prototype.onSaveClicked = function() {  
   var originalData = {};
   originalData.active = controller.glfxCanvas.toDataURL();
-    originalData.active_width = controller.glfxCanvas.width;
-    originalData.active_height = controller.glfxCanvas.height;
-    originalData.time = new Date();
-    originalData.description = "Applied Filter to existing image.";
+  originalData.active_width = controller.glfxCanvas.width;
+  originalData.active_height = controller.glfxCanvas.height;
+  originalData.time = new Date();
+  originalData.description = 'Applied Filter to existing image.';
     
-  var thumbnailDimensions = {width: controller.currentThumbnail.width, 
-    height:controller.currentThumbnail.height};
+  var thumbnailDimensions = {
+    width: controller.currentThumbnail.width, 
+    height:controller.currentThumbnail.height
+  };
     
-  processCapture = function(imgData) {
-    console.log("process capture");
-    console.log(imgData);
-    originalData.thumbnail = imgData;
+  var processCapture = function(thumbnailData) {
+    console.log('process capture');
+    console.log(thumbnailData);
+    originalData.thumbnail = thumbnailData;
     originalData.thumbnail_width = thumbnailDimensions.width;
     originalData.thumbnail_height = thumbnailDimensions.height;
     
@@ -145,7 +147,7 @@ CaptureGalleryController.prototype.onSaveClicked = function() {
       arguments: [originalData]
     }, function(res) {
       console.log(res);
-      console.log("saved");
+      console.log('saved');
       $('#light').hide();
       $('#fade').hide();
       $(controller.glfxCanvas).remove();
@@ -157,15 +159,14 @@ CaptureGalleryController.prototype.onSaveClicked = function() {
   
   // glfx.js doesn't seem to work nicely with drawImage so I had to write to an image
   // and then use that image with drawImage
-  tempImage = new Image()
+  var tempImage = new Image()
   tempImage.src = controller.glfxCanvas.toDataURL();
   tempImage.onload = function () {
-      tempCanvas = document.createElement("canvas");
-      ctx = tempCanvas.getContext("2d");
-      ctx.canvas.width = thumbnailDimensions.width;
-      ctx.canvas.height = thumbnailDimensions.height;
-      ctx.drawImage(this, 0, 0, thumbnailDimensions.width, thumbnailDimensions.height);
-    
-      processCapture(ctx.canvas.toDataURL());    
-    }                                    
+    tempCanvas = document.createElement('canvas');
+    ctx = tempCanvas.getContext('2d');
+    ctx.canvas.width = thumbnailDimensions.width;
+    ctx.canvas.height = thumbnailDimensions.height;
+    ctx.drawImage(this, 0, 0, thumbnailDimensions.width, thumbnailDimensions.height);
+    processCapture(ctx.canvas.toDataURL());    
+  }                                    
 }

@@ -2,7 +2,7 @@
 // @author James Williams 2011 (http://jameswilliams.be)
 // Adapted from http://evanw.github.com/glfx.js/media/demo.js
 
-function Filter(name, func, init, update, imageData) {
+CaptureGalleryFilter = function(name, func, init, update, imageData) {
     this.name = name;
     this.func = func;
     this.update = update;
@@ -12,19 +12,19 @@ function Filter(name, func, init, update, imageData) {
     init.call(this);
 }
 
-Filter.prototype.addNub = function(name, x, y) {
+CaptureGalleryFilter.prototype.addNub = function(name, x, y) {
     this.nubs.push({ name: name, x: x, y: y });
 };
 
-Filter.prototype.addSlider = function(name, label, min, max, value, step) {
+CaptureGalleryFilter.prototype.addSlider = function(name, label, min, max, value, step) {
     this.sliders.push({ name: name, label: label, min: min, max: max, value: value, step: step });
 };
 
-Filter.prototype.setCode = function(code) {
+CaptureGalleryFilter.prototype.setCode = function(code) {
     eval(code);
 };
 
-Filter.prototype.use = function() {
+CaptureGalleryFilter.prototype.use = function() {
     // Load the texture from the image and draw it to the canvas
     var image = controller.tempImage;
     texture = controller.tempImage.texture;
@@ -101,7 +101,7 @@ function init() {
 
     // Call use() on the currently selected filter when the selection is changed
     var select = $('#filters')[0];
-    function switchToFilter(index) {
+    function switchToCaptureGalleryFilter(index) {
         if (select.selectedIndex != index) select.selectedIndex = index;
         for (var category in filters) {
             index--;
@@ -112,9 +112,9 @@ function init() {
         }
     }
     $('#filters').change(function() {
-        switchToFilter(select.selectedIndex);
+        switchToCaptureGalleryFilter(select.selectedIndex);
     });
-    switchToFilter(1);
+    switchToCaptureGalleryFilter(1);
 
     // Allow the URL hash to jump to a specific demo
     var hash;
@@ -127,7 +127,7 @@ function init() {
             var list = filters[category];
             for (var i = 0; i < list.length; i++) {
                 if ('#' + list[i].func == hash) {
-                    switchToFilter(index);
+                    switchToCaptureGalleryFilter(index);
                     break;
                 }
                 index++;
@@ -139,51 +139,51 @@ function init() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Filter definitions
+// CaptureGalleryFilter definitions
 ////////////////////////////////////////////////////////////////////////////////
 
 var perspectiveNubs = [175, 156, 496, 55, 161, 279, 504, 330];
 var filters = {
     'Adjust': [
-        new Filter('Brightness / Contrast', 'brightnessContrast', function() {
+        new CaptureGalleryFilter('Brightness / Contrast', 'brightnessContrast', function() {
             this.addSlider('brightness', 'Brightness', -1, 1, 0, 0.01);
             this.addSlider('contrast', 'Contrast', -1, 1, 0, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).brightnessContrast(' + this.brightness + ', ' + this.contrast + ').update();');
         }),
-        new Filter('Hue / Saturation', 'hueSaturation', function() {
+        new CaptureGalleryFilter('Hue / Saturation', 'hueSaturation', function() {
             this.addSlider('hue', 'Hue', -1, 1, 0, 0.01);
             this.addSlider('saturation', 'Saturation', -1, 1, 0, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).hueSaturation(' + this.hue + ', ' + this.saturation + ').update();');
         }),
-        new Filter('Vibrance', 'vibrance', function() {
+        new CaptureGalleryFilter('Vibrance', 'vibrance', function() {
             this.addSlider('amount', 'Amount', -1, 1, 0.5, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).vibrance(' + this.amount + ').update();');
         }),
-        new Filter('Denoise', 'denoise', function() {
+        new CaptureGalleryFilter('Denoise', 'denoise', function() {
             this.addSlider('exponent', 'Exponent', 0, 50, 20, 1);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).denoise(' + this.exponent + ').update();');
         }),
-        new Filter('Unsharp Mask', 'unsharpMask', function() {
+        new CaptureGalleryFilter('Unsharp Mask', 'unsharpMask', function() {
             this.addSlider('radius', 'Radius', 0, 200, 20, 1);
             this.addSlider('strength', 'Strength', 0, 5, 2, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).unsharpMask(' + this.radius + ', ' + this.strength + ').update();');
         }),
-        new Filter('Noise', 'noise', function() {
+        new CaptureGalleryFilter('Noise', 'noise', function() {
             this.addSlider('amount', 'Amount', 0, 1, 0.5, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).noise(' + this.amount + ').update();');
         }),
-        new Filter('Sepia', 'sepia', function() {
+        new CaptureGalleryFilter('Sepia', 'sepia', function() {
             this.addSlider('amount', 'Amount', 0, 1, 1, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).sepia(' + this.amount + ').update();');
         }),
-        new Filter('Vignette', 'vignette', function() {
+        new CaptureGalleryFilter('Vignette', 'vignette', function() {
             this.addSlider('size', 'Size', 0, 1, 0.5, 0.01);
             this.addSlider('amount', 'Amount', 0, 1, 0.5, 0.01);
         }, function() {
@@ -191,18 +191,18 @@ var filters = {
         })
     ],
     'Blur': [
-        new Filter('Zoom Blur', 'zoomBlur', function() {
+        new CaptureGalleryFilter('Zoom Blur', 'zoomBlur', function() {
             this.addNub('center', 0.5, 0.5);
             this.addSlider('strength', 'Strength', 0, 1, 0.3, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).zoomBlur(' + this.center.x + ', ' + this.center.y + ', ' + this.strength + ').update();');
         }),
-        new Filter('Triangle Blur', 'triangleBlur', function() {
+        new CaptureGalleryFilter('Triangle Blur', 'triangleBlur', function() {
             this.addSlider('radius', 'Radius', 0, 200, 50, 1);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).triangleBlur(' + this.radius + ').update();');
         }),
-        new Filter('Tilt Shift', 'tiltShift', function() {
+        new CaptureGalleryFilter('Tilt Shift', 'tiltShift', function() {
             this.addNub('start', 0.15, 0.75);
             this.addNub('end', 0.75, 0.6);
             this.addSlider('blurRadius', 'Blur Radius', 0, 50, 15, 1);
@@ -210,7 +210,7 @@ var filters = {
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).tiltShift(' + this.start.x + ', ' + this.start.y + ', ' + this.end.x + ', ' + this.end.y + ', ' + this.blurRadius + ', ' + this.gradientRadius + ').update();');
         }),
-        new Filter('Lens Blur', 'lensBlur', function() {
+        new CaptureGalleryFilter('Lens Blur', 'lensBlur', function() {
             this.addSlider('radius', 'Radius', 0, 50, 10, 1);
             this.addSlider('brightness', 'Brightness', -1, 1, 0.75, 0.01);
             this.addSlider('angle', 'Angle', -Math.PI, Math.PI, 0, 0.01);
@@ -219,21 +219,21 @@ var filters = {
           })
     ],
     'Warp': [
-        new Filter('Swirl', 'swirl', function() {
+        new CaptureGalleryFilter('Swirl', 'swirl', function() {
             this.addNub('center', 0.5, 0.5);
             this.addSlider('angle', 'Angle', -25, 25, 3, 0.1);
             this.addSlider('radius', 'Radius', 0, 600, 200, 1);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).swirl(' + this.center.x + ', ' + this.center.y + ', ' + this.radius + ', ' + this.angle + ').update();');
         }),
-        new Filter('Bulge / Pinch', 'bulgePinch', function() {
+        new CaptureGalleryFilter('Bulge / Pinch', 'bulgePinch', function() {
             this.addNub('center', 0.5, 0.5);
             this.addSlider('strength', 'Strength', -1, 1, 0.5, 0.01);
             this.addSlider('radius', 'Radius', 0, 600, 200, 1);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).bulgePinch(' + this.center.x + ', ' + this.center.y + ', ' + this.radius + ', ' + this.strength + ').update();');
             })/*,
-        new Filter('Perspective', 'perspective', function() {
+        new CaptureGalleryFilter('Perspective', 'perspective', function() {
             var w = 640, h = 425;
             this.addNub('a', perspectiveNubs[0] / w, perspectiveNubs[1] / h);
             this.addNub('b', perspectiveNubs[2] / w, perspectiveNubs[3] / h);
@@ -246,30 +246,30 @@ var filters = {
       })*/
     ],
     'Fun': [
-        new Filter('Ink', 'ink', function() {
+        new CaptureGalleryFilter('Ink', 'ink', function() {
             this.addSlider('strength', 'Strength', 0, 1, 0.25, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).ink(' + this.strength + ').update();');
         }),
-        new Filter('Edge Work', 'edgeWork', function() {
+        new CaptureGalleryFilter('Edge Work', 'edgeWork', function() {
             this.addSlider('radius', 'Radius', 0, 200, 10, 1);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).edgeWork(' + this.radius + ').update();');
         }),
-        new Filter('Hexagonal Pixelate', 'hexagonalPixelate', function() {
+        new CaptureGalleryFilter('Hexagonal Pixelate', 'hexagonalPixelate', function() {
             this.addNub('center', 0.5, 0.5);
             this.addSlider('scale', 'Scale', 10, 100, 20, 1);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).hexagonalPixelate(' + this.center.x + ', ' + this.center.y + ', ' + this.scale + ').update();');
         }),
-        new Filter('Dot Screen', 'dotScreen', function() {
+        new CaptureGalleryFilter('Dot Screen', 'dotScreen', function() {
             this.addNub('center', 0.5, 0.5);
             this.addSlider('angle', 'Angle', 0, Math.PI / 2, 1.1, 0.01);
             this.addSlider('size', 'Size', 3, 20, 3, 0.01);
         }, function() {
             this.setCode('controller.glfxCanvas.draw(controller.texture).dotScreen(' + this.center.x + ', ' + this.center.y + ', ' + this.angle + ', ' + this.size + ').update();');
         }),
-        new Filter('Color Halftone', 'colorHalftone', function() {
+        new CaptureGalleryFilter('Color Halftone', 'colorHalftone', function() {
             this.addNub('center', 0.5, 0.5);
             this.addSlider('angle', 'Angle', 0, Math.PI / 2, 0.25, 0.01);
             this.addSlider('size', 'Size', 3, 20, 4, 0.01);
