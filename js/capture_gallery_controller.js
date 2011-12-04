@@ -22,10 +22,10 @@ CaptureGalleryController.prototype.init = function() {
 /**
  * Bind the UI controlls from the view to their events.
  */
-CaptureGalleryController.prototype.bindUIControls = function() {
-  $('.delete').click(this.deleteCapture.bind(this));
-  $('.download').click(this.downloadCapture.bind(this));
-  $('.effects').click(this.showEffectsWindow.bind(this));
+CaptureGalleryController.prototype.bindUIControls = function(parent) {
+  $('.delete', parent).click(this.deleteCapture.bind(this));
+  $('.download', parent).click(this.downloadCapture.bind(this));
+  $('.effects', parent).click(this.showEffectsWindow.bind(this));
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {
@@ -37,10 +37,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
   }, function(res) {
     if (res.status) {
       res.data.forEach(function(moment, index) {
-        // DO some preprocessing
-        moment.time = $.timeago(new Date(moment.time));
-        // Render the template.
-        self.momentsTemplate.tmpl(moment).appendTo('.gallery');
+        self.renderMoment(moment);
       });
       console.log('Done', (new Date().getTime() - start) / 1000);
       self.bindUIControls();
@@ -49,6 +46,14 @@ CaptureGalleryController.prototype.renderGallery = function() {
       alert('Error happened ' + res.data);
     }
   });
+};
+
+CaptureGalleryController.prototype.renderMoment = function(moment) {
+  // Do some preprocessing
+  moment.time = $.timeago(new Date(moment.time));
+  var newMoment = this.momentsTemplate.tmpl(moment);
+  newMoment.appendTo('.gallery');
+  this.bindUIControls(newMoment);
 };
 
 CaptureGalleryController.prototype.deleteCapture = function(e) {

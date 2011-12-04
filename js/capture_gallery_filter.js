@@ -78,7 +78,7 @@ CaptureEffectsController.prototype.onSaveClicked = function() {
 
 CaptureEffectsController.prototype.processImage = function(originalData, thumbnail) {
   var self = this;
-  console.log('process capture');
+  console.log('Process capture');
   originalData.thumbnail = thumbnail;
   originalData.thumbnail_width = self.originalData.thumbnail_width;
   originalData.thumbnail_height = self.originalData.thumbnail_height;
@@ -88,9 +88,12 @@ CaptureEffectsController.prototype.processImage = function(originalData, thumbna
     method: 'processCapture',
     arguments: [originalData]
   }, function(res) {
-    console.log('saved');
+    console.log('Saved ' + res.id);
     self.dispose();
-    document.location = document.location;
+    
+    // Append that moment to the gallery.
+    originalData._id = res.id;
+    self.galleryController.renderMoment(originalData);
   });
 };
 
