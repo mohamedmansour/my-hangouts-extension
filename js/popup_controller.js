@@ -6,7 +6,7 @@
  */
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
-  this.currentPage = 'hangouts'; // circle-watch
+  this.currentPage = 'hangouts'; // options
 };
 
 /**
@@ -14,8 +14,16 @@ PopupController = function() {
  */
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
+  this.bindUI();
+};
+
+PopupController.prototype.bindUI = function() {
   $('#version').text(this.bkg.settings.version);
-  $('#toggle-circle-watch').click(this.onCircleWatchClick.bind(this));
+  $('#toggle-options').click(this.onOptionsClick.bind(this));
+  this.bkg.controller.getCircles().forEach(function(circle, index) {
+    $('#circles').append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
+  });
+  $('.chzn-select').chosen();
 };
 
 /**
@@ -132,14 +140,14 @@ PopupController.prototype.relayout = function(hangoutTotal) {
   $('#popup-container').height(height);
 };
 
-PopupController.prototype.onCircleWatchClick = function(e) {
+PopupController.prototype.onOptionsClick = function(e) {
   $(e.target).text('view ' + this.currentPage);
   if (this.currentPage == 'hangouts') {
     $('#hangouts-container').animate({left: -600}, 500);
   }
   else {  
-    $('#circle-watch-container').animate({left: 600}, 500);
+    $('#options-container').animate({left: 600}, 500);
   }
-  this.currentPage = (this.currentPage == 'hangouts' ? 'circle-watch' : 'hangouts');
+  this.currentPage = (this.currentPage == 'hangouts' ? 'options' : 'hangouts');
   $('#' + this.currentPage + '-container').animate({left: 0}, 500);
 };

@@ -50,16 +50,16 @@ body, html {
   left: 0;
 }
 
-#circle-watch-container {
+#options-container {
   left: 600px;
 }
 
-#circle-watch-container h1 {
+#options-container h2 {
   color: #4d90fe;
   font-size: 18px;
 }
 
-#toggle-circle-watch {
+#toggle-options {
   display: inline-block;
 }
 .hangout-item {
