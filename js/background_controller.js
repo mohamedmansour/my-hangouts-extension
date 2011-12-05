@@ -12,6 +12,7 @@ BackgroundController = function() {
   this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
   this.myFollowersMap = {};
+  this.myCirclesList = [];
 };
 
 /**
@@ -149,6 +150,11 @@ BackgroundController.prototype.refreshCircles = function() {
   var self = this;
   this.plus.getDatabase().clearAll(function(clearStatus) {
     self.plus.refreshCircles(function(status) {
+      self.plus.getCircles(function(res) {
+        if (res.status) {
+          self.myCircles = res.data;
+        }
+      });
       self.plus.getDatabase().getPersonEntity().findMap(function(res) {
         if (res.status) {
           self.myFollowersMap = res.data;
@@ -166,4 +172,13 @@ BackgroundController.prototype.refreshCircles = function() {
  */
 BackgroundController.prototype.getPerson = function(id) {
   return this.myFollowersMap[id];
+};
+
+/**
+ * Gets a list of circles that the current user is registered with.
+ *
+ * @return {Array<Object>} a list of circle objects in correct order.
+ */
+BackgroundController.prototype.getCircles = function() {
+  return this.myCircles;
 };
