@@ -6,6 +6,7 @@
  */
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
+  this.currentPage = 'hangouts'; // circle-watch
 };
 
 /**
@@ -14,6 +15,7 @@ PopupController = function() {
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   $('#version').text(this.bkg.settings.version);
+  $('#toggle-circle-watch').click(this.onCircleWatchClick.bind(this));
 };
 
 /**
@@ -23,7 +25,7 @@ PopupController.prototype.init = function() {
 PopupController.prototype.updateHangouts = function() {
   var hangouts = this.bkg.controller.getHangouts();
   if (hangouts.length == 0) {
-    $('#hangout-container').html('loading ...');
+    $('#hangouts-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);
   }
   else {
@@ -75,7 +77,7 @@ PopupController.prototype.loadHangouts = function(hangouts) {
       else return 0;
     });
     this.renderHangouts(hangouts);
-
+    this.relayout(hangouts.length);
     $('a').click(this.onLinkClicked);
   }
 };
@@ -105,6 +107,10 @@ PopupController.prototype.stripHTML = function(html) {
  */
 PopupController.prototype.onLinkClicked = function(e) {
   e.preventDefault();
+  var disabled = $(e.target).attr('disabled');
+  if (disabled) {
+    return;
+  }
   var href = $(e.target).attr('href');
   if (!href) {
     href = $(e.target).parent().attr('href');
@@ -118,5 +124,22 @@ PopupController.prototype.onLinkClicked = function(e) {
  * @param {Array(Object)} hangouts The hangout item in a JSON format.
  */
 PopupController.prototype.renderHangouts = function(hangouts) {
-  $('#hangout-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
+  $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
+};
+
+PopupController.prototype.relayout = function(hangoutTotal) {
+  var height = (hangoutTotal * 55) + 5;
+  $('#popup-container').height(height);
+};
+
+PopupController.prototype.onCircleWatchClick = function(e) {
+  $(e.target).text('view ' + this.currentPage);
+  if (this.currentPage == 'hangouts') {
+    $('#hangouts-container').animate({left: -600}, 500);
+  }
+  else {  
+    $('#circle-watch-container').animate({left: 600}, 500);
+  }
+  this.currentPage = (this.currentPage == 'hangouts' ? 'circle-watch' : 'hangouts');
+  $('#' + this.currentPage + '-container').animate({left: 0}, 500);
 };
