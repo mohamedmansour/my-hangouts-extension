@@ -57,7 +57,7 @@ HangoutUpdater.prototype.search = function(obj) {
       var cache = self.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
-        if (cache.public) hangout.public = cache;
+        if (cache.is_public) hangout.is_public = cache;
 
         // Update the hangouts collection.
         self.hangouts[cache.index] = hangout;
@@ -70,7 +70,7 @@ HangoutUpdater.prototype.search = function(obj) {
       // Preserve in the cache the visibility status and the index in the collection.
       self.cache[hangout.data.id] = {
         index: self.hangouts.length - 1,
-        public: hangout.public
+        is_public: hangout.is_public
       };
     }
 
