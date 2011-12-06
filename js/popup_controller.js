@@ -21,9 +21,9 @@ PopupController.prototype.bindUI = function() {
   $('#version').text(this.bkg.settings.version);
   $('#toggle-options').click(this.onOptionsClick.bind(this));
   this.bkg.controller.getCircles().forEach(function(circle, index) {
-    $('#circles').append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
+    $('#option-circles').append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
   });
-  $('.chzn-select').chosen();
+  $('#option-circles').chosen();
 };
 
 /**
