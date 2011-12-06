@@ -123,6 +123,7 @@ ul.gallery  li div:hover .controls {
   top:64px;
   width:800px;
   margin:0 auto;
+  display: none;
 }
 .no-captures h1 {
   font:bold 3em Arial, sans-serif;

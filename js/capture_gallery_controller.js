@@ -17,7 +17,8 @@ CaptureGalleryController = function() {
 CaptureGalleryController.prototype.init = function() {
   this.renderGallery();
   this.effectsController.init();
-  this.toggleEditMode();
+  // TODO(rboujaram) This needs to move somewhere else.
+  //this.toggleEditMode();
 };
 
 /**
@@ -36,7 +37,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
     service: 'Capture',
     method: 'findAll'
   }, function(res) {
-    if (res.status) {
+    if (res.status && res.data.length > 0) {
       res.data.forEach(function(moment, index) {
         self.renderMoment(moment);
       });
@@ -44,7 +45,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
       self.bindUIControls();
     }
     else {
-      alert('Error happened ' + res.data);
+      $('.no-captures').show();
     }
   });
 };
