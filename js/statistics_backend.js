@@ -3,7 +3,7 @@
  *
  * @constructor
  */
-StatisticsEntity =  = function(db) {
+StatisticsEntity = function(db) {
   AbstractEntity.call(this, db, 'statistics');
 };
 JSAPIHelper.inherits(StatisticsEntity, AbstractEntity);
