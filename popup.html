@@ -3,10 +3,12 @@
 <head>
   <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="/css/common.css" />
+  <link rel="stylesheet" type="text/css" href="/css/chosen.css" />
   <link rel="stylesheet" type="text/css" href="/css/popup.css" />
   <script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script>  
+  <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script>
+  <script type="text/javascript" src="/js/libs/chosen.jquery.min.js"></script>
   <script type="text/javascript" src="/js/popup_controller.js"></script>
 </head>
 <body>
@@ -17,10 +19,23 @@
       <span id="version"></span>
     </div>
     <div id="hangout-bar-right">
+      <span><a href="#" id="toggle-options" disabled>view options</a></span>
+      <span>|</span>
       <span><a href="capture_gallery.html">view captured moments gallery</a></span>
     </div>
   </div>
-  <div id="hangout-container"></div>
+  <div id="popup-container">
+    <div id="hangouts-container" class="popup-page"></div>
+    <div id="options-container" class="popup-page">
+      <h2>Circle preferences</h2>
+      <select id="option-circles" data-placeholder="Choose your Circles..." multiple style="width: 100%;"></select>
+      <p><label for="option-circles-notify"><input id="option-circles-notify" type="checkbox" /> Notify me when a user in my circles above entered a hangout.</label></p>
+      <p><label for="option-circles-join"><input id="option-circles-join" type="checkbox" /> Automatically join the hangout when a user in my circles above entered a hangout.</label></p>
+      <h2>Hangout preferences</h2>
+      <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
+      <button>Go back to hangouts</button>
+    </div>
+  </div>
   <script type="text/x-jquery-tmpl" id="hangouts-template">
     {{each(i, hangout) hangouts}}
     <div class="hangout-item{{if hangout.isFull}} full{{/if}}">
