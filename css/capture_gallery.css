@@ -9,6 +9,7 @@ body {
   border-width: 1px 1px 0; 
   -webkit-border-radius: 3px; 
   -webkit-box-shadow: 0 1px 1px rgba(255,255,255,.5);
+  white-space: nowrap;
 }
 #header h1 {
   font-weight: bold;
@@ -115,6 +116,62 @@ ul.gallery  li div .controls {
 
 ul.gallery  li div:hover .controls {
   visibility: visible;
+}
+
+.no-captures { 
+  position: relative;
+  top:64px;
+  width:800px;
+  margin:0 auto;
+}
+.no-captures h1 {
+  font:bold 3em Arial, sans-serif;
+  color:rgba(0,0,0,0.75);
+  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
+  text-align:center;
+  margin-bottom:0;
+}
+.no-captures p  {
+  font:normal 1.6em Arial, sans-serif;
+  text-align:center;
+}
+
+.select {
+	-webkit-transition: -webkit-transform 0.75s ease-in; -webkit-transform:scale(6); position:relative; z-index:20;
+}
+#edit {
+	height:100%;
+	width:100%;
+	background:rgba(255,255,255,0.8);
+	position:absolute; top:0; left:0; z-index:10; 
+	display:none; 
+}
+#edit-head {
+	background: white;
+	width: 100%;
+	height: 64px;
+	position: absolute;
+	top: 0;
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+#edit-head h1 {
+	background:url(../img/effects.png) left center no-repeat;
+	color:rgba(0,0,0,0.75);
+	padding:0 48px;
+	margin-left:24px;
+	font:bold 2em Arial, Helvetica, sans-serif;
+	color:rgba(0,0,0,0.8);
+	text-shadow:1px 1px 1px rgba(0,0,0,0.5);
+}
+#close-tab {
+	position:absolute;
+	top:15px;
+	right:30px;
+	width:32px;
+	height:32px;
+	background:url(../img/close32.png) center center no-repeat;
+	z-index:20;
+	display:none;
 }
 
 .delete {
