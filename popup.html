@@ -27,7 +27,7 @@
       <div class="hangout-overlay">
         <div class="hangout-show">
           <span class="hangout-show-count">${hangout.activeCount}</span>
-          <span class="hangout-show-visibility">{{if hangout.public}}public{{else}}limited{{/if}}</span>
+          <span class="hangout-show-visibility">{{if hangout.is_public}}public{{else}}limited{{/if}}</span>
         </div>
         <div class="hangout-extra">
           <a href="${hangout.url}"><img src="/img/link.png" alt="Original post"/></a>
