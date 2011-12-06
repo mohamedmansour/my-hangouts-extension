@@ -319,6 +319,65 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
     }
   }
 };
+
+/* Add text to a canvas
+ *
+ * args = {
+ *    text: <text string>,
+ *    fillColor: <hex color>
+ *    font: <font name>,
+ *    fontSize: <size in pixels>  --optional, can be in font name
+ *
+ */
+
+CaptureEffectsController.prototype.addTextToCanvas = function(args) {
+  effectCanvas = controller.effectsController.getEffectCanvas()
+  // create canvas with same size as source
+  var textCanvas = document.createElement("canvas");
+  textCanvas.height = effectCanvas.height;
+  textCanvas.width = effectCanvas.width;
+  var ctx = textCanvas.getContext("2d");
+  // Find the height and width of the text
+  var width = ctx.measureText(args.text);
+  console.log(width);
+  // height is based on the emHeight
+  var height = function() {
+    d = document.createElement("span");
+    d.font = "36px Arial, serif";
+    d.textContent = args.text;
+    emHeight = d.offsetHeight;
+    return emHeight;
+  }();
+  console.log("DDD");
+  appliedEffectsImage = new Image();
+  appliedEffectsImage.src = effectCanvas.toDataURL();
+  appliedEffectsImage.onload = function () {
+    ctx.drawImage(this, 0, 0);
+    
+    ctx.fillStyle = args.fillColor;
+    ctx.font = args.font;
+    console.log(height);
+    ctx.fillText(args.text, 5, 5+36);
+    
+  
+    var compositeImage = new Image();
+    compositeImage.src = textCanvas.toDataURL();
+    compositeImage.onload = function () {
+      
+      tex = effectCanvas.texture(this);
+      console.log(tex);
+      effectCanvas = fx.canvas();
+      effectsCanvas.draw(tex).update();
+      
+    }
+  }
+  
+  // render text
+  // save current canvas to image
+  // draw text
+  // replace texture
+}
+
 /**
  * Describes a filter.
  */
@@ -376,7 +435,8 @@ Filter.prototype.use = function(effectController) {
     var y = nub.y * canvas.height;
     $('<div class="nub" id="nub' + i + '"></div>').appendTo('#nubs');
     var ondrag = (function(this_, nub) { return function(event, ui) {
-      var offset = $(event.target.parentNode).offset();
+      var offset = $("#light").offset();
+      console.log("here");
       this_[nub.name] = { x: ui.offset.left - offset.left, y: ui.offset.top - offset.top };
       this_.update();
     }; })(this, nub);
