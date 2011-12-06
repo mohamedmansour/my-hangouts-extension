@@ -5,14 +5,23 @@
  * @constructor
  */
 BackgroundController = function() {
+  var db = this.initDatabase();
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updater = new HangoutUpdater(this);
-  this.captureBackend = new CaptureBackend();
+  this.captureBackend = new CaptureBackend(db);
+  this.statisticsBackend = new StatisticsBackend(db);
   this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
   this.myFollowersMap = {};
   this.myCirclesList = [];
+};
+
+/**
+ * Initialize the My Hangouts database.
+ */
+BackgroundController.prototype.initDatabase = function() {
+  return openDatabase('My Hangouts', '1.0', 'my-hangouts', 10 * 1024 * 1024);
 };
 
 /**

@@ -28,10 +28,10 @@ CaptureEntity.prototype.tableDefinition = function() {
 
 /**
  * Backend that is responsible of handling captures.
+ * @param {Database} db The database backend.
  * @constructor
  */
-CaptureBackend = function() {
-  var db = openDatabase('My Hangouts', '1.0', 'my-hangouts', 10 * 1024 * 1024);
+CaptureBackend = function(db) {
   this.captureEntity = new CaptureEntity(db);
   this.tempCapture = {};
 };
