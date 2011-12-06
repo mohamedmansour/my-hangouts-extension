@@ -13,6 +13,7 @@
   <script type="text/javascript" src="/js/libs/glfx.js"></script>
   <script type="text/javascript" src="/js/capture_gallery_filter.js"></script>
   <script type="text/javascript" src="/js/capture_gallery_controller.js"></script>
+  
 </head>
 <body>
 <div id="container">
@@ -51,6 +52,22 @@
     </div>
   </li>
 </script>
+
+<div id="edit">
+    <div id="edit-head">
+    	<h1>Edit My Hangout Moment</h1>
+    </div>
+    <div id="edit-body"></div>
+</div>
+<div id="close-tab"></div>
+
+
+
+<div class="no-captures">
+  <h1>You currently have no captures.</h1>
+  <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
+  <img src="../img/hangout-screenshot.png" alt="" />
+</div>
 <script>
 var controller = new CaptureGalleryController();
 controller.init();
