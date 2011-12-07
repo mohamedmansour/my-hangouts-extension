@@ -7,6 +7,7 @@
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.currentPage = 'hangouts'; // options
+  this.hangouts = [];
 };
 
 /**
@@ -31,13 +32,13 @@ PopupController.prototype.bindUI = function() {
  * box of data.
  */
 PopupController.prototype.updateHangouts = function() {
-  var hangouts = this.bkg.controller.getHangouts();
-  if (hangouts.length == 0) {
+  this.hangouts = this.bkg.controller.getHangouts();
+  if (this.hangouts.length == 0) {
     $('#hangouts-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);
   }
   else {
-    this.loadHangouts(hangouts);
+    this.processHangouts();
     setTimeout(this.updateHangouts.bind(this), 15000);
   }
 };
@@ -46,12 +47,12 @@ PopupController.prototype.updateHangouts = function() {
  * When the window loads, render the User Interface by creating the widgets
  * dynamically.
  */
-PopupController.prototype.loadHangouts = function(hangouts) {
+PopupController.prototype.processHangouts = function() {
   console.log('Hangouts refreshed! ' + new Date());
 
-  if (hangouts.length > 0) {
-    for (var i = 0; i < hangouts.length; i++) {
-      var hangoutItem = hangouts[i];
+  if (this.hangouts.length > 0) {
+    for (var i = 0; i < this.hangouts.length; i++) {
+      var hangoutItem = this.hangouts[i];
 
       // Slice everything that we don't need.
       hangoutItem.data.participants = hangoutItem.data.participants.slice(0, 9);
@@ -79,13 +80,12 @@ PopupController.prototype.loadHangouts = function(hangouts) {
     }
 
     // Sort by rank.
-    hangouts.sort(function(a, b) {
+    this.hangouts.sort(function(a, b) {
       if (a.rank > b.rank) return -1;
       else if (a.rank < b.rank) return 1;
       else return 0;
     });
-    this.renderHangouts(hangouts);
-    this.relayout(hangouts.length);
+    this.renderHangouts(this.hangouts);
     $('a').click(this.onLinkClicked);
   }
 };
@@ -133,21 +133,31 @@ PopupController.prototype.onLinkClicked = function(e) {
  */
 PopupController.prototype.renderHangouts = function(hangouts) {
   $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
+  this.relayout();
+  console.log('rendering');
 };
 
-PopupController.prototype.relayout = function(hangoutTotal) {
-  var height = (hangoutTotal * 55) + 5;
-  $('#popup-container').height(height);
+PopupController.prototype.relayout = function() {
+  if (this.currentPage == 'hangouts') {
+    var height = (this.hangouts.length * 55) + 5;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
+  }
+  else {
+    $('.popup-page').height(300);
+    $('#popup-container').height(300);
+  }
 };
 
 PopupController.prototype.onOptionsClick = function(e) {
   $(e.target).text('view ' + this.currentPage);
   if (this.currentPage == 'hangouts') {
-    $('#hangouts-container').animate({left: -600}, 500);
+    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
   }
   else {  
-    $('#options-container').animate({left: 600}, 500);
+    $('#options-container').animate({left: 600, overflow: 'hidden'}, 500);
   }
   this.currentPage = (this.currentPage == 'hangouts' ? 'options' : 'hangouts');
-  $('#' + this.currentPage + '-container').animate({left: 0}, 500);
+  $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
+  this.relayout();
 };
