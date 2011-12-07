@@ -9,19 +9,20 @@
   <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script>
   <script type="text/javascript" src="/js/libs/chosen.jquery.min.js"></script>
+  <script type="text/javascript" src="/js/options_controller.js"></script>
   <script type="text/javascript" src="/js/popup_controller.js"></script>
 </head>
 <body>
   <div id="hangout-bar">
     <div id="hangout-bar-left">
       <img src="/img/hangout-extras-white.png"/>
-      <span>+<a href="https://plus.google.com/116935358560979346551/about" title="My Hangouts Google+ Page">My Hangouts</a> </span>
+      <span>+<a href="https://plus.google.com/116935358560979346551/about" title="My Hangouts Google+ Page" class="clickable">My Hangouts</a> </span>
       <span id="version"></span>
     </div>
     <div id="hangout-bar-right">
-      <span><a href="#" id="toggle-options" disabled>view options</a></span>
+      <span><a href="#" id="toggle-options">view options</a></span>
       <span>|</span>
-      <span><a href="capture_gallery.html">view captured moments gallery</a></span>
+      <span><a href="capture_gallery.html" class="clickable">view captured moments gallery</a></span>
     </div>
   </div>
   <div id="popup-container">
@@ -30,10 +31,9 @@
       <h2>Circle preferences</h2>
       <select id="option-circles" data-placeholder="Choose your Circles..." multiple style="width: 100%;"></select>
       <p><label for="option-circles-notify"><input id="option-circles-notify" type="checkbox" /> Notify me when a user in my circles above entered a hangout.</label></p>
-      <p><label for="option-circles-join"><input id="option-circles-join" type="checkbox" /> Automatically join the hangout when a user in my circles above entered a hangout.</label></p>
       <h2>Hangout preferences</h2>
       <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
-      <button>Go back to hangouts</button>
+      <button id="option-go-back">Go back to hangouts</button>
     </div>
   </div>
   <script type="text/x-jquery-tmpl" id="hangouts-template">
@@ -45,17 +45,17 @@
           <span class="hangout-show-visibility">{{if hangout.is_public}}public{{else}}limited{{/if}}</span>
         </div>
         <div class="hangout-extra">
-          <a href="${hangout.url}"><img src="/img/link.png" alt="Original post"/></a>
+          <a href="${hangout.url}" class="clickable"><img src="/img/link.png" alt="Original post"/></a>
           ${html}
         </div>
       </div>
       <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
       <div class="hangout-participants">
         <ul>
-        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
+        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
         {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
-          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
+          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
           {{/if}}
         {{/each}}
         </ul>
