@@ -120,9 +120,9 @@ ul.gallery  li div:hover .controls {
 
 .no-captures { 
   position: relative;
-  top:64px;
-  width:800px;
-  margin:0 auto;
+  top: 0;
+  width: 800px;
+  margin: 0 auto;
   display: none;
 }
 .no-captures h1 {
