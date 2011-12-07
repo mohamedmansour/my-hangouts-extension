@@ -327,7 +327,10 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
  *    fillColor: <hex color>
  *    font: <font name>,
  *    fontSize: <size in pixels>  --optional, can be in font name
+ *    x: <x>,                     --optional, defaults to (0,0)
+ *    y: <y>
  *
+ * Should always be applied last.
  */
 
 CaptureEffectsController.prototype.addTextToCanvas = function(args) {
@@ -337,18 +340,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
   textCanvas.height = effectCanvas.height;
   textCanvas.width = effectCanvas.width;
   var ctx = textCanvas.getContext("2d");
-  // Find the height and width of the text
-  var width = ctx.measureText(args.text);
-  console.log(width);
-  // height is based on the emHeight
-  var height = function() {
-    d = document.createElement("span");
-    d.font = "36px Arial, serif";
-    d.textContent = args.text;
-    emHeight = d.offsetHeight;
-    return emHeight;
-  }();
-  console.log("DDD");
+  
   appliedEffectsImage = new Image();
   appliedEffectsImage.src = effectCanvas.toDataURL();
   appliedEffectsImage.onload = function () {
@@ -356,26 +348,29 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
     
     ctx.fillStyle = args.fillColor;
     ctx.font = args.font;
-    console.log(height);
-    ctx.fillText(args.text, 5, 5+36);
+    ctx.textBaseline = "top";
+    if (args.x == undefined)
+      args.x = 0;
+    if (args.y == undefined)
+      args.y = 0;
+    ctx.fillText(args.text, 0, 0);
     
   
     var compositeImage = new Image();
     compositeImage.src = textCanvas.toDataURL();
     compositeImage.onload = function () {
-      
+      console.log (effectCanvas);
       tex = effectCanvas.texture(this);
       console.log(tex);
-      effectCanvas = fx.canvas();
-      effectsCanvas.draw(tex).update();
-      
+      //remove old canvas
+      // TODO encapsulate this code
+      $(controller.effectsController.glfxCanvas).remove();
+      controller.effectsController.glfxCanvas = fx.canvas();
+      tex = controller.effectsController.glfxCanvas.texture(this);
+      controller.effectsController.glfxCanvas.draw(tex).update();
+      $("#canvasPreview").append(controller.effectsController.glfxCanvas);
     }
   }
-  
-  // render text
-  // save current canvas to image
-  // draw text
-  // replace texture
 }
 
 /**
