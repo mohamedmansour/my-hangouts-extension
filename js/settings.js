@@ -17,13 +17,27 @@ settings = {
   set opt_out(val) {
     localStorage['opt_out'] = val;
   },
-  get notify_circles() {
-    var key = localStorage['notify_circles'];
+  get circles_to_notify() {
+    var key = localStorage['circles_to_notify'];
     return (typeof key == 'undefined' || key == '') ? [] : key.split(', ');
   },
-  set notify_circles(val) {
+  set circles_to_notify(val) {
     if (typeof val == 'object') {
-      localStorage['notify_circles'] = val.join(', ');
+      localStorage['circles_to_notify'] = val.join(', ');
     }
-  }
+  },
+  get notify_circles() {
+    var key = localStorage['notify_circles'];
+    return (typeof key == 'undefined') ? false : key === 'true';
+  },
+  set notify_circles(val) {
+    localStorage['notify_circles'] = val;
+  },
+  get open_hangout_new_window() {
+    var key = localStorage['open_hangout_new_window'];
+    return (typeof key == 'undefined') ? false : key === 'true';
+  },
+  set open_hangout_new_window(val) {
+    localStorage['open_hangout_new_window'] = val;
+  },
 };

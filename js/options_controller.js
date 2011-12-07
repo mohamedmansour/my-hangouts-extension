@@ -9,16 +9,29 @@ OptionsController.prototype.init = function() {
 };
 
 OptionsController.prototype.bindUI = function() {
-  // Setup circle notification
+  var self = this;
+  
+  // Setup circle notification preference.
   var circleChooserDOM = $('#option-circles');
   this.bkg.getCircles().forEach(function(circle, index) {
     circleChooserDOM.append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
   });
-  circleChooserDOM.val(this.settings.notify_circles);
-  circleChooserDOM.chosen().change(this.onCircleChooserChange.bind(this));
-};
+  circleChooserDOM.val(this.settings.circles_to_notify);
+  circleChooserDOM.chosen().change(function(e) {
+    self.settings.circles_to_notify = $(e.target).val() || [];
+  });
+  
+  // Notify circles preference.
+  var circleNotifyDOM = $('#option-circles-notify');
+  circleNotifyDOM.prop('checked', this.settings.notify_circles);
+  circleNotifyDOM.change(function(e) {
+    self.settings.notify_circles = $(e.target).is(':checked');
+  });
 
-OptionsController.prototype.onCircleChooserChange = function(e) {
-  var values = $(e.target).val();
-  this.settings.notify_circles = values || [];
+  // Notify circles preference.
+  var hangoutOpenWindowDOM = $('#option-hangout-window');
+  hangoutOpenWindowDOM.prop('checked', this.settings.open_hangout_new_window);
+  hangoutOpenWindowDOM.change(function(e) {
+    self.settings.open_hangout_new_window = $(e.target).is(':checked');
+  });
 };
