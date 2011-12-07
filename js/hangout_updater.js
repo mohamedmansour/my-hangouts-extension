@@ -35,14 +35,24 @@ HangoutUpdater.prototype.getHangouts = function() {
 
 /**
  * @param {Object} obj The search object where keys are "query" and "extra"
+ * @param {boolean} refresh Reset the data with fresh hangouts.
  */
-HangoutUpdater.prototype.search = function(obj) {
+HangoutUpdater.prototype.search = function(obj, refresh) {
   var self = this;
+  var doRefresh = refresh;
   self.controller.plus.search(function(res) {
     var data = res.data;
 
-    // Capture the error 
+    // Capture the error
+    // TODO: We need to deal with that late on.
     self.error = data.status;
+
+    // It is time to refresh data, do it now, then stop asking for it.
+    if (doRefresh) {
+      self.hangouts.length = 0;
+      self.cache = {};
+      doRefresh = false;
+    }
 
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
@@ -127,9 +137,7 @@ HangoutUpdater.prototype.doNext = function() {
  * Reset the state after 3rd try to keep results fresh.
  */
 HangoutUpdater.prototype.state0 = function() {
-  this.hangouts.length = 0;
-  this.cache = {};
-  this.search(this.HANGOUT_SEARCH_QUERY);
+  this.search(this.HANGOUT_SEARCH_QUERY, true);
 };
 
 
@@ -137,5 +145,5 @@ HangoutUpdater.prototype.state0 = function() {
  * Requery the hangouts list
  */
 HangoutUpdater.prototype.state1 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY);
+  this.search(this.HANGOUT_SEARCH_QUERY, false);
 };
