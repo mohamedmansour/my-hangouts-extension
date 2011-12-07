@@ -131,6 +131,9 @@ PopupController.prototype.renderHangouts = function(hangouts) {
   console.log('rendering');
 };
 
+/**
+ * Relayout the page since each page has different heights.
+ */
 PopupController.prototype.relayout = function() {
   if (this.currentPage == 'hangouts') {
     var height = (this.hangouts.length * 55) + 5;
@@ -143,9 +146,19 @@ PopupController.prototype.relayout = function() {
   }
 };
 
+/**
+ * When the options has been clicked.
+ */
 PopupController.prototype.onOptionsClick = function(e) {
   e.preventDefault();
-  $(e.target).text('view ' + this.currentPage);
+  this.togglePage();
+};
+
+/**
+ * Toggle the page from options and hangouts.
+ */
+PopupController.prototype.togglePage = function() {
+  $('#toggle-options').text('view ' + this.currentPage);
   if (this.currentPage == 'hangouts') {
     $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
   }
