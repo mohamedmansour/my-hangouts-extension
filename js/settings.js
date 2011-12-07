@@ -17,13 +17,13 @@ settings = {
   set opt_out(val) {
     localStorage['opt_out'] = val;
   },
-  get whitelist() {
-    var key = localStorage['whitelist'];
-    return (typeof key == 'undefined') ? ['Mohamed Mansour'] : (key == '' ? [] : key.split(', '));
+  get notify_circles() {
+    var key = localStorage['notify_circles'];
+    return (typeof key == 'undefined' || key == '') ? [] : key.split(', ');
   },
-  set whitelist(val) {
+  set notify_circles(val) {
     if (typeof val == 'object') {
-      localStorage['whitelist'] = val.sort().join(', ');
+      localStorage['notify_circles'] = val.join(', ');
     }
   }
 };

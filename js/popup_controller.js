@@ -6,6 +6,7 @@
  */
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
+  this.options = new OptionsController(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
 };
@@ -16,15 +17,12 @@ PopupController = function() {
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
+  this.options.init();
 };
 
 PopupController.prototype.bindUI = function() {
   $('#version').text(this.bkg.settings.version);
   $('#toggle-options').click(this.onOptionsClick.bind(this));
-  this.bkg.controller.getCircles().forEach(function(circle, index) {
-    $('#option-circles').append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
-  });
-  $('#option-circles').chosen();
 };
 
 /**
@@ -86,7 +84,7 @@ PopupController.prototype.processHangouts = function() {
       else return 0;
     });
     this.renderHangouts(this.hangouts);
-    $('a').click(this.onLinkClicked);
+    $('a.clickable').click(this.onLinkClicked);
   }
 };
 
@@ -115,10 +113,6 @@ PopupController.prototype.stripHTML = function(html) {
  */
 PopupController.prototype.onLinkClicked = function(e) {
   e.preventDefault();
-  var disabled = $(e.target).attr('disabled');
-  if (disabled) {
-    return;
-  }
   var href = $(e.target).attr('href');
   if (!href) {
     href = $(e.target).parent().attr('href');
@@ -150,6 +144,7 @@ PopupController.prototype.relayout = function() {
 };
 
 PopupController.prototype.onOptionsClick = function(e) {
+  e.preventDefault();
   $(e.target).text('view ' + this.currentPage);
   if (this.currentPage == 'hangouts') {
     $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
