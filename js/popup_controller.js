@@ -7,6 +7,7 @@
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.options = new OptionsController(this);
+  this.map = new MapController(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
 };
@@ -23,6 +24,7 @@ PopupController.prototype.init = function() {
 PopupController.prototype.bindUI = function() {
   $('#version').text(this.bkg.settings.version);
   $('#toggle-options').click(this.onOptionsClick.bind(this));
+  $('#hangouts-map').click(this.onHangoutMapsClick.bind(this));
 };
 
 /**
@@ -60,7 +62,7 @@ PopupController.prototype.processHangouts = function() {
       var circleCount = 0;
       for (var j = 0; j < hangoutItem.data.participants.length; j++) {
         var participant = hangoutItem.data.participants[j];
-        if (participant.status) {
+             if (participant.status) {
           userCount++;
           if (this.fillCircleInfo(participant)) {
             circleCount++;
@@ -155,6 +157,16 @@ PopupController.prototype.onOptionsClick = function(e) {
 };
 
 /**
+ * When the hangout maps has been clicked.
+ */
+PopupController.prototype.onHangoutMapsClick = function(e) {
+  e.preventDefault();
+  this.map.load();
+  this.toggleMapPage();
+};
+
+
+/**
  * Toggle the page from options and hangouts.
  */
 PopupController.prototype.togglePage = function() {
@@ -169,3 +181,20 @@ PopupController.prototype.togglePage = function() {
   $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
   this.relayout();
 };
+
+/**
+ * Toggle the page from options and hangouts.
+ */
+PopupController.prototype.toggleMapPage = function() {
+  $('#hangouts-map').text('view ' + this.currentPage);
+  if (this.currentPage == 'hangouts') {
+    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
+  }
+  else {  
+    $('#map-container').animate({left: 600, overflow: 'hidden'}, 500);
+  }
+  this.currentPage = (this.currentPage == 'hangouts' ? 'map' : 'hangouts');
+  $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
+  this.relayout();
+};
+
