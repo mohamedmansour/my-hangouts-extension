@@ -20,10 +20,13 @@ People may ask what are the main differences from the *other* extensions out the
 Contributors
 -----------
 
-- Mohamed Mansour (https://plus.google.com/116805285176805120365/about)
-- John Barrington Craggs (https://plus.google.com/117791034087176894458/about)
-- Jake McCuistion (https://plus.google.com/105275638908165446414/about)
-- Mike Searle (https://plus.google.com/117344786984788205452/about)
+Look in AUTHORS.md
+
+
+License
+-----------
+
+Look in LICENSE.md
 
 Screenshots
 ----------

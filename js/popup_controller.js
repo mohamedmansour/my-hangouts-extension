@@ -6,6 +6,9 @@
  */
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
+  this.options = new OptionsController(this);
+  this.currentPage = 'hangouts'; // options
+  this.hangouts = [];
 };
 
 /**
@@ -13,7 +16,13 @@ PopupController = function() {
  */
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
+  this.bindUI();
+  this.options.init();
+};
+
+PopupController.prototype.bindUI = function() {
   $('#version').text(this.bkg.settings.version);
+  $('#toggle-options').click(this.onOptionsClick.bind(this));
 };
 
 /**
@@ -21,13 +30,13 @@ PopupController.prototype.init = function() {
  * box of data.
  */
 PopupController.prototype.updateHangouts = function() {
-  var hangouts = this.bkg.controller.getHangouts();
-  if (hangouts.length == 0) {
-    $('#hangout-container').html('loading ...');
+  this.hangouts = this.bkg.controller.getHangouts();
+  if (this.hangouts.length == 0) {
+    $('#hangouts-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);
   }
   else {
-    this.loadHangouts(hangouts);
+    this.processHangouts();
     setTimeout(this.updateHangouts.bind(this), 15000);
   }
 };
@@ -36,36 +45,46 @@ PopupController.prototype.updateHangouts = function() {
  * When the window loads, render the User Interface by creating the widgets
  * dynamically.
  */
-PopupController.prototype.loadHangouts = function(hangouts) {
+PopupController.prototype.processHangouts = function() {
   console.log('Hangouts refreshed! ' + new Date());
-  $('#hangout-container').html('');
-  
-  if (hangouts.length > 0) {
-    for (var i = 0; i < hangouts.length; i++) {
-      var hangoutItem = hangouts[i];
+
+  if (this.hangouts.length > 0) {
+    for (var i = 0; i < this.hangouts.length; i++) {
+      var hangoutItem = this.hangouts[i];
 
       // Slice everything that we don't need.
       hangoutItem.data.participants = hangoutItem.data.participants.slice(0, 9);
 
       // Hangout Participants.
       var userCount = 1;
+      var circleCount = 0;
       for (var j = 0; j < hangoutItem.data.participants.length; j++) {
         var participant = hangoutItem.data.participants[j];
         if (participant.status) {
           userCount++;
-          this.fillCircleInfo(participant);
+          if (this.fillCircleInfo(participant)) {
+            circleCount++;
+          }
         }
+      }
+      if (this.fillCircleInfo(hangoutItem.owner)) {
+        circleCount++;
       }
       hangoutItem.html = this.stripHTML(hangoutItem.html);
       hangoutItem.activeCount = userCount;
       hangoutItem.isFull = userCount >= 10;
       hangoutItem.time = $.timeago(new Date(hangoutItem.time));
-
-      this.fillCircleInfo(hangoutItem.owner);
-      this.renderHangoutItem(hangoutItem);
+      hangoutItem.rank = circleCount;
     }
 
-    $('a').click(this.onLinkClicked);
+    // Sort by rank.
+    this.hangouts.sort(function(a, b) {
+      if (a.rank > b.rank) return -1;
+      else if (a.rank < b.rank) return 1;
+      else return 0;
+    });
+    this.renderHangouts(this.hangouts);
+    $('a.clickable').click(this.onLinkClicked);
   }
 };
 
@@ -73,7 +92,9 @@ PopupController.prototype.fillCircleInfo = function(user) {
   var person = this.bkg.controller.getPerson(user.id);
   if (person) {
     user.circles = person.circles.map(function(e) {return  ' ' + e.name});
+    return true;
   }
+  return false;
 };
 
 
@@ -102,8 +123,49 @@ PopupController.prototype.onLinkClicked = function(e) {
 /**
  * Rendering each hangout.
  *
- * @param {Object} hangout The hangout item in a JSON format.
+ * @param {Array(Object)} hangouts The hangout item in a JSON format.
  */
-PopupController.prototype.renderHangoutItem = function(hangout) {
-  $('#hangout-item-template').tmpl(hangout).appendTo('#hangout-container');
+PopupController.prototype.renderHangouts = function(hangouts) {
+  $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
+  this.relayout();
+  console.log('rendering');
+};
+
+/**
+ * Relayout the page since each page has different heights.
+ */
+PopupController.prototype.relayout = function() {
+  if (this.currentPage == 'hangouts') {
+    var height = (this.hangouts.length * 55) + 5;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
+  }
+  else {
+    $('.popup-page').height(300);
+    $('#popup-container').height(300);
+  }
+};
+
+/**
+ * When the options has been clicked.
+ */
+PopupController.prototype.onOptionsClick = function(e) {
+  e.preventDefault();
+  this.togglePage();
+};
+
+/**
+ * Toggle the page from options and hangouts.
+ */
+PopupController.prototype.togglePage = function() {
+  $('#toggle-options').text('view ' + this.currentPage);
+  if (this.currentPage == 'hangouts') {
+    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
+  }
+  else {  
+    $('#options-container').animate({left: 600, overflow: 'hidden'}, 500);
+  }
+  this.currentPage = (this.currentPage == 'hangouts' ? 'options' : 'hangouts');
+  $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
+  this.relayout();
 };

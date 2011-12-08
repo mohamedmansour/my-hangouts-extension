@@ -1,13 +1,19 @@
 <!DOCTYPE html> 
 <html>
 <head>
+  <title>My Hangouts</title>
   <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="/css/common.css" />
   <link rel="stylesheet" type="text/css" href="/css/capture_gallery.css" />
-  <script type="text/javascript" src="/js/libs/jquery-1.6.3.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/css/lightbox.css" />
+  <script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script> 
+  <script type="text/javascript" src="/js/libs/jquery.ui.slider.js"></script>
+  <script type="text/javascript" src="/js/libs/glfx.js"></script>
+  <script type="text/javascript" src="/js/capture_gallery_filter.js"></script>
   <script type="text/javascript" src="/js/capture_gallery_controller.js"></script>
+  
 </head>
 <body>
 <div id="container">
@@ -16,7 +22,23 @@
   </div>
   <ul class="gallery">
   </ul>
+  <div class="detail">
+  </div>
 </div>
+<!-- TODO Make this a jquery template -->
+<div id="light" class="white_content">
+  <div id="canvasPreview">
+    <div id="nubs"></div>
+  </div>
+  <div id="controls">
+    Filter:<select id="filters"></select><br/>
+    <div class="sliders"></div>
+    <button class="save">Save</button>
+    <button class="discard">Close</button>
+  </div>
+</div>
+<div id="fade" class="black_overlay"></div>
+
 <script type="text/x-jquery-tmpl" id="moments-item-template">
   <li id="${_id}">
     <div>
@@ -25,10 +47,27 @@
       <span class="controls">
         <span class="delete"></span>
         <span class="download"></span>
+        <span class="effects"></span>
       </span>
     </div>
   </li>
 </script>
+
+<div id="edit">
+    <div id="edit-head">
+    	<h1>Edit My Hangout Moment</h1>
+    </div>
+    <div id="edit-body"></div>
+</div>
+<div id="close-tab"></div>
+
+
+
+<div class="no-captures">
+  <h1>You currently have no captures.</h1>
+  <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
+  <img src="../img/hangout-screenshot.png" alt="" />
+</div>
 <script>
 var controller = new CaptureGalleryController();
 controller.init();

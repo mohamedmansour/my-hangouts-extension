@@ -4,7 +4,7 @@
  * Mohamed Mansour (http://mohamedmansour.com) *
  * @constructor
  */
-GooglePlusAPI = function() {
+GooglePlusAPI = function(opt) {
   //------------------------ Constants --------------------------
   // Implemented API
   this.CIRCLE_API              = 'https://plus.google.com/u/0/_/socialgraph/lookup/circles/?m=true';
@@ -16,13 +16,11 @@ GooglePlusAPI = function() {
   this.PROPERTIES_MUTATE_API   = 'https://plus.google.com/u/0/_/socialgraph/mutate/properties/';
   this.DELETE_MUTATE_API       = 'https://plus.google.com/u/0/_/socialgraph/mutate/delete/';
   this.SORT_MUTATE_API         = 'https://plus.google.com/u/0/_/socialgraph/mutate/sortorder/';
-
   this.INITIAL_DATA_API        = 'https://plus.google.com/u/0/_/initialdata?key=14';
-
   this.PROFILE_GET_API         = 'https://plus.google.com/u/0/_/profiles/get/';
   this.PROFILE_SAVE_API        = 'https://plus.google.com/u/0/_/profiles/save?_reqid=0';
-
-  this.QUERY_API               = 'https://plus.google.com/u/0/_/s/query';
+  this.QUERY_API               = 'https://plus.google.com/u/0/_/s/';
+  this.LOOKUP_API              = 'https://plus.google.com/u/0/_/socialgraph/lookup/hovercards/';
   
   // Not Yet Implemented API
   this.CIRCLE_ACTIVITIES_API   = 'https://plus.google.com/u/0/_/stream/getactivities/'; // ?sp=[1,2,null,"7f2150328d791ede",null,null,null,"social.google.com",[]]
@@ -38,7 +36,8 @@ GooglePlusAPI = function() {
   this.MEMBER_SUGGESTION_API   = 'https://plus.google.com/u/0/_/socialgraph/lookup/circle_member_suggestions/'; // s=[[[null, null, "116805285176805120365"]]]&at=
 
 	//------------------------ Private Fields --------------------------
-  this._db = new PlusDB();
+  this._opt = opt || {};
+  this._db = this._opt.use_mockdb ? new MockDB() : new PlusDB();
 
   this._session = null;
   this._info = null;
@@ -87,8 +86,9 @@ GooglePlusAPI.prototype._requestService = function(callback, url, postData) {
     }
     else {
       var text = data.responseText;
-      var results = data.responseText.substring(4);
-      callback(self._parseJSON(results));
+      var uglyResults = data.responseText.substring(4);
+      var results = self._parseJSON(uglyResults);
+      callback(JSAPIHelper.isArray(results) ? results[0] : results);
     }
   };
   var xhr = $.ajax({
@@ -142,9 +142,11 @@ GooglePlusAPI.prototype._parseUser = function(element, extractCircles) {
     dirtyCircles.forEach(function(element, index) {
       cleanCircles.push(element[2][0]);
     });
+    return [user, cleanCircles];
   }
-
-  return [user, cleanCircles];
+  else {
+    return user;
+  }
 };
 
 /**
@@ -373,8 +375,7 @@ GooglePlusAPI.prototype.refreshFollowers = function(callback) {
 
     var personEntity = self._db.getPersonEntity();
     dirtyFollowers.forEach(function(element, index) {
-      var userTuple = self._parseUser(element);
-      var user = userTuple[0];
+      var user = self._parseUser(element);
       user.added_me = 'Y';
       onRecord(personEntity, user);
     });
@@ -407,10 +408,9 @@ GooglePlusAPI.prototype.refreshFindPeople = function(callback) {
       }
     };
 
-    var personEntity =self._db.getPersonEntity();
+    var personEntity = self._db.getPersonEntity();
     dirtyUsers.forEach(function(element, index) {
-      var userTuple = self._parseUser(element[0]);
-      var user = userTuple[0];
+      var user = self._parseUser(element[0]);
       onRecord(personEntity, user);
     });
   }, this.FIND_PEOPLE_API);
@@ -430,19 +430,25 @@ GooglePlusAPI.prototype.refreshInfo = function(callback) {
   var self = this;
   this._requestService(function(response) {
     var responseMap = self._parseJSON(response[1]);
-    info = {};
+    self._info = {};
     // Just get the fist result of the Map.
     for (var i in responseMap) {
       var detail = responseMap[i];
       var emailParse = detail[20].match(/(.+) <(.+)>/);
-      info.full_email = emailParse[0];
-      info.name = emailParse[1];
-      info.email = emailParse[2];
-      info.id = detail[0];
-      info.acl = '"' + (detail[1][14][0][0]).replace(/"/g, '\\"') + '"';
+      self._info.full_email = emailParse[0];
+      self._info.name = emailParse[1];
+      self._info.email = emailParse[2];
+      self._info.id = detail[0];
+      self._info.acl = '"' + (detail[1][14][0][0]).replace(/"/g, '\\"') + '"';
+      self._info.circles = detail[10][1].map(function(element) {
+        return {id: element[0], name: element[1]}
+      });
       break;
     }
-    self._fireCallback(callback, true);
+    self._fireCallback(callback, {
+      status: true,
+      data: self._info
+    });
   }, this.INITIAL_DATA_API);
 };
 
@@ -471,8 +477,7 @@ GooglePlusAPI.prototype.addPeople = function(callback, circle, users) {
       }
     };
     dirtyPeople.forEach(function(element, index) {
-      userTuple = self._parseUser(element);
-      var user = userTuple[0];
+      var user = self._parseUser(element);
       user.in_my_circle = 'Y';
       self._db.getPersonEntity().create(user, function(result) {
         self._db.getPersonCircleEntity().create({
@@ -616,6 +621,40 @@ GooglePlusAPI.prototype.getProfile = function(callback, id) {
 };
 
 /**
+ * Lookups the information, user and circle data for a specific
+ * user. The circle data is basically just the circle ID.
+ *
+ * @param {function(boolean)} callback
+ * @param {Array<string>} id The profile ID
+ */
+GooglePlusAPI.prototype.lookupUsers = function(callback, ids) {
+  var self = this;
+  var usersParam = [];
+  if (!JSAPIHelper.isArray(ids)) {
+    ids = [ids];
+  }
+  ids.forEach(function(element, i) {
+     usersParam.push('[null,null,"' + element + '"]');
+  });
+  var params = '?n=6&m=[[' + usersParam.join(', ') + ']]';
+  var data = 'at=' + this._getSession();
+  this._requestService(function(response) {
+    var usersArr = response[1];
+    var users = {};
+    usersArr.forEach(function(element, i) {
+      var userObj = self._parseUser(element[1], true);
+      var user = userObj[0];
+      var circles = userObj[1];
+      users[user.id] = {
+        data: user,
+        circles: circles
+      };
+    });
+    self._fireCallback(callback, users);
+  }, this.LOOKUP_API + params, data);
+};
+
+/**
  * Saves the profile information back to the current logged in user.
  *
  * TODO: complete this for the entire profile. This will just persist the introduction portion
@@ -650,12 +689,17 @@ GooglePlusAPI.prototype.saveProfile = function(callback, introduction) {
  * @param {Object} opt_extra Optional extra params:
  *                           category : 'best' | 'recent'
  *                           precache : | 1+
+ *                           burst    : false
+ *                           burst_size    : 8
  */
 GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
   var self = this;
   var extra = opt_extra || {};
   var category = extra.category == 'best' ? 1 : 2;
   var precache = extra.precache || 1;
+  var burst = extra.burst || false;
+  var burst_size = extra.burst_size || 8;
+  var type = 'query';
   query = query.replace(/"/g, '\\"'); // Escape only quotes for now.
   
   var data = 'srchrp=[["' + query + '",1,' + category + ',[1]]$SESSION_ID]&at=' + this._getSession();
@@ -663,7 +707,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
   
   var doRequest = function(searchResults) {
     self._requestService(function(response) {
-      var errorExists = response[1][1];
+      var errorExists = response[1];
       if (!errorExists) {
         self._fireCallback(callback, {
           status: false,
@@ -671,7 +715,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
         });
       } else {
         var streamID = response[1][1][2]; // Not Used.
-        var trends = response[1][3][0]; // Not Used.
+        var trends = response[1][3]; // Not Used.
         var dirtySearchResults = response[1][1][0][0];
         processedData = data.replace('$SESSION_ID', ',null,["' + streamID + '"]');
         dirtySearchResults.forEach(function(element, index) {
@@ -679,7 +723,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
           item.type = element[2].toLowerCase();
           item.time = element[30];
           item.url = self._buildProfileURLFromItem(element[21]);
-          item.public =  element[32] == '1';
+          item.is_public = (element[32] != '1');
           
           item.owner = {};
           item.owner.name = element[3];
@@ -735,11 +779,21 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
         else {
           self._fireCallback(callback, {
             status: true,
-            data: searchResults
+            data: searchResults,
+            type: type
           });
+          // Decide whether to do bursts or not.
+          if (burst) {
+            type = 'rt';
+            if (--burst_size > 0) {
+              setTimeout(function() {
+                doRequest([]);
+              }.bind(this), 2000);
+            }
+          }
         }
       }
-    }, self.QUERY_API, processedData);
+    }, self.QUERY_API + type, processedData);
   };
   
   var searchResults = [];
@@ -748,10 +802,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
 
 /**
  * @return {Object.<string, string>} The information from the user.
- *                                    - id
- *                                    - name
- *                                    - email
- *                                    - acl
+ *                                    - id | name | email | acl
  */
 GooglePlusAPI.prototype.getInfo = function() {
   return this._info;

@@ -28,10 +28,10 @@ CaptureEntity.prototype.tableDefinition = function() {
 
 /**
  * Backend that is responsible of handling captures.
+ * @param {Database} db The database backend.
  * @constructor
  */
-CaptureBackend = function() {
-  var db = openDatabase('My Hangouts', '1.0', 'my-hangouts', 10 * 1024 * 1024);
+CaptureBackend = function(db) {
   this.captureEntity = new CaptureEntity(db);
   this.tempCapture = {};
 };
@@ -81,7 +81,7 @@ CaptureBackend.prototype.deleteCapture = function(id, callback) {
  */
 CaptureBackend.prototype.findCapture = function(id, callback) {
   this.captureEntity.find(['_id', 'hangout', 'time', 'description', 'type',
-    'active', 'active_width', 'active_height'], {_id: id}, function(obj) {
+    'active', 'active_width', 'active_height','thumbnail_width', 'thumbnail_height'], {_id: id}, function(obj) {
     var status = obj.status && obj.data.length > 0;
     var result = status ? obj.data[0] : obj.data;
     var res = {

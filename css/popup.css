@@ -32,9 +32,36 @@ body, html {
   text-decoration: none;
   border-bottom: 1px dotted #eee;
 }
-#hangout-container {
+#popup-container {
   width: 600px;
   margin-top: 28px;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.popup-page {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+}
+
+#hangouts-container {
+  left: 0;
+}
+
+#options-container {
+  left: 600px;
+}
+
+#options-container h2 {
+  color: #4d90fe;
+  font-size: 18px;
+}
+
+#toggle-options {
+  display: inline-block;
 }
 .hangout-item {
   background-color: #eee;
