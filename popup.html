@@ -49,7 +49,7 @@
           ${html}
         </div>
       </div>
-      <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
+      <div class="hangout-button"><a class="button clickable" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
       <div class="hangout-participants">
         <ul>
         <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
