@@ -1,8 +1,8 @@
 /**
  * Testing mapping out hangout participants' locations.
  *
- * @author 
- * @constructor
+ * @author jbc
+ * 
  */
 
 MapController = function(popupController) {
@@ -23,33 +23,30 @@ MapController.prototype.bindUI = function() {
 
 MapController.prototype.load = function() {
 	var hangouts = this.popup.hangouts;
-	
+	var allParticipants = []; // TODO: cache and only look up/ remove detlas
  
 	if (hangouts.length > 0) {
 		for (var i = 0; i < hangouts.length; i++) {
 			var hangoutItem = hangouts[i];
-			this.addToMap(hangoutItem.owner, i*5000)
+			allParticipants.push(hangoutItem.owner.id);
 
 			for (var j = 0; j < hangoutItem.data.participants.length; j++) {
 				var participant = hangoutItem.data.participants[j];
-				this.addToMap(participant, j * 2000)
+				allParticipants.push(participant.id)
 			}
 		}
 	}
-};
+	var me = this;
+	this.bkg.plus.lookupUsers( function(users) { 
+		for( var i=0; i<allParticipants.length;i++ ){ 
+			var user = users[allParticipants[i]];
+			if(user.location) {
+				me.mapLocation(data.user.location);
+			}
+		}
+	}, allParticipants ); 
 
-MapController.prototype.addToMap = function ( participant, when  ) {
-	
-	self = this;
-	setTimeout( function() { 
-								self.bkg.plus.lookupUser( function(data) { 
-																		if ( data.user.location ) {
-																			self.mapLocation(data.user.location);
-																		}
-																			
-														}, participant.id ) 
-			}, when);
-}
+};
 
 MapController.prototype.mapLocation = function ( location ) {
 	console.log('location:'+location);
