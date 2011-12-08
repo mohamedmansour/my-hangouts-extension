@@ -1,4 +1,23 @@
 /**
+ * Mock Entity for testing.
+ */
+MockEntity = function(db, name) {};
+MockEntity.prototype.tableDefinition = function() {};
+MockEntity.prototype.initialize = function(callback) {callback({data: {}, status: true})};
+MockEntity.prototype.getWhereObject = function(callback) {callback({keys: [], values: []})};
+MockEntity.prototype.getName = function() {return 'mock'};
+MockEntity.prototype.drop = function(callback) {callback({data: {}, status: true})};
+MockEntity.prototype.create = function(obj, callback) {callback({data: {}, status: true})};
+MockEntity.prototype.clear = function(callback) {callback({data: {}, status: true})};
+MockEntity.prototype.fireCallback = function(obj, callback) {callback({data: {}, status: true})};
+MockEntity.prototype.destroy = function(id, callback) {callback({data: {}, status: true})};
+MockEntity.prototype.update = function(obj, callback) {callback({data: {}, status: true})};
+MockEntity.prototype.find = function(select, where, callback) {callback({data: {}, status: true})};
+MockEntity.prototype.findAll = function(callback) {callback({data: {}, status: true})};
+MockEntity.prototype.count = function(obj, callback) {callback({data: {}, status: true})};
+MockEntity.prototype.save = function(obj, callback) {callback({data: {}, status: true})};
+
+/**
  * Represents a table entity.
  *
  * @param {Object} db The active database.
@@ -32,11 +51,11 @@ AbstractEntity.prototype.initialize = function(callback) {
   for (var key in obj) {
     if (obj.hasOwnProperty(key)) {
       var val = obj[key];
-      if (_.isString(val)) {
+      if (JSAPIHelper.isString(val)) {
         sql.push(key + ' ' + val);
       }
       else if (key == 'unique') {
-          _.each(val, function(uniqueItem) {
+          val.forEach(function(uniqueItem, index) {
             sql.push('UNIQUE (' + uniqueItem.join(', ') + ')');
           });
       }
@@ -156,7 +175,7 @@ AbstractEntity.prototype.clear = function(callback) {
  */
 AbstractEntity.prototype.create = function(obj, callback) {
   var self = this;
-  if (!_.isArray(obj)) {
+  if (!JSAPIHelper.isArray(obj)) {
     obj = [obj];
   }
   this.db.transaction(function(tx) {
@@ -213,7 +232,7 @@ AbstractEntity.prototype.destroy = function(id, callback) {
  */
 AbstractEntity.prototype.update = function(obj, callback) {
   var self = this;
-  if (!_.isArray(obj)) {
+  if (!JSAPIHelper.isArray(obj)) {
     obj = [obj];
   }
 

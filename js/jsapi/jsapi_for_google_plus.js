@@ -4,7 +4,7 @@
  * Mohamed Mansour (http://mohamedmansour.com) *
  * @constructor
  */
-GooglePlusAPI = function() {
+GooglePlusAPI = function(opt) {
   //------------------------ Constants --------------------------
   // Implemented API
   this.CIRCLE_API              = 'https://plus.google.com/u/0/_/socialgraph/lookup/circles/?m=true';
@@ -36,7 +36,8 @@ GooglePlusAPI = function() {
   this.MEMBER_SUGGESTION_API   = 'https://plus.google.com/u/0/_/socialgraph/lookup/circle_member_suggestions/'; // s=[[[null, null, "116805285176805120365"]]]&at=
 
 	//------------------------ Private Fields --------------------------
-  this._db = new PlusDB();
+  this._opt = opt || {};
+  this._db = this._opt.use_mockdb ? new MockDB() : new PlusDB();
 
   this._session = null;
   this._info = null;
@@ -429,19 +430,25 @@ GooglePlusAPI.prototype.refreshInfo = function(callback) {
   var self = this;
   this._requestService(function(response) {
     var responseMap = self._parseJSON(response[1]);
-    info = {};
+    self._info = {};
     // Just get the fist result of the Map.
     for (var i in responseMap) {
       var detail = responseMap[i];
       var emailParse = detail[20].match(/(.+) <(.+)>/);
-      info.full_email = emailParse[0];
-      info.name = emailParse[1];
-      info.email = emailParse[2];
-      info.id = detail[0];
-      info.acl = '"' + (detail[1][14][0][0]).replace(/"/g, '\\"') + '"';
+      self._info.full_email = emailParse[0];
+      self._info.name = emailParse[1];
+      self._info.email = emailParse[2];
+      self._info.id = detail[0];
+      self._info.acl = '"' + (detail[1][14][0][0]).replace(/"/g, '\\"') + '"';
+      self._info.circles = detail[10][1].map(function(element) {
+        return {id: element[0], name: element[1]}
+      });
       break;
     }
-    self._fireCallback(callback, true);
+    self._fireCallback(callback, {
+      status: true,
+      data: self._info
+    });
   }, this.INITIAL_DATA_API);
 };
 
@@ -618,18 +625,32 @@ GooglePlusAPI.prototype.getProfile = function(callback, id) {
  * user. The circle data is basically just the circle ID.
  *
  * @param {function(boolean)} callback
- * @param {string} id The profile ID
+ * @param {Array<string>} id The profile ID
  */
-GooglePlusAPI.prototype.lookupUser = function(callback, id) {
+GooglePlusAPI.prototype.lookupUsers = function(callback, ids) {
   var self = this;
-  var params = '?n=6&m=[[[null,null,"' + id + '"]]]';
+  var usersParam = [];
+  if (!JSAPIHelper.isArray(ids)) {
+    ids = [ids];
+  }
+  ids.forEach(function(element, i) {
+     usersParam.push('[null,null,"' + element + '"]');
+  });
+  var params = '?n=6&m=[[' + usersParam.join(', ') + ']]';
   var data = 'at=' + this._getSession();
   this._requestService(function(response) {
-    var userObj = self._parseUser(response[1][0][1], true);
-    self._fireCallback(callback, {
-      user: userObj[0],
-      circles: userObj[1]
+    var usersArr = response[1];
+    var users = {};
+    usersArr.forEach(function(element, i) {
+      var userObj = self._parseUser(element[1], true);
+      var user = userObj[0];
+      var circles = userObj[1];
+      users[user.id] = {
+        data: user,
+        circles: circles
+      };
     });
+    self._fireCallback(callback, users);
   }, this.LOOKUP_API + params, data);
 };
 
@@ -781,10 +802,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
 
 /**
  * @return {Object.<string, string>} The information from the user.
- *                                    - id
- *                                    - name
- *                                    - email
- *                                    - acl
+ *                                    - id | name | email | acl
  */
 GooglePlusAPI.prototype.getInfo = function() {
   return this._info;
