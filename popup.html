@@ -5,12 +5,16 @@
   <link rel="stylesheet" type="text/css" href="/css/common.css" />
   <link rel="stylesheet" type="text/css" href="/css/chosen.css" />
   <link rel="stylesheet" type="text/css" href="/css/popup.css" />
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyDnMniG_y2Fo35Tw28QnR4OeUTVBMXIWi4&sensor=true"></script>
   <script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script>
   <script type="text/javascript" src="/js/libs/chosen.jquery.min.js"></script>
   <script type="text/javascript" src="/js/options_controller.js"></script>
+    <script type="text/javascript" src="/js/map_controller.js"></script>
   <script type="text/javascript" src="/js/popup_controller.js"></script>
+
+  
 </head>
 <body>
   <div id="hangout-bar">
@@ -23,10 +27,16 @@
       <span><a href="#" id="toggle-options">view options</a></span>
       <span>|</span>
       <span><a href="capture_gallery.html" class="clickable">view captured moments gallery</a></span>
+      <span>|</span>
+      <span><a href="#" id="hangouts-map">hangouts map</a></span>
     </div>
   </div>
   <div id="popup-container">
     <div id="hangouts-container" class="popup-page"></div>
+    <div id="map-container" class="popup-page">
+		<div id="map_canvas" style="width: 100%; height: 100%"> <h2>Hangout map here</h2></div>
+		
+    </div>    
     <div id="options-container" class="popup-page">
       <h2>Circle preferences</h2>
       <select id="option-circles" data-placeholder="Choose your Circles..." multiple style="width: 100%;"></select>
@@ -49,7 +59,7 @@
           ${html}
         </div>
       </div>
-      <div class="hangout-button"><a class="button clickable" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
+      <div class="hangout-button"><a class="button" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
       <div class="hangout-participants">
         <ul>
         <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
