@@ -60,9 +60,20 @@ body, html {
   font-size: 18px;
 }
 
+
 #toggle-options {
   display: inline-block;
 }
+
+#map-container {
+  left: 600px;
+}
+
+#map-container h2 {
+  color: #4d90fe;
+  font-size: 18px;
+}
+
 .hangout-item {
   background-color: #eee;
   border-radius: 5px;
