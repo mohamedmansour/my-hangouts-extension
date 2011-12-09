@@ -23,9 +23,29 @@ PopupController.prototype.init = function() {
 
 PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
-  $('#menu-options').click(this.onMenuOptionsClick.bind(this));
-  $('#menu-maps').click(this.onMenuMapsClick.bind(this));
-  $('#menu-hangouts').click(this.onMenuHangoutsClick.bind(this));
+  $('.menu-item').click(this.onMenuItemClick.bind(this));
+};
+
+PopupController.prototype.onMenuItemClick = function(e) {
+  var id = e.target.id;
+  switch (id) {
+    case 'menu-extensionpage':
+      chrome.tabs.create({url: 'https://plus.google.com/116935358560979346551/about'});
+      break;
+    case 'menu-gallery':
+      chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
+      break;
+    case 'menu-maps':
+      this.map.load();
+      this.togglePage('maps');
+      break;
+    case 'menu-options':
+      this.togglePage('options');
+      break;
+    case 'menu-hangouts':
+      this.togglePage('hangouts');
+      break;
+  }
 };
 
 /**
@@ -150,59 +170,14 @@ PopupController.prototype.relayout = function() {
 };
 
 /**
- * When the options has been clicked.
- */
-PopupController.prototype.onMenuOptionsClick = function(e) {
-  e.preventDefault();
-  this.togglePage();
-};
-
-/**
- * When the options has been clicked.
- */
-PopupController.prototype.onMenuHangoutsClick = function(e) {
-  e.preventDefault();
-  this.togglePage();
-};
-
-/**
- * When the hangout maps has been clicked.
- */
-PopupController.prototype.onMenuMapsClick = function(e) {
-  e.preventDefault();
-  this.map.load();
-  this.toggleMapPage();
-};
-
-
-/**
  * Toggle the page from options and hangouts.
  */
-PopupController.prototype.togglePage = function() {
-  if (this.currentPage == 'hangouts') {
-    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
-  }
-  else {  
-    $('#options-container').animate({left: 600, overflow: 'hidden'}, 500);
-  }
-  this.currentPage = (this.currentPage == 'hangouts' ? 'options' : 'hangouts');
+PopupController.prototype.togglePage = function(newpage) {
+  $('#' + this.currentPage + '-container').animate({left: -600, overflow: 'hidden'}, 500);
+  $('#menu-' + this.currentPage).toggleClass('selected');
+  this.currentPage = newpage;
   $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
-  this.relayout();
-};
-
-/**
- * Toggle the page from options and hangouts.
- */
-PopupController.prototype.toggleMapPage = function() {
-  $('#hangouts-map').text('view ' + this.currentPage);
-  if (this.currentPage == 'hangouts') {
-    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
-  }
-  else {  
-    $('#map-container').animate({left: 600, overflow: 'hidden'}, 500);
-  }
-  this.currentPage = (this.currentPage == 'hangouts' ? 'map' : 'hangouts');
-  $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
+  $('#menu-' + this.currentPage).toggleClass('selected');
   this.relayout();
 };
 
