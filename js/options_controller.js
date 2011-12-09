@@ -34,9 +34,4 @@ OptionsController.prototype.bindUI = function() {
   hangoutOpenWindowDOM.change(function(e) {
     self.settings.open_hangout_new_window = $(e.target).is(':checked');
   });
-  
-  // Options.
-  $('#option-go-back').click(function(e) {
-    self.popup.togglePage();
-  });
 };
