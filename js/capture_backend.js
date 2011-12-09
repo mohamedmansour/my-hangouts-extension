@@ -1,6 +1,7 @@
 /**
  * Database backend for capturing storing.
  *
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  * @constructor
  */
 CaptureEntity = function(db) {

@@ -1,3 +1,8 @@
+/**
+ * Options controller.
+ *
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
+ */
 OptionsController = function(popupController) {
   this.popup = popupController;
   this.settings = this.popup.bkg.settings;
@@ -33,10 +38,5 @@ OptionsController.prototype.bindUI = function() {
   hangoutOpenWindowDOM.prop('checked', this.settings.open_hangout_new_window);
   hangoutOpenWindowDOM.change(function(e) {
     self.settings.open_hangout_new_window = $(e.target).is(':checked');
-  });
-  
-  // Options.
-  $('#option-go-back').click(function(e) {
-    self.popup.togglePage();
   });
 };

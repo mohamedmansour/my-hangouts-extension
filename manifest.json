@@ -1,7 +1,7 @@
 {
   "name": "My Hangouts for Google Plus",
-  "version": "3.2.0",
-  "description": "Quick view and capture of all the active hangouts in your stream. Doesn't send any of your information to outside servers.",
+  "version": "4.0.0",
+  "description": "A better way to enjoy Hangouts on Google+ with Screen Captures and Editing, Maps, Circle Watching, Statistics, for public and limited hangouts!",
   "icons": {
     "16": "img/icon16.png",
     "32": "img/icon32.png",

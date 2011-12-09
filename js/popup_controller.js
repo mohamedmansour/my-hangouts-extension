@@ -8,6 +8,14 @@ PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.options = new OptionsController(this);
   this.map = new MapController(this);
+<<<<<<< HEAD
+=======
+  this.navigationPositions = {
+    hangouts: 1,
+    maps: 2,
+    options: 3
+  };
+>>>>>>> upstream/master
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
 };
@@ -22,9 +30,36 @@ PopupController.prototype.init = function() {
 };
 
 PopupController.prototype.bindUI = function() {
+<<<<<<< HEAD
   $('#version').text(this.bkg.settings.version);
   $('#toggle-options').click(this.onOptionsClick.bind(this));
   $('#hangouts-map').click(this.onHangoutMapsClick.bind(this));
+=======
+  $('#version').text('version ' + this.bkg.settings.version);
+  $('.menu-item').click(this.onMenuItemClick.bind(this));
+};
+
+PopupController.prototype.onMenuItemClick = function(e) {
+  var id = e.target.id;
+  switch (id) {
+    case 'menu-extensionpage':
+      chrome.tabs.create({url: 'https://plus.google.com/116935358560979346551/about'});
+      break;
+    case 'menu-gallery':
+      chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
+      break;
+    case 'menu-maps':
+      this.map.load();
+      this.togglePage('maps');
+      break;
+    case 'menu-options':
+      this.togglePage('options');
+      break;
+    case 'menu-hangouts':
+      this.togglePage('hangouts');
+      break;
+  }
+>>>>>>> upstream/master
 };
 
 /**
@@ -149,6 +184,7 @@ PopupController.prototype.relayout = function() {
 };
 
 /**
+<<<<<<< HEAD
  * When the options has been clicked.
  */
 PopupController.prototype.onOptionsClick = function(e) {
@@ -167,21 +203,24 @@ PopupController.prototype.onHangoutMapsClick = function(e) {
 
 
 /**
+=======
+>>>>>>> upstream/master
  * Toggle the page from options and hangouts.
  */
-PopupController.prototype.togglePage = function() {
-  $('#toggle-options').text('view ' + this.currentPage);
-  if (this.currentPage == 'hangouts') {
-    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
+PopupController.prototype.togglePage = function(newpage) {
+  var goLeftBy = -600;
+  if (this.navigationPositions[newpage] < this.navigationPositions[this.currentPage]) {
+    goLeftBy = 600;
   }
-  else {  
-    $('#options-container').animate({left: 600, overflow: 'hidden'}, 500);
-  }
-  this.currentPage = (this.currentPage == 'hangouts' ? 'options' : 'hangouts');
+  $('#' + this.currentPage + '-container').animate({left: goLeftBy, overflow: 'hidden'}, 500);
+  $('#menu-' + this.currentPage).toggleClass('selected');
+  this.currentPage = newpage;
   $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
+  $('#menu-' + this.currentPage).toggleClass('selected');
   this.relayout();
 };
 
+<<<<<<< HEAD
 /**
  * Toggle the page from options and hangouts.
  */
@@ -198,3 +237,5 @@ PopupController.prototype.toggleMapPage = function() {
   this.relayout();
 };
 
+=======
+>>>>>>> upstream/master
