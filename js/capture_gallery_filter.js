@@ -4,6 +4,7 @@
  *
  * @author James Williams 2011 (http://jameswilliams.be)
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
+ * @author Rayan Bouajram 2011 (http://rayanbouajram.com)
  */
 CaptureEffectsController = function(galleryController) {
   this.galleryController = galleryController;
@@ -23,6 +24,7 @@ CaptureEffectsController.prototype.init = function() {
 
 CaptureEffectsController.prototype.open = function(id) {
   var self = this;
+  self.openEditMode();
 
   // Retrieve larger image.
   chrome.extension.sendRequest({
@@ -40,16 +42,18 @@ CaptureEffectsController.prototype.open = function(id) {
       self.texture = self.glfxCanvas.texture(originalImage);
       self.getEffectCanvas().update();
       $('#canvasPreview').append(self.glfxCanvas);
-      $('#light').show();
-      $('#fade').show();
+//      $('#light').show();
+//      $('#fade').show();
     };
   });
 };
 
 CaptureEffectsController.prototype.dispose = function() {
   $(this.glfxCanvas).remove();
-  $('#light').hide();
-  $('#fade').hide();
+//  $('#light').hide();
+//  $('#fade').hide();
+  $('#edit').fadeOut(200);
+  $('li').delay(400).fadeIn(200).removeClass('select');
 };
 
 CaptureEffectsController.prototype.onSaveClicked = function() {
@@ -278,6 +282,13 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
       }
     }
   }
+};
+CaptureEffectsController.prototype.openEditMode = function() {
+  $(document).delegate("li", "click", function() {
+	  $(this).addClass('select');
+	  $('li').fadeOut(800);
+	  $('#edit').delay(600).fadeIn(400);
+  });
 };
 
 /**
