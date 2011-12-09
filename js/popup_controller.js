@@ -8,6 +8,11 @@ PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.options = new OptionsController(this);
   this.map = new MapController(this);
+  this.navigationPositions = {
+    hangouts: 1,
+    maps: 2,
+    options: 3
+  };
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
 };
@@ -173,7 +178,11 @@ PopupController.prototype.relayout = function() {
  * Toggle the page from options and hangouts.
  */
 PopupController.prototype.togglePage = function(newpage) {
-  $('#' + this.currentPage + '-container').animate({left: -600, overflow: 'hidden'}, 500);
+  var goLeftBy = -600;
+  if (this.navigationPositions[newpage] < this.navigationPositions[this.currentPage]) {
+    goLeftBy = 600;
+  }
+  $('#' + this.currentPage + '-container').animate({left: goLeftBy, overflow: 'hidden'}, 500);
   $('#menu-' + this.currentPage).toggleClass('selected');
   this.currentPage = newpage;
   $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
