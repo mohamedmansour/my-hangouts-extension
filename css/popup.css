@@ -5,23 +5,37 @@ body, html {
   overflow-x: hidden;
 }
 #hangout-bar {
-  background-color: #444;
-  height: 20px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  padding: 3px 0 0 10px;
+  background-color: #2D2D2D;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  margin: 0;
+  padding: 0;
   position: fixed;
   top: 0px;
   left: 0px;
   z-index: 9999;
-  width: 98%;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+}
+.menu-item {
+  display: inline-block;
+  height: 27px;
+  border-top: 3px solid transparent;
+}
+.menu-item:hover {
+  background-color: #4a4a4a;
+}
+.menu-item.selected {
+  border-color: #dd4b39;
 }
 #hangout-bar-left {
   float: left;
+  margin-left: 10px;
 }
 #hangout-bar-right {
   float: right;
-  padding-right: 10px;
+  margin-right: 10px;
 }
 #hangout-bar span {
   font-family: 'Droid Sans', sans-serif;
@@ -30,7 +44,8 @@ body, html {
 #hangout-bar a, #hangout-bar a:active, #hangout-bar a:visited, #hangout-bar a:link {
   color: white;
   text-decoration: none;
-  border-bottom: 1px dotted #eee;
+  display: inline-block;
+  padding: 0 5px;
 }
 #popup-container {
   width: 600px;
@@ -38,6 +53,9 @@ body, html {
   position: relative;
   top: 0;
   left: 0;
+}
+#version {
+  font-size: 0.8em;
 }
 .popup-page {
   width: 100%;
@@ -53,10 +71,6 @@ body, html {
 
 #hangouts-container {
   left: 0;
-}
-
-#toggle-options {
-  display: inline-block;
 }
 
 #map-canvas {

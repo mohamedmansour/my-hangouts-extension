@@ -22,9 +22,10 @@ PopupController.prototype.init = function() {
 };
 
 PopupController.prototype.bindUI = function() {
-  $('#version').text(this.bkg.settings.version);
-  $('#toggle-options').click(this.onOptionsClick.bind(this));
-  $('#hangouts-map').click(this.onHangoutMapsClick.bind(this));
+  $('#version').text('version ' + this.bkg.settings.version);
+  $('#menu-options').click(this.onMenuOptionsClick.bind(this));
+  $('#menu-maps').click(this.onMenuMapsClick.bind(this));
+  $('#menu-hangouts').click(this.onMenuHangoutsClick.bind(this));
 };
 
 /**
@@ -151,7 +152,15 @@ PopupController.prototype.relayout = function() {
 /**
  * When the options has been clicked.
  */
-PopupController.prototype.onOptionsClick = function(e) {
+PopupController.prototype.onMenuOptionsClick = function(e) {
+  e.preventDefault();
+  this.togglePage();
+};
+
+/**
+ * When the options has been clicked.
+ */
+PopupController.prototype.onMenuHangoutsClick = function(e) {
   e.preventDefault();
   this.togglePage();
 };
@@ -159,7 +168,7 @@ PopupController.prototype.onOptionsClick = function(e) {
 /**
  * When the hangout maps has been clicked.
  */
-PopupController.prototype.onHangoutMapsClick = function(e) {
+PopupController.prototype.onMenuMapsClick = function(e) {
   e.preventDefault();
   this.map.load();
   this.toggleMapPage();
@@ -170,7 +179,6 @@ PopupController.prototype.onHangoutMapsClick = function(e) {
  * Toggle the page from options and hangouts.
  */
 PopupController.prototype.togglePage = function() {
-  $('#toggle-options').text('view ' + this.currentPage);
   if (this.currentPage == 'hangouts') {
     $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
   }
