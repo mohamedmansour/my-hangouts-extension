@@ -2,12 +2,13 @@
  * Updater State Machine to execute different states each iteration.
  *
  * @param {BackgroundController} controller The background controller.
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  */
 HangoutUpdater = function(controller) {
   this.controller = controller;
   this.currentState = 0;
   this.maxState = 1;
-  
+  this.circleNotifier = new CircleNotifier(this);
   this.errorCount = 0;
   this.error = false;
   this.cache = {};
@@ -72,6 +73,8 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         // Update the hangouts collection.
         self.hangouts[cache.index] = hangout;
 
+        // Notify
+        self.circleNotifier.notify(hangout);
         continue;
       }
       hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >=0;
@@ -82,6 +85,9 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         index: self.hangouts.length - 1,
         is_public: hangout.is_public
       };
+      
+      // Notify
+      self.circleNotifier.notify(hangout);
     }
 
     // Go through the hangouts we have and remove any that were returned not active.

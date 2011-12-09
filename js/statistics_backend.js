@@ -1,6 +1,7 @@
 /**
  * Database backend for hangout statistics.
  *
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  * @constructor
  */
 StatisticsEntity = function(db) {

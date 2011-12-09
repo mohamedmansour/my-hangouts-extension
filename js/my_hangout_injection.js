@@ -1,6 +1,7 @@
 /**
  * Hangout Injection. Makes sense to abstract it out here, but keep it simpler.
  *
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  * @constructor
  */
 MyHangoutInjection = function() {

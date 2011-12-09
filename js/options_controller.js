@@ -1,3 +1,8 @@
+/**
+ * Options controller.
+ *
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
+ */
 OptionsController = function(popupController) {
   this.popup = popupController;
   this.settings = this.popup.bkg.settings;

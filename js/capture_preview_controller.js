@@ -2,6 +2,7 @@
  * Capture Moment controller to display the preview
  * for the hangout.
  *
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  * @constructor
  */
 CapturePreviewController = function() {

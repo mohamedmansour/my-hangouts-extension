@@ -2,7 +2,7 @@
  * Testing mapping out hangout participants' locations.
  *
  * @author jbc
- * 
+ * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  */
 
 MapController = function(popupController) {
