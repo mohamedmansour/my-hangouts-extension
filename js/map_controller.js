@@ -26,41 +26,46 @@ MapController.prototype.bindUI = function() {
 
 
 MapController.prototype.load = function() {
-	var hangouts = this.popup.hangouts;
-	var allParticipants = []; // TODO: cache and only look up/ remove detlas
+  var hangouts = this.popup.hangouts;
+  var allParticipants = []; // TODO: cache and only look up/ remove detlas
  
-	if (hangouts.length > 0) {
-		for (var i = 0; i < hangouts.length; i++) {
-			var hangoutItem = hangouts[i];
-			allParticipants.push(hangoutItem.owner.id);
+  if (hangouts.length > 0) {
+    for (var i = 0; i < hangouts.length; i++) {
+      var hangoutItem = hangouts[i];
+      allParticipants.push(hangoutItem.owner.id);
 
-			for (var j = 0; j < hangoutItem.data.participants.length; j++) {
-				var participant = hangoutItem.data.participants[j];
-				allParticipants.push(participant.id)
-			}
-		}
-	}
-	var self = this;
-	this.bkg.plus.lookupUsers( function(users) { 
-		for( var i=0; i<allParticipants.length;i++ ){ 
-			var user = users[allParticipants[i]];
-			if(user.location) {
-				self.mapLocation(data.user.location);
-			}
-		}
-	}, allParticipants);
+      for (var j = 0; j < hangoutItem.data.participants.length; j++) {
+        var participant = hangoutItem.data.participants[j];
+        allParticipants.push(participant.id)
+      }
+    }
+  }
+  var self = this;
+  
+  // TODO: Make a preloader here since it takes time.
+  this.bkg.plus.lookupUsers(function(users) {
+    for (var i=0; i < allParticipants.length; i++ ){ 
+      var user = users[allParticipants[i]];
+      if (user.data.location) {
+        self.mapLocation(user.data.location);
+      }
+    }
+  }, allParticipants);
 };
 
 MapController.prototype.mapLocation = function ( location ) {
-	console.log('location:'+location);
-	var coder = new google.maps.Geocoder();
-	var self = this;
-  coder.geocode({ address: location }, 
-    function(response){
+  var self = this;
+  var coder = new google.maps.Geocoder();
+  coder.geocode({address: location}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      console.log('location: '+ location, results);
       var marker = new google.maps.Marker({
         map: self.map,
-        location: response[0].geometry.location
+        location: results[0].geometry.location
       });
     }
-  );
+    else {
+      console.error('location: '+ location, status);
+    }
+  });
 };
