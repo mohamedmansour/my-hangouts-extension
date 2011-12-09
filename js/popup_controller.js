@@ -8,14 +8,11 @@ PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.options = new OptionsController(this);
   this.map = new MapController(this);
-<<<<<<< HEAD
-=======
   this.navigationPositions = {
     hangouts: 1,
     maps: 2,
     options: 3
   };
->>>>>>> upstream/master
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
 };
@@ -30,11 +27,6 @@ PopupController.prototype.init = function() {
 };
 
 PopupController.prototype.bindUI = function() {
-<<<<<<< HEAD
-  $('#version').text(this.bkg.settings.version);
-  $('#toggle-options').click(this.onOptionsClick.bind(this));
-  $('#hangouts-map').click(this.onHangoutMapsClick.bind(this));
-=======
   $('#version').text('version ' + this.bkg.settings.version);
   $('.menu-item').click(this.onMenuItemClick.bind(this));
 };
@@ -49,7 +41,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
       break;
     case 'menu-maps':
-      this.map.load();
+	  this.map.addMarkersFromCache();
       this.togglePage('maps');
       break;
     case 'menu-options':
@@ -59,7 +51,6 @@ PopupController.prototype.onMenuItemClick = function(e) {
       this.togglePage('hangouts');
       break;
   }
->>>>>>> upstream/master
 };
 
 /**
@@ -184,27 +175,6 @@ PopupController.prototype.relayout = function() {
 };
 
 /**
-<<<<<<< HEAD
- * When the options has been clicked.
- */
-PopupController.prototype.onOptionsClick = function(e) {
-  e.preventDefault();
-  this.togglePage();
-};
-
-/**
- * When the hangout maps has been clicked.
- */
-PopupController.prototype.onHangoutMapsClick = function(e) {
-  e.preventDefault();
-  this.map.load();
-  this.toggleMapPage();
-};
-
-
-/**
-=======
->>>>>>> upstream/master
  * Toggle the page from options and hangouts.
  */
 PopupController.prototype.togglePage = function(newpage) {
@@ -220,22 +190,3 @@ PopupController.prototype.togglePage = function(newpage) {
   this.relayout();
 };
 
-<<<<<<< HEAD
-/**
- * Toggle the page from options and hangouts.
- */
-PopupController.prototype.toggleMapPage = function() {
-  $('#hangouts-map').text('view ' + this.currentPage);
-  if (this.currentPage == 'hangouts') {
-    $('#hangouts-container').animate({left: -600, overflow: 'hidden'}, 500);
-  }
-  else {  
-    $('#map-container').animate({left: 600, overflow: 'hidden'}, 500);
-  }
-  this.currentPage = (this.currentPage == 'hangouts' ? 'map' : 'hangouts');
-  $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
-  this.relayout();
-};
-
-=======
->>>>>>> upstream/master

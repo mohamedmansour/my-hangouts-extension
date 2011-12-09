@@ -77,20 +77,6 @@ body, html {
   font-size: 18px;
 }
 
-<<<<<<< HEAD
-
-#toggle-options {
-  display: inline-block;
-}
-
-#map-container {
-  left: 600px;
-}
-
-#map-container h2 {
-  color: #4d90fe;
-  font-size: 18px;
-=======
 #hangouts-container {
   left: 0;
 }
@@ -98,7 +84,6 @@ body, html {
 #map-canvas {
   width: 98%;
   height: 250px;
->>>>>>> upstream/master
 }
 
 .hangout-item {
@@ -248,3 +233,4 @@ body, html {
   background-color: #fff;
   color: #444;
 }
+
