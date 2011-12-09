@@ -9,7 +9,11 @@ MapController = function(popupController) {
   this.popup = popupController;
   this.bkg = this.popup.bkg.controller;
   var latlong = new google.maps.LatLng(-34.397, 150.644);
-  this.map = new google.maps.Map( $('map_canvas'), {zoom: 8, center:latlong,   mapTypeId: google.maps.MapTypeId.ROADMAP} );
+  this.map = new google.maps.Map($('#map-canvas')[0], {
+    zoom: 8,
+    center: latlong,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
 };
 
 MapController.prototype.init = function() {
@@ -36,25 +40,27 @@ MapController.prototype.load = function() {
 			}
 		}
 	}
-	var me = this;
+	var self = this;
 	this.bkg.plus.lookupUsers( function(users) { 
 		for( var i=0; i<allParticipants.length;i++ ){ 
 			var user = users[allParticipants[i]];
 			if(user.location) {
-				me.mapLocation(data.user.location);
+				self.mapLocation(data.user.location);
 			}
 		}
-	}, allParticipants ); 
-
+	}, allParticipants);
 };
 
 MapController.prototype.mapLocation = function ( location ) {
 	console.log('location:'+location);
 	var coder = new google.maps.Geocoder();
 	var self = this;
-    coder.geocode({ address: location } , 
-				function(response){
-						var marker = new google.maps.Marker({ map:self.map, location:response[0].geometry.location } );
-					} );		
-	
+  coder.geocode({ address: location }, 
+    function(response){
+      var marker = new google.maps.Marker({
+        map: self.map,
+        location: response[0].geometry.location
+      });
+    }
+  );
 };

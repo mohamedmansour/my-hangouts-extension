@@ -42,36 +42,26 @@ body, html {
 .popup-page {
   width: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
+  left: 600px;
   overflow-x: hidden;
+}
+
+.popup-page h2 {
+  color: #4d90fe;
+  font-size: 18px;
 }
 
 #hangouts-container {
   left: 0;
 }
 
-#options-container {
-  left: 600px;
-}
-
-#options-container h2 {
-  color: #4d90fe;
-  font-size: 18px;
-}
-
-
 #toggle-options {
   display: inline-block;
 }
 
-#map-container {
-  left: 600px;
-}
-
-#map-container h2 {
-  color: #4d90fe;
-  font-size: 18px;
+#map-canvas {
+  width: 98%;
+  height: 250px;
 }
 
 .hangout-item {
