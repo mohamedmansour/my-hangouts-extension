@@ -30,7 +30,7 @@ MapController.prototype.init = function() {
 };
 
 MapController.prototype.bindUI = function() {
-	this.startUpdates();
+
 };
 
 MapController.prototype.startUpdates = function() {
@@ -38,13 +38,13 @@ MapController.prototype.startUpdates = function() {
    var self = this;
    this.peopleInterval = setInterval(function() {
         self.loadPeople();
-    }, 5000);
+    }, 2000);
     this.locationInterval = setInterval(function() {
         self.loadLocations();
-    }, 10000);
+    }, 2500);
     this.markersInterval = setInterval(function() {
         self.addMarkersFromCache();
-    }, 15000);
+    }, 2500);
 };
 
 MapController.prototype.stopUpdates = function() {
