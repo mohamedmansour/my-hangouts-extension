@@ -41,7 +41,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
       break;
     case 'menu-maps':
-      this.map.load();
+	  this.map.addMarkersFromCache();
       this.togglePage('maps');
       break;
     case 'menu-options':
