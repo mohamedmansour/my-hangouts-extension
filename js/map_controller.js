@@ -20,7 +20,10 @@ MapController = function(popupController) {
         people: {}
     };
     
+	this.imageSize  = new google.maps.Size(20,20);
+    
     this.startUpdates();
+
     
  };
 
@@ -148,7 +151,8 @@ MapController.prototype.addMarkersFromCache = function() {
                     position: locationCacheItem.geometry.location
                 });
                 marker.setMap(this.map);
-    
+				mImage = new google.maps.MarkerImage(personCacheItem.data.photo, this.imageSize,null,null, this.imageSize);
+				marker.setIcon(mImage);
 				// TODO: click to join hangout :
 				//gogle.maps.event.addListener(marker, 'click', function() {
 				//						join the hangout
@@ -161,7 +165,7 @@ MapController.prototype.addMarkersFromCache = function() {
 
 
 /*
- *     Return an arrary if g+ ids for every person in all we know about hangouts.
+ *     Return an array of g+ ids for every person in all we know about hangouts.
  */
 MapController.prototype.getAllParticipants = function() {
     var hangouts = this.popup.hangouts;
