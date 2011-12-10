@@ -147,7 +147,7 @@ MapController.prototype.addMarkersFromCache = function() {
             var locationCacheItem = this.cache.location[personCacheItem.address];
             if (locationCacheItem) {
                 var marker = new google.maps.Marker({
-					title:personCacheItem.data.name,
+					title:personCacheItem.data.name+', '+locationCacheItem.formatted_address,
                     position: locationCacheItem.geometry.location
                 });
                 marker.setMap(this.map);
