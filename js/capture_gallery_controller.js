@@ -17,8 +17,6 @@ CaptureGalleryController = function() {
 CaptureGalleryController.prototype.init = function() {
   this.renderGallery();
   this.effectsController.init();
-  // TODO(rboujaram) This needs to move somewhere else.
-  //this.toggleEditMode();
 };
 
 /**
@@ -85,19 +83,4 @@ CaptureGalleryController.prototype.downloadCapture = function(e) {
 CaptureGalleryController.prototype.showEffectsWindow = function(e) {
   var container = $(e.target).parent().parent().parent();
   this.effectsController.open(container.attr('id'));
-};
-
-CaptureGalleryController.prototype.toggleEditMode = function() {
-  $(document).delegate("li", "click", function() {
-	  $(this).addClass('select');
-	  $('.no-captures').fadeOut();
-	  $('li').fadeOut(800);
-	  $('#edit').delay(600).fadeIn(400);
-	  $('#close-tab').delay(800).fadeIn();
-  });
-  $('#close-tab').click(function() {
-	  $(this).fadeOut(200);
-	  $('#edit').delay(200).fadeOut(200);
-	  $('li').delay(400).fadeIn(200).removeClass('select');
-  });
 };
