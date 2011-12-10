@@ -26,19 +26,23 @@
   </div>
 </div>
 <!-- TODO Make this a jquery template -->
-<div id="light" class="white_content">
-  <div id="canvasPreview">
-    <div id="nubs"></div>
-  </div>
-  <div id="controls">
-    Filter:<select id="filters"></select><br/>
-    <div class="sliders"></div>
-    <button class="save">Save</button>
-    <button class="discard">Close</button>
-  </div>
+<div id="edit">
+    <div id="edit-head">
+    	<h1>Edit My Hangout Moment</h1>
+    </div>
+    <div id="edit-body">
+    <!-- TODO Make this a jquery template -->
+      <div id="canvasPreview">
+        <div id="nubs"></div>
+      </div>
+      <div id="controls">
+        Filter:<select id="filters"></select><br/>
+        <div class="sliders"></div>
+        <button class="save">Save</button>
+        <button class="discard">Close</button>
+      </div>
+    </div>
 </div>
-<div id="fade" class="black_overlay"></div>
-
 <script type="text/x-jquery-tmpl" id="moments-item-template">
   <li id="${_id}">
     <div>
@@ -52,17 +56,6 @@
     </div>
   </li>
 </script>
-
-<div id="edit">
-    <div id="edit-head">
-    	<h1>Edit My Hangout Moment</h1>
-    </div>
-    <div id="edit-body"></div>
-</div>
-<div id="close-tab"></div>
-
-
-
 <div class="no-captures">
   <h1>You currently have no captures.</h1>
   <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
