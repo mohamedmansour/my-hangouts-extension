@@ -8,7 +8,7 @@
 MapController = function(popupController) {
   this.popup = popupController;
   this.bkg = this.popup.bkg.controller; 
-  var latlong = new google.maps.LatLng(37.39, 122.08);
+  var latlong = new google.maps.LatLng(0, 0);
   this.map = new google.maps.Map($('#map-canvas')[0], {
     zoom: 1,
     center: latlong,
