@@ -120,7 +120,7 @@ ul.gallery  li div:hover .controls {
 
 .no-captures { 
   position: relative;
-  top:64px;
+  top:0;
   width:800px;
   margin:0 auto;
   display: none;
@@ -138,7 +138,7 @@ ul.gallery  li div:hover .controls {
 }
 
 .select {
-	-webkit-transition: -webkit-transform 0.75s ease-in; -webkit-transform:scale(6); position:relative; z-index:20;
+	-webkit-transition: -webkit-transform 0.50s ease-in; -webkit-transform:scale(6); position:relative; z-index:20;
 }
 #edit {
 	height:100%;
