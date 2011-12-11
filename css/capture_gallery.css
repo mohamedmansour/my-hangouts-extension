@@ -140,12 +140,18 @@ ul.gallery  li div:hover .controls {
 .select {
 	-webkit-transition: -webkit-transform 0.50s ease-in; -webkit-transform:scale(6); position:relative; z-index:20;
 }
+/* -- edit dialog -- */
 #edit {
 	height:100%;
 	width:100%;
-	background:rgba(255,255,255,0.8);
 	position:absolute; top:0; left:0; z-index:10; 
 	display:none; 
+	overflow:hidden;
+}
+#dialog-controls {
+	position:absolute;
+	top:20px;
+	right:40px;
 }
 #edit-head {
 	background: white;
@@ -164,15 +170,45 @@ ul.gallery  li div:hover .controls {
 	color:rgba(0,0,0,0.8);
 	text-shadow:1px 1px 1px rgba(0,0,0,0.5);
 }
-#close-tab {
-	position:absolute;
-	top:15px;
-	right:30px;
-	width:32px;
-	height:32px;
-	background:url(../img/close32.png) center center no-repeat;
-	z-index:20;
-	display:none;
+#edit-body { position:absolute; top:65px; }
+
+#fx-container {
+	width:240px;
+	overflow-x:hidden;
+	overflow-y:scroll;
+}
+#fx-container h2 { 
+	display: block;
+	height: 36px;
+	background: #d5b267;
+	text-transform: uppercase;
+	text-align: center;
+	font: bold 1.4em/2 Arial, sans-serif;
+	color: #7e5b10;
+	text-shadow: 1px 1px 2px rgba(255, 255, 255,0.5);
+	margin: 0;
+	border-bottom: 2px solid #7e5b10;
+}
+.fx-panel {
+	min-height:60px;
+	background-image: -webkit-linear-gradient(top, #f1f1f1 0%, #eeeeee 100%);
+	border:1px solid rgba(0,0,0,0.2);
+	padding:10px;
+}
+.fx-panel:hover {
+
+}
+span.close {visibility:hidden; width:16px; height:16px; background:url(../img/chosen-sprite.png); background-position:-32px 2px; float:right; cursor:pointer;}
+.fx-panel:hover span.close {visibility:visible;}
+
+.add-effect-btn {
+	text-align: center;
+	display: block;
+	margin:5px 0;
+	padding: 10px;
+	-webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+	background: #EBEBEB -webkit-linear-gradient(#FEFEFE, #F8F8F8 40%, #E9E9E9);
+	cursor:pointer;
 }
 
 .delete {
@@ -206,4 +242,28 @@ ul.gallery  li div:hover .controls {
   height: 32px;
   background: url(/img/effects.png) center center no-repeat;
   background-color: rgba(0,0,0, 0.5);
+}
+#canvasPreview {
+	position:absolute;
+	left:240px;
+	top:0;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,0.10),inset 0 -1px 0 rgba(0,0,0,0.07);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+::-webkit-scrollbar {
+  cursor: pointer;
+  width: 10px;
+  height: 16px;
+}
+::-webkit-scrollbar-corner  {
+  background-color: transparent;
 }

@@ -61,7 +61,6 @@ CaptureEffectsController.prototype.dispose = function() {
 
 CaptureEffectsController.prototype.onSaveClicked = function() {
   var self = this;
-
   var originalData = {};
   originalData.active = this.glfxCanvas.toDataURL();
   originalData.active_width = this.glfxCanvas.width;
@@ -111,6 +110,33 @@ CaptureEffectsController.prototype.getEffectCanvas = function() {
 CaptureEffectsController.prototype.bindUI = function() {
   $('.discard').click(this.dispose.bind(this));
   $('.save').click(this.onSaveClicked.bind(this));
+
+  function resizeCanvas() {
+    $(window).resize(function(){
+      var head = document.getElementById('edit-head').offsetHeight;
+      var sidebar = document.getElementById('fx-container').offsetWidth;
+      var h = $(window).height() - head; var w = $(window).width() - sidebar;
+      var ch = $('canvas').height(); var cw = $('canvas').width();
+      if ((ch < h) || (ch > h)) {
+        $("canvas").css('height', h).css('width', 'auto');			
+	  }
+      if ((cw > w)) {
+        $("canvas").css('height', 'auto').css('width', w);
+      }
+      $('#fx-container').css('height', h);
+    });
+  }
+	
+  $(window).resize(function() {
+    resizeCanvas();
+  });
+  
+  $('.close').click(function(e) {
+      $(this).parent().fadeOut();
+  });
+  $('.add-effect-btn').click(function() {
+	  $(this).appendTo('<div class="fx-panel"><span class="close"></span>Filter:<select id="filters"></select><br/><div class="sliders"></div></div>').slideDown();
+  });
 };
 
 CaptureEffectsController.prototype.loadEffects = function() {
