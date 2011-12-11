@@ -129,13 +129,14 @@ CaptureEffectsController.prototype.bindUI = function() {
 	
   $(window).resize(function() {
     resizeCanvas();
-  });
+  });  
+  //TODO: Have Edit auto-adjust canvas on load.
   
   $('.close').click(function(e) {
       $(this).parent().fadeOut();
   });
   $('.add-effect-btn').click(function() {
-	  $(this).appendTo('<div class="fx-panel"><span class="close"></span>Filter:<select id="filters"></select><br/><div class="sliders"></div></div>').slideDown();
+	  //TODO: Implement .append fx panel here
   });
 };
 
