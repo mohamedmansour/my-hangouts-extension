@@ -84,3 +84,12 @@ button:active {
   background: #EBEBEB -webkit-linear-gradient(#F4F4F4, #EFEFEF 40%, gainsboro);
   color: #333;
 }
+
+button.save { 
+  background: #3079ed -webkit-linear-gradient(#3079ed, #2a6bd1 40%, #2a6bd1);
+  color:#fff;
+}
+button.save:hover { 
+  background: #6fa1f2 -webkit-linear-gradient(#6fa1f2, #6a98df 40%, #6fa1f2);
+  color:#fff;
+}
