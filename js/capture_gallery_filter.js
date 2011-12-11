@@ -42,18 +42,21 @@ CaptureEffectsController.prototype.open = function(id) {
       self.texture = self.glfxCanvas.texture(originalImage);
       self.getEffectCanvas().update();
       $('#canvasPreview').append(self.glfxCanvas);
-//      $('#light').show();
-//      $('#fade').show();
     };
   });
 };
-
+CaptureEffectsController.prototype.openEditMode = function() {
+  $(document).delegate("li", "click", function() {
+	  $(this).addClass('select');
+	  $('li').fadeOut(800);
+	  $('#edit').delay(400).fadeIn(400);
+  });
+};
 CaptureEffectsController.prototype.dispose = function() {
-  $(this.glfxCanvas).remove();
-//  $('#light').hide();
-//  $('#fade').hide();
-  $('#edit').fadeOut(200);
-  $('li').delay(400).fadeIn(200).removeClass('select');
+	$(this.glfxCanvas).remove();
+	$('#edit').fadeOut(200);
+	$('li').delay(400).fadeIn(200).removeClass('select');	
+	$(document).undelegate("li", "click");
 };
 
 CaptureEffectsController.prototype.onSaveClicked = function() {
@@ -283,14 +286,6 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
     }
   }
 };
-CaptureEffectsController.prototype.openEditMode = function() {
-  $(document).delegate("li", "click", function() {
-	  $(this).addClass('select');
-	  $('li').fadeOut(800);
-	  $('#edit').delay(600).fadeIn(400);
-  });
-};
-
 /**
  * Describes a filter.
  */
