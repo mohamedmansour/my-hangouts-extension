@@ -28,18 +28,24 @@
 <!-- TODO Make this a jquery template -->
 <div id="edit">
     <div id="edit-head">
-    	<h1>Edit My Hangout Moment</h1>
+    	<h1>Edit Moment</h1>
+        <div id="dialog-controls">
+          <button class="save">Save Changes</button>
+          <button class="discard">Cancel Changes</button>
+        </div>
     </div>
     <div id="edit-body">
-    <!-- TODO Make this a jquery template -->
+      <div id="fx-container">
+        <h2>Effects</h2>
+        <div class="fx-panel">
+          <span class="close"></span>
+          Filter:<select id="filters"></select><br/>
+          <div class="sliders"></div>
+        </div>
+        <div class="add-effect-btn">Add Effect</div>
+      </div>
       <div id="canvasPreview">
         <div id="nubs"></div>
-      </div>
-      <div id="controls">
-        Filter:<select id="filters"></select><br/>
-        <div class="sliders"></div>
-        <button class="save">Save</button>
-        <button class="discard">Close</button>
       </div>
     </div>
 </div>
