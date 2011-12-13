@@ -42,6 +42,7 @@ CaptureEffectsController.prototype.open = function(id) {
       self.texture = self.glfxCanvas.texture(originalImage);
       self.getEffectCanvas().update();
       $('#canvasPreview').append(self.glfxCanvas);
+      self.onWindowResize();
     };
   });
 };
@@ -107,37 +108,37 @@ CaptureEffectsController.prototype.getEffectCanvas = function() {
   return this.glfxCanvas.draw(this.texture);
 };
 
+CaptureEffectsController.prototype.onWindowResize = function() {
+  var head = document.getElementById('edit-head').offsetHeight;
+  var sidebar = document.getElementById('fx-container').offsetWidth;
+  var h = $(window).height() - head;
+  var w = $(window).width() - sidebar;
+  var ch = $('canvas').height();
+  var cw = $('canvas').width();
+  if ((ch < h) || (ch > h)) {
+    $('canvas').css('height', h).css('width', 'auto');			
+  }
+  if ((cw > w)) {
+    $('canvas').css('height', 'auto').css('width', w);
+  }
+  $('#fx-container').css('height', h);
+};
+
+CaptureEffectsController.prototype.onEffectClose = function(e) {
+  $(e.target).parent().fadeOut();
+  // TODO: Cleanup
+};
+
+CaptureEffectsController.prototype.onAddEffectClicked = function() {
+  // TODO
+};
+
 CaptureEffectsController.prototype.bindUI = function() {
   $('.discard').click(this.dispose.bind(this));
   $('.save').click(this.onSaveClicked.bind(this));
-
-  function resizeCanvas() {
-    $(window).resize(function(){
-      var head = document.getElementById('edit-head').offsetHeight;
-      var sidebar = document.getElementById('fx-container').offsetWidth;
-      var h = $(window).height() - head; var w = $(window).width() - sidebar;
-      var ch = $('canvas').height(); var cw = $('canvas').width();
-      if ((ch < h) || (ch > h)) {
-        $("canvas").css('height', h).css('width', 'auto');			
-	  }
-      if ((cw > w)) {
-        $("canvas").css('height', 'auto').css('width', w);
-      }
-      $('#fx-container').css('height', h);
-    });
-  }
-	
-  $(window).resize(function() {
-    resizeCanvas();
-  });  
-  //TODO: Have Edit auto-adjust canvas on load.
-  
-  $('.close').click(function(e) {
-      $(this).parent().fadeOut();
-  });
-  $('.add-effect-btn').click(function() {
-	  //TODO: Implement .append fx panel here
-  });
+  $('.close').click(this.onEffectClose.bind(this));
+  $('.add-effect-btn').click(this.onAddEffectClicked.bind(this));
+  $(window).resize(this.onWindowResize.bind(this));
 };
 
 CaptureEffectsController.prototype.loadEffects = function() {
