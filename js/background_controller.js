@@ -123,17 +123,19 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   ctx.font = 'bold 11px arial, sans-serif';
   ctx.fillStyle = '#fff';
 
+  chrome.browserAction.setTitle({title: 'There are ' + count + ' people hanging out!'});
   if (count > 19){
     ctx.fillText('19+', 1, 14);
   }
   else if (count > 9){
     ctx.fillText(count + '', 3, 14);
   }
-  else if (count > 0) {
+  else if (count >= 0) {
     ctx.fillText(count + '', 6, 14);
   }
   else {
     ctx.fillText('?', 6, 14);
+    chrome.browserAction.setTitle({title: 'Your session to Google+ was not found, please log in or reopen Chrome.'});
   }
   chrome.browserAction.setIcon({imageData: ctx.getImageData(0,0,19,19)});
 };
