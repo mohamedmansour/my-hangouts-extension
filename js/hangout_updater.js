@@ -45,8 +45,11 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
     var data = res.data;
 
     // Capture the error
-    // TODO: We need to deal with that late on.
-    self.error = data.status;
+    self.error = !res.status
+    if (self.error) {
+      self.controller.drawBadgeIcon(-1, false);
+      return;
+    }
 
     // It is time to refresh data, do it now, then stop asking for it.
     if (doRefresh) {
@@ -120,7 +123,8 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
 HangoutUpdater.prototype.doNext = function() {
   if (this.hasError()) {
     this.errorCount++;
-    if (this.errorCount % 10) {
+    if (this.errorCount % 2) {
+      console.log('Reinitializing session');
       this.controller.plus.init(); // Reinitialize the session.
     }
     else {
