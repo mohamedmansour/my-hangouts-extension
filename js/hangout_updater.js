@@ -7,7 +7,7 @@
 HangoutUpdater = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 1;
+  this.maxState = 2;
   this.circleNotifier = new CircleNotifier(this);
   this.errorCount = 0;
   this.error = false;
@@ -152,5 +152,9 @@ HangoutUpdater.prototype.state0 = function() {
  * Requery the hangouts list
  */
 HangoutUpdater.prototype.state1 = function() {
+  this.search(this.HANGOUT_SEARCH_QUERY, false);
+};
+
+HangoutUpdater.prototype.state2 = function() {
   this.search(this.HANGOUT_SEARCH_QUERY, false);
 };
