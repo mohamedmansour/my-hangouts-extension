@@ -7,13 +7,13 @@
 HangoutUpdater = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 1;
+  this.maxState = 2;
   this.circleNotifier = new CircleNotifier(this);
   this.errorCount = 0;
   this.error = false;
   this.cache = {};
   this.hangouts = [];
-  this.NAMED_HANGOUT_ID_STRING = 'join a hangout named';
+  this.NAMED_HANGOUT_ID_STRING = 'in a hangout named';
   this.IS_HANGING_OUT_ID_STRING = 'is hanging out';
   this.HANGOUT_SEARCH_QUERY = {
     query: '"is hanging out" | "hangout named"'
@@ -71,13 +71,14 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         if (cache.is_public) hangout.is_public = cache;
 
         // Update the hangouts collection.
+        hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >= 0;
         self.hangouts[cache.index] = hangout;
 
         // Notify
         self.circleNotifier.notify(hangout);
         continue;
       }
-      hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >=0;
+      hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >= 0;
       self.hangouts.push(hangout);
       
       // Preserve in the cache the visibility status and the index in the collection.
@@ -151,5 +152,9 @@ HangoutUpdater.prototype.state0 = function() {
  * Requery the hangouts list
  */
 HangoutUpdater.prototype.state1 = function() {
+  this.search(this.HANGOUT_SEARCH_QUERY, false);
+};
+
+HangoutUpdater.prototype.state2 = function() {
   this.search(this.HANGOUT_SEARCH_QUERY, false);
 };
