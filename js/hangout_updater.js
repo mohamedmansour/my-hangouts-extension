@@ -205,9 +205,6 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
 
         // Update the hangouts collection.
         self.hangouts[cache.index] = hangout;
-
-        // Notify
-        self.circleNotifier.notify(hangout);
         continue;
       }
 
@@ -218,9 +215,6 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         index: self.hangouts.length - 1,
         is_public: hangout.is_public
       };
-      
-      // Notify
-      self.circleNotifier.notify(hangout);
     }
 
     // Go through the hangouts we have and remove any that were returned not active.
@@ -243,6 +237,7 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
       }
     }
     */
+    self.circleNotifier.notify(self.hangouts);
     self.controller.drawBadgeIcon(self.hangouts.length, true);
   }, obj.query, {precache: 4, type: 'hangout', burst: true});
 };

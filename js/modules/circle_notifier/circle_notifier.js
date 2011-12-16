@@ -9,6 +9,7 @@ CircleNotifier = function(updater) {
   this.circles_to_notify = {};
   this.notify_circles = false;
   this.initializeListeners();
+  this.notified = {};
 };
 
 CircleNotifier.prototype.initializeListeners = function() {
@@ -18,18 +19,28 @@ CircleNotifier.prototype.initializeListeners = function() {
   this.onSettingsChangeListener('notify_circles', settings.notify_circles);
 };
 
-CircleNotifier.prototype.notify = function(hangout) {
+CircleNotifier.prototype.notify = function(hangouts) {
   // Only notify if the user permits.
-  if (!this.notify_circle) {
+  if (!this.notify_circles) {
     return;
   }
-  for (var p in hangout.data.participants) {
-    var participant = hangout.data.participants[p];
-    if (participant.circle_ids) {
-      for (var c in participant.circle_ids) {
-        var circleID = participant.circle_ids[c];
-        if (this.circles_to_notify[circleID]) {
-          console.log('NOTIFY USER ', participant.name);
+  for (var h in hangouts) {
+    var hangout = hangouts[h];
+    this.notified[hangout.data.id] = this.notified[hangout.data.id] || {};
+    for (var p in hangout.data.participants) {
+      var participant = hangout.data.participants[p];
+      if (participant.circle_ids && participant.status) {
+        if (!this.notified[hangout.data.id][participant.id]) {
+          for (var c in participant.circle_ids) {
+            var circleID = participant.circle_ids[c];
+            if (this.circles_to_notify[circleID]) {
+              this.notified[hangout.data.id][participant.id] = true;
+              console.log('NOTIFY USER ', participant.name);
+            }
+          }
+        }
+        else {
+          this.notified[hangout.data.id][participant.id] = {};
         }
       }
     }
