@@ -103,7 +103,7 @@ MapBackend.prototype.cacheMapLocation = function(address) {
       self.cache.location[address] = results[0];
     }
     else {
-      console.error('location: ' + location, status);
+      console.error('location: ' + address, status);
     }
   });
 };
