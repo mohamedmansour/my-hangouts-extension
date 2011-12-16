@@ -45,8 +45,17 @@ settings = {
     settings.notify('open_hangout_new_window', val);
     localStorage['open_hangout_new_window'] = val;
   },
+  get moment_skip_dialog() {
+    var key = localStorage['moment_skip_dialog'];
+    return (typeof key == 'undefined') ? false : key === 'true';
+  },
+  set moment_skip_dialog(val) {
+    settings.notify('moment_skip_dialog', val);
+    localStorage['moment_skip_dialog'] = val;
+  },
 };
 
+// Settings event listeners.
 settings.listeners = {};
 settings.notify = function(key, val) {
   var listeners = settings.listeners[key]

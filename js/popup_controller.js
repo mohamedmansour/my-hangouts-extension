@@ -24,11 +24,15 @@ PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
   this.options.init();
+  this.map.init();
 };
 
 PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
   $('.menu-item').click(this.onMenuItemClick.bind(this));
+  if (window.location.hash == '#window') {
+    this.displayAsTab = true;
+  }
 };
 
 PopupController.prototype.onMenuItemClick = function(e) {
@@ -41,7 +45,6 @@ PopupController.prototype.onMenuItemClick = function(e) {
       chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
       break;
     case 'menu-maps':
-	  this.map.addMarkersFromCache();
       this.togglePage('maps');
       break;
     case 'menu-options':
@@ -58,7 +61,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
  * box of data.
  */
 PopupController.prototype.updateHangouts = function() {
-  this.hangouts = this.bkg.controller.getHangouts();
+  this.hangouts = this.bkg.controller.getHangoutBackend().getHangouts();
   if (this.hangouts.length == 0) {
     $('#hangouts-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);
@@ -77,34 +80,6 @@ PopupController.prototype.processHangouts = function() {
   console.log('Hangouts refreshed! ' + new Date());
 
   if (this.hangouts.length > 0) {
-    for (var i = 0; i < this.hangouts.length; i++) {
-      var hangoutItem = this.hangouts[i];
-
-      // Slice everything that we don't need.
-      hangoutItem.data.participants = hangoutItem.data.participants.slice(0, 9);
-
-      // Hangout Participants.
-      var userCount = 1;
-      var circleCount = 0;
-      for (var j = 0; j < hangoutItem.data.participants.length; j++) {
-        var participant = hangoutItem.data.participants[j];
-             if (participant.status) {
-          userCount++;
-          if (this.fillCircleInfo(participant)) {
-            circleCount++;
-          }
-        }
-      }
-      if (this.fillCircleInfo(hangoutItem.owner)) {
-        circleCount++;
-      }
-      hangoutItem.html = this.stripHTML(hangoutItem.html);
-      hangoutItem.activeCount = userCount;
-      hangoutItem.isFull = userCount >= 10;
-      hangoutItem.time = $.timeago(new Date(hangoutItem.time));
-      hangoutItem.rank = circleCount;
-    }
-
     // Sort by rank.
     this.hangouts.sort(function(a, b) {
       if (a.rank > b.rank) return -1;
@@ -116,24 +91,6 @@ PopupController.prototype.processHangouts = function() {
   }
 };
 
-PopupController.prototype.fillCircleInfo = function(user) {
-  var person = this.bkg.controller.getPerson(user.id);
-  if (person) {
-    user.circles = person.circles.map(function(e) {return  ' ' + e.name});
-    return true;
-  }
-  return false;
-};
-
-
-/**
- * From http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
- */
-PopupController.prototype.stripHTML = function(html) {
-  var tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText;
-}
 /**
  * Forward click events to the extension.
  *
@@ -163,8 +120,11 @@ PopupController.prototype.renderHangouts = function(hangouts) {
  * Relayout the page since each page has different heights.
  */
 PopupController.prototype.relayout = function() {
+  if (this.displayAsTab) {
+    return;
+  }
   if (this.currentPage == 'hangouts') {
-    var height = (this.hangouts.length * 55) + 5;
+    var height = (this.hangouts.length * 70) + 5;
     $('.popup-page').height(height);
     $('#popup-container').height(height);
   }
