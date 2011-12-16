@@ -19,6 +19,10 @@ CircleNotifier.prototype.initializeListeners = function() {
 };
 
 CircleNotifier.prototype.notify = function(hangout) {
+  // Only notify if the user permits.
+  if (!this.notify_circle) {
+    return;
+  }
   for (var p in hangout.data.participants) {
     var participant = hangout.data.participants[p];
     if (participant.circle_ids) {
