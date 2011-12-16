@@ -235,14 +235,14 @@ body, html {
   opacity: 0.75;
   cursor: pointer;
 }
-.hangout-participants .in_my_circle img {
+.in_my_circle img {
   border: 2px solid transparent;
   box-shadow: 0 0 15px f8cc38; 
 }
-.hangout-participants .in_my_circle img:hover {
+.in_my_circle img:hover {
   border: 2px solid transparent;
 }
-.hangout-participants .in_my_circle:hover span {
+.in_my_circle:hover span {
   opacity: 0.8;
   background-color: #fff;
   color: #444;
@@ -252,6 +252,11 @@ body, html {
   border-radius: 5px;
 }
 .hangout-popup {
+  position: relative;
+}
+.hangout-popup-name{
+  position: absolute;
+  left: 50px;
 }
 .hangout-popup-header {
   height: 40px;
@@ -263,4 +268,16 @@ body, html {
 
 .hangout-popup-header .hangout-button {
   float: left;
+}
+
+.hangout-popup .hangout-button {
+  position: absolute;
+  right: 0;
+}
+.hangout-popup .hangout-button a {
+  min-width: 25px;
+}
+
+.hangout-popup .hangout-participants {
+  white-space: normal;
 }

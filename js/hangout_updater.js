@@ -123,7 +123,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
     updatedHangout.data.name = updatedHangout.data.extra_data[1] + ' - OnAir';
   }
   else if (updatedHangout.data.is_extra) {
-    updatedHangout.data.name = updatedHangout.data.id + ' - Extra';
+    updatedHangout.data.name = updatedHangout.data.id + '.';
   }
   else {
     updatedHangout.data.name = updatedHangout.owner.name + ' is hanging out.';
