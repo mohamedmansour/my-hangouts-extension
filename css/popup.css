@@ -89,7 +89,7 @@ body, html {
 .hangout-item {
   background-color: #eee;
   border-radius: 5px;
-  height: 50px;
+  height: 65px;
   margin: 5px 0;
   clear: both;
   position: relative;
@@ -101,9 +101,9 @@ body, html {
   position: absolute;
   right: 0px;
   width: 70px;
-  height: 50px;
+  height: 65px;
   text-align: right;
-  padding-right: 10px;
+  padding-right: 0px;
   background-color: #ddd;
   border-radius: 15px;
   border-top-right-radius: 2px;
@@ -115,7 +115,7 @@ body, html {
   z-index: 100;
 }
 .hangout-overlay:hover {
-  width: 500px;
+  width: 100px;
   box-shadow: -5px 0px 10px rgba(0,0,0,0.2);
 }
 .full .hangout-overlay {
@@ -123,15 +123,15 @@ body, html {
 }
 .hangout-extra {
   width: 450px;
-  height: 50px;
-  line-height: 50px;
+  height: 65px;
+  line-height: 65px;
 }
 .hangout-show {
   float: right;
   width: 70px;
   text-align: center;
   display: block;
-  height: 50px;
+  height: 65px;
   font-weight: bold;
   color: #777;
 }
@@ -179,7 +179,18 @@ body, html {
 .hangout-button {
   float: left;
   margin-top: 10px;
+  line-height: 40px;
 }
+.hangout-name {
+  position: absolute;
+  left: 160px;
+  color: #aaa;
+}
+
+.hangout-item:hover .hangout-name {
+  color: #444;
+}
+
 .button {
   display: inline-block;
   cursor: pointer;
@@ -211,10 +222,10 @@ body, html {
 }
 .in_my_circle span {
   position: absolute;
-  width: 32px;
+  width: 10px;
   height: 10px;
   display: block;
-  top: 2px;
+  bottom: 4px;
   left: 2px;
   background-color: #ca333a;
   font-size: 8px;
