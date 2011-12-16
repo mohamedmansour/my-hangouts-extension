@@ -79,9 +79,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var updatedHangout = hangout;
   
   // Type.
+  updatedHangout.data.is_normal = hangout.data.type == 0;
   updatedHangout.data.is_extra = hangout.data.type == 1;
-  updatedHangout.data.is_normal = hangout.data.type == 2;
-  updatedHangout.data.is_onair = hangout.data.type == 3;
+  updatedHangout.data.is_onair = hangout.data.type == 2;
 
   // Fill in circle information for each participant.
   var circleCount = 0;
