@@ -39,4 +39,11 @@ OptionsController.prototype.bindUI = function() {
   hangoutOpenWindowDOM.change(function(e) {
     self.settings.open_hangout_new_window = $(e.target).is(':checked');
   });
+  
+  // Skip dialog moment captures
+  var momentSkipDialogCaptureDOM = $('#option-moment-quick');
+  momentSkipDialogCaptureDOM.prop('checked', this.settings.moment_skip_dialog);
+  momentSkipDialogCaptureDOM.change(function(e) {
+    self.settings.moment_skip_dialog = $(e.target).is(':checked');
+  });
 };
