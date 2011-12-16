@@ -16,6 +16,7 @@ MapController = function(popupController) {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
   this.imageSize  = new google.maps.Size(20, 20);
+  this.markersArray = [];
   this.startUpdates();
 };
 
@@ -26,6 +27,17 @@ MapController.prototype.init = function() {
 
 };
 
+/**
+ *
+ */
+MapController.prototype.clearMarkers = function() {
+  if (this.markersArray) {
+    for (i in this.markersArray) {
+      this.markersArray[i].setMap(null);
+    }
+    this.markersArray.length = 0;
+  }
+};
 
 /**
  * Start the markers update, in real time.
@@ -43,13 +55,13 @@ MapController.prototype.startUpdates = function() {
  */
 MapController.prototype.addMarkersFromCache = function() {
   var self = this;
-  //   TODO: hOW TO CLEAR MARKERS...?
+  this.clearMarkers();
   this.bkg.getHangoutBackend().getAllParticipants(function(gpIds) {
     var i = 0;
     for (i = 0; i < gpIds.length; i++) {
       var id = gpIds[i];
       var personCacheItem = self.mapBackend.getPersonFromCache(id);
-      if (personCacheItem && !personCacheItem.isOnMap) {
+      if (personCacheItem) {
         var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
         if (locationCacheItem) {
           var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
@@ -60,10 +72,9 @@ MapController.prototype.addMarkersFromCache = function() {
             anchor: new google.maps.Point(12,12),
             title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
           });
-          
+          self.markersArray.push(marker);
           // Marker click
           self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
-          personCacheItem.isOnMap = true;
         }
       }
     }
