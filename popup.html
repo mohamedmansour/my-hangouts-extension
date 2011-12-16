@@ -68,12 +68,12 @@
     <div class="hangout-item{{if hangout.isFull}} full{{/if}}">
       <div class="hangout-overlay">
         <div class="hangout-show">
-          <span class="hangout-show-count">${hangout.activeCount}</span>
+          <span class="hangout-show-count">${hangout.data.participants.length}</span>
           <span class="hangout-show-visibility">{{if hangout.is_public}}public{{else}}limited{{/if}}</span>
         </div>
         <div class="hangout-extra">
           <a href="${hangout.url}" class="clickable"><img src="/img/link.png" alt="Original post"/></a>
-          ${html}
+          ${hangout.data.name}
         </div>
       </div>
       <div class="hangout-button"><a class="button clickable" href="${hangout.data.url}">Join</a></div>

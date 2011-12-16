@@ -13,8 +13,6 @@ HangoutUpdater = function(controller) {
   this.error = false;
   this.cache = {};
   this.hangouts = [];
-  this.NAMED_HANGOUT_ID_STRING = 'in a hangout named';
-  this.IS_HANGING_OUT_ID_STRING = 'is hanging out';
   this.HANGOUT_SEARCH_QUERY = {
     query: '"is hanging out" | "hangout named"'
   };
@@ -32,6 +30,73 @@ HangoutUpdater.prototype.hasError = function() {
  */
 HangoutUpdater.prototype.getHangouts = function() {
   return this.hangouts;
+};
+
+/**
+ * From http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
+ */
+HangoutUpdater.prototype.stripHTML = function(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText;
+}
+
+HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
+  // If it is inactive, just continue to the next.
+  if (!hangout.data.active) {
+    return false;
+  }
+  
+  var updatedHangout = hangout;
+  
+  // Type.
+  updatedHangout.data.is_extra = hangout.data.type == 1;
+  updatedHangout.data.is_normal = hangout.data.type == 2;
+  updatedHangout.data.is_onair = hangout.data.type == 3;
+  
+  // Custom name.
+  if (updatedHangout.data.is_onair) {
+    updatedHangout.data.name = hangout.data.extra_data[1] + ' - OnAir';
+  }
+  else {
+    updatedHangout.data.name = this.stripHTML(hangout.html);
+  }
+
+  // Fill in circle information for each participant.
+  var circleCount = 0;
+  var participants = [];
+  for (var j = 0; j < updatedHangout.data.participants.length; j++) {
+    var participant = updatedHangout.data.participants[j];
+    if (participant.status) {
+      if (this.fillCircleInfo(participant)) {
+        circleCount++;
+      }
+      participants.push(participant);
+    }
+  }
+  updatedHangout.data.participants = participants;
+
+  // Slice everything that we don't need.
+  updatedHangout.data.participants = updatedHangout.data.participants.slice(0, 9);
+
+  // Owner Information
+  if (this.fillCircleInfo(updatedHangout.owner)) {
+    circleCount++;
+  }
+
+  // Fill in circle data.
+  updatedHangout.isFull = updatedHangout.data.participants.length >= 9;
+  updatedHangout.rank = circleCount;
+  return updatedHangout;
+};
+
+HangoutUpdater.prototype.fillCircleInfo = function(user) {
+  var person = this.controller.getPerson(user.id);
+  if (person) {
+    user.circles = person.circles.map(function(e) {return  ' ' + e.name});
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -60,30 +125,24 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
 
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
-      var hangout = data[i];
-      hangout.jbc = res;
-      
-      // If it is inactive, just continue to the next.
-      if (!hangout.data.active) {
+      var hangout = self.preprocessHangoutData(data[i]);
+      if (!hangout) {
         continue;
       }
-      
+
       var cache = self.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
-        if (cache.is_public) hangout.is_public = cache;
+        if (cache.is_public) hangout.is_public = true;
 
         // Update the hangouts collection.
-        hangout.data = hangout.data;
         self.hangouts[cache.index] = hangout;
 
         // Notify
         self.circleNotifier.notify(hangout);
         continue;
       }
-      hangout.data.is_extra = hangout.data.type == 1;
-      hangout.data.is_normal = hangout.data.type == 2;
-      hangout.data.is_onair = hangout.data.type == 3;
+
       self.hangouts.push(hangout);
       
       // Preserve in the cache the visibility status and the index in the collection.
@@ -98,6 +157,7 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
 
     // Go through the hangouts we have and remove any that were returned not active.
     // This should be defined at the end since our cache index is not being used at this point.
+    /* TODO: DISABLE for now, it was creating duplicates.
     for (var i = 0; i < data.length; i++) {
       var hangout = data[i];
       if (hangout.data.active === false) {
@@ -114,7 +174,7 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         }
       }
     }
-
+    */
     self.controller.drawBadgeIcon(self.hangouts.length, true);
   }, obj.query, {precache: 4, type: 'hangout', burst: true});
 };
@@ -126,7 +186,7 @@ HangoutUpdater.prototype.doNext = function() {
   if (this.hasError()) {
     this.errorCount++;
     if (this.errorCount % 2) {
-      console.log('Reinitializing session');
+      console.log('Reinitializing session since session was destroyed');
       this.controller.plus.init(); // Reinitialize the session.
     }
     else {

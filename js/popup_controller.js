@@ -77,34 +77,6 @@ PopupController.prototype.processHangouts = function() {
   console.log('Hangouts refreshed! ' + new Date());
 
   if (this.hangouts.length > 0) {
-    for (var i = 0; i < this.hangouts.length; i++) {
-      var hangoutItem = this.hangouts[i];
-
-      // Slice everything that we don't need.
-      hangoutItem.data.participants = hangoutItem.data.participants.slice(0, 9);
-
-      // Hangout Participants.
-      var userCount = 1;
-      var circleCount = 0;
-      for (var j = 0; j < hangoutItem.data.participants.length; j++) {
-        var participant = hangoutItem.data.participants[j];
-             if (participant.status) {
-          userCount++;
-          if (this.fillCircleInfo(participant)) {
-            circleCount++;
-          }
-        }
-      }
-      if (this.fillCircleInfo(hangoutItem.owner)) {
-        circleCount++;
-      }
-      hangoutItem.html = this.stripHTML(hangoutItem.html);
-      hangoutItem.activeCount = userCount;
-      hangoutItem.isFull = userCount >= 10;
-      hangoutItem.time = $.timeago(new Date(hangoutItem.time));
-      hangoutItem.rank = circleCount;
-    }
-
     // Sort by rank.
     this.hangouts.sort(function(a, b) {
       if (a.rank > b.rank) return -1;
@@ -116,24 +88,6 @@ PopupController.prototype.processHangouts = function() {
   }
 };
 
-PopupController.prototype.fillCircleInfo = function(user) {
-  var person = this.bkg.controller.getPerson(user.id);
-  if (person) {
-    user.circles = person.circles.map(function(e) {return  ' ' + e.name});
-    return true;
-  }
-  return false;
-};
-
-
-/**
- * From http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
- */
-PopupController.prototype.stripHTML = function(html) {
-  var tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText;
-}
 /**
  * Forward click events to the extension.
  *
