@@ -10,6 +10,7 @@ MapBackend = function(controller) {
     people: {}
   };
   
+  this.blacklist = {};
   this.startUpdates();
 };
 
@@ -97,10 +98,19 @@ MapBackend.prototype.cachePeople = function(gpIds) {
 MapBackend.prototype.cacheMapLocation = function(address) {
   var self = this;
   var coder = new google.maps.Geocoder();
+
+  // Skip if we already blacklisted.
+  if (this.blacklist[address]) {
+    return;
+  }
   coder.geocode({ address: address }, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
       console.log('location: ' + address, results);
       self.cache.location[address] = results[0];
+    }
+    else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
+      // We don't want to requery so blacklist address.
+      self.blacklist[address] = true;
     }
     else {
       console.error('location: ' + address, status);
