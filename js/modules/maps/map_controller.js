@@ -85,7 +85,6 @@ MapController.prototype.addMarkersFromCache = function() {
  * detailed hangout information.
  */
 MapController.prototype.addPersonMarkerClickedEvent = function(userID, marker, location) {
-  console.log(userID, location);
   google.maps.event.addListener(marker, 'click', function() {
     var currentHangout = this.getHangoutObjectFromPerson(userID);
     if (currentHangout) {
