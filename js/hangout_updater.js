@@ -98,6 +98,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
 
   // Slice everything that we don't need.
   updatedHangout.data.participants = updatedHangout.data.participants.slice(0, 9);
+  
+  var totalParticipants = updatedHangout.data.participants.length;
+  updatedHangout.totalParticipants = totalParticipants + 1; // include the owner.
 
   // Custom name to each hangout.
   if (updatedHangout.data.is_onair) {
@@ -107,7 +110,6 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
     updatedHangout.data.name = updatedHangout.data.id + ' - Extra';
   }
   else {
-    var totalParticipants = updatedHangout.data.participants.length;
     updatedHangout.data.name = updatedHangout.owner.name + ' is hanging out.';
     if (totalParticipants == 1) {
       updatedHangout.data.name += ' with ' + updatedHangout.data.participants[0].name + '.';
@@ -128,6 +130,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   return updatedHangout;
 };
 
+/**
+ * Fill in the circle information for the user.
+ */
 HangoutUpdater.prototype.fillCircleInfo = function(user) {
   var person = this.controller.getPerson(user.id);
   if (person) {
