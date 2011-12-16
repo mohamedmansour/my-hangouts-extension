@@ -24,11 +24,15 @@ PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
   this.options.init();
+  this.map.init();
 };
 
 PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
   $('.menu-item').click(this.onMenuItemClick.bind(this));
+  if (window.location.hash == '#window') {
+    this.displayAsTab = true;
+  }
 };
 
 PopupController.prototype.onMenuItemClick = function(e) {
@@ -116,6 +120,9 @@ PopupController.prototype.renderHangouts = function(hangouts) {
  * Relayout the page since each page has different heights.
  */
 PopupController.prototype.relayout = function() {
+  if (this.displayAsTab) {
+    return;
+  }
   if (this.currentPage == 'hangouts') {
     var height = (this.hangouts.length * 70) + 5;
     $('.popup-page').height(height);

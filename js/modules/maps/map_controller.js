@@ -24,7 +24,48 @@ MapController = function(popupController) {
  * Initialization code.
  */
 MapController.prototype.init = function() {
+  this.bindUI();
+};
 
+MapController.prototype.bindUI = function() {
+  if (this.popup.displayAsTab) {
+    $('#hangout-bar').hide();
+    $('#options-container').hide();
+    $('#hangouts-container').hide();
+    $('#popup-open').hide();
+    $('#maps-container')
+        .css('width', $(window).width() + 'px')
+        .css('position', 'fixed')
+        .css('left', '0')
+        .css('top', '0')
+        .css('overflow-x', 'auto');
+    $('#maps-container h2')
+        .css('position', 'fixed')
+        .css('width', ($(window).width() - 200) + 'px')
+        .css('height', '40px')
+        .css('line-height', '40px')
+        .css('z-index', 99999)
+        .css('border-bottom-radius', 10)
+        .css('background-color', 'rgba(255,255,255,0.5)')
+        .css('color', '#444')
+        .css('margin', '0 100px')
+        .css('padding', '0 0 0 10px');
+    $('#popup-container')
+        .css('width', '100%')
+        .css('height', '100%');
+    $('#map-canvas')
+        .css('height', $(window).height() + 'px');
+    $('body')
+        .css('background', 'white url(/img/wood-bg.jpg)');
+    this.map.setZoom(3);
+  }
+  else {
+    $('#popup-open').click(this.onOpenAsWindow.bind(this));
+  }
+};
+
+MapController.prototype.onOpenAsWindow = function(e) {
+  chrome.tabs.create({url: chrome.extension.getURL('popup.html#window')});
 };
 
 /**
