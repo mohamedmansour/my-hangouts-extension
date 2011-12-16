@@ -234,3 +234,19 @@ body, html {
   color: #444;
 }
 
+.personMarker {
+  border-radius: 5px;
+}
+.hangout-popup {
+}
+.hangout-popup-header {
+  height: 40px;
+}
+
+.hangout-popup-header .hangout-popup-owner {
+  float: left;
+}
+
+.hangout-popup-header .hangout-button {
+  float: left;
+}

@@ -138,25 +138,63 @@ MapController.prototype.addMarkersFromCache = function() {
     if (personCacheItem && !personCacheItem.isOnMap) {
       var locationCacheItem = this.cache.location[personCacheItem.address];
       if (locationCacheItem) {
-        var marker = new google.maps.Marker({
-            title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address,
-            position: locationCacheItem.geometry.location
+        var marker = new SimpleMarker(this.map, locationCacheItem.geometry.location, {
+          id: 'person-' + personCacheItem.data.id,
+          classname: 'personMarker',
+          image: personCacheItem.data.photo + '?sz=24',
+          dimension: new google.maps.Size(24,24),
+          anchor: new google.maps.Point(12,12),
+          title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
         });
-        marker.setMap(this.map);
-        mImage = new google.maps.MarkerImage(personCacheItem.data.photo, this.imageSize,null,null, this.imageSize);
-        marker.setIcon(mImage);
-        // TODO: click to join hangout :
-        //gogle.maps.event.addListener(marker, 'click', function() {
-        //						join the hangout
-        //});
+        
+        // Marker click
+        this.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
         personCacheItem.isOnMap = true;
       }
     }
   }
 };
 
+MapController.prototype.addPersonMarkerClickedEvent = function(userID, marker, location) {
+  google.maps.event.addListener(marker, 'click', function() {
+    var currentHangout = this.getHangoutFromPerson(userID);
+    if (currentHangout) {
+      var hangoutPopupDOM = $('#hangouts-popup-template').tmpl({hangout: currentHangout});
+      var infowindow = new google.maps.InfoWindow();
+      infowindow.setContent(hangoutPopupDOM.html());
+      infowindow.setPosition(location);
+      infowindow.open(this.map);
+    }
+  }.bind(this));
+};
+
 /**
- *     Return an array of g+ ids for every person in all we know about hangouts.
+ * Retrieve the hangout given the participant id.
+ *
+ * @param {number} id The participant id from Google.
+ * @return {Object} the hangout obj, null if not found.
+ */
+MapController.prototype.getHangoutFromPerson = function(id) {
+  var hangout = null;
+  this.popup.hangouts.some(function(hangoutElement, hangoutIndex) {
+    if (hangoutElement.owner.id == id) {
+      hangout = hangoutElement;
+      return true;
+    }
+		hangoutElement.data.participants.some(function(participantElement, participantIndex) {
+      // 99 % of the people are in one hangout, crazy people are in multiple hangouts.
+      if (participantElement.id == id && participantElement.status) {
+        hangout = hangoutElement;
+        return true;
+      }
+    });
+    return hangout;
+  });
+  return hangout;
+};
+
+/**
+ * Return an array of g+ ids for every person in all we know about hangouts.
  */
 MapController.prototype.getAllParticipants = function() {
   var hangouts = this.popup.hangouts;

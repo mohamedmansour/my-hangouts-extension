@@ -10,11 +10,10 @@
   <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
   <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script>
   <script type="text/javascript" src="/js/libs/chosen.jquery.min.js"></script>
+  <script type="text/javascript" src="/js/libs/simplemarker.1.4.min.js"></script>
   <script type="text/javascript" src="/js/options_controller.js"></script>
-    <script type="text/javascript" src="/js/map_controller.js"></script>
+  <script type="text/javascript" src="/js/map_controller.js"></script>
   <script type="text/javascript" src="/js/popup_controller.js"></script>
-
-  
 </head>
 <body>
   <div id="hangout-bar">
@@ -44,6 +43,26 @@
       <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
     </div>
   </div>
+  <script type="text/x-jquery-tmpl" id="hangouts-popup-template">
+    <div>
+      <div class="hangout-popup">
+        <div class="hangout-popup-name">${hangout.name} - ${hangout.activeCount} / 10 ({{if hangout.is_public}}public{{else}}limited{{/if}})</div>
+        <div class="hangout-popup-header">
+          <div class="hangout-popup-owner" {{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=40" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</div>
+          <div class="hangout-button"><a class="button clickable" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
+        </div>
+        <div class="hangout-participants">
+          <ul>
+          {{each(i, participant) hangout.data.participants}}
+            {{if participant.status}}
+            <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=20" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
+            {{/if}}
+          {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </script>
   <script type="text/x-jquery-tmpl" id="hangouts-template">
     {{each(i, hangout) hangouts}}
     <div class="hangout-item{{if hangout.isFull}} full{{/if}}">
@@ -60,7 +79,7 @@
       <div class="hangout-button"><a class="button clickable" href="http://plus.google.com/hangouts/{{if hangout.data.extra}}extras/{{/if}}${hangout.data.id}">Join</a></div>
       <div class="hangout-participants">
         <ul>
-        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
+        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=32" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
         {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
           <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
