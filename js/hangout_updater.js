@@ -81,14 +81,6 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.data.is_extra = hangout.data.type == 1;
   updatedHangout.data.is_normal = hangout.data.type == 2;
   updatedHangout.data.is_onair = hangout.data.type == 3;
-  
-  // Custom name.
-  if (updatedHangout.data.is_onair) {
-    updatedHangout.data.name = hangout.data.extra_data[1] + ' - OnAir';
-  }
-  else {
-    updatedHangout.data.name = this.stripHTML(hangout.html);
-  }
 
   // Fill in circle information for each participant.
   var circleCount = 0;
@@ -107,6 +99,24 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   // Slice everything that we don't need.
   updatedHangout.data.participants = updatedHangout.data.participants.slice(0, 9);
 
+  // Custom name to each hangout.
+  if (updatedHangout.data.is_onair) {
+    updatedHangout.data.name = updatedHangout.data.extra_data[1] + ' - OnAir';
+  }
+  else if (updatedHangout.data.is_extra) {
+    updatedHangout.data.name = updatedHangout.data.id + ' - Extra';
+  }
+  else {
+    var totalParticipants = updatedHangout.data.participants.length;
+    updatedHangout.data.name = updatedHangout.owner.name + ' is hanging out.';
+    if (totalParticipants == 1) {
+      updatedHangout.data.name += ' with ' + updatedHangout.data.participants[0].name + '.';
+    }
+    if (totalParticipants > 1 ) {
+      updatedHangout.data.name += ' with ' + totalParticipants +  ' people.';
+    }
+  }
+  
   // Owner Information
   if (this.fillCircleInfo(updatedHangout.owner)) {
     circleCount++;
