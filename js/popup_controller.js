@@ -117,7 +117,7 @@ PopupController.prototype.renderHangouts = function(hangouts) {
  */
 PopupController.prototype.relayout = function() {
   if (this.currentPage == 'hangouts') {
-    var height = (this.hangouts.length * 55) + 5;
+    var height = (this.hangouts.length * 70) + 5;
     $('.popup-page').height(height);
     $('#popup-container').height(height);
   }
