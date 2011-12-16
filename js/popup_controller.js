@@ -41,7 +41,6 @@ PopupController.prototype.onMenuItemClick = function(e) {
       chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
       break;
     case 'menu-maps':
-	  this.map.addMarkersFromCache();
       this.togglePage('maps');
       break;
     case 'menu-options':
@@ -58,7 +57,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
  * box of data.
  */
 PopupController.prototype.updateHangouts = function() {
-  this.hangouts = this.bkg.controller.getHangouts();
+  this.hangouts = this.bkg.controller.getHangoutBackend().getHangouts();
   if (this.hangouts.length == 0) {
     $('#hangouts-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);

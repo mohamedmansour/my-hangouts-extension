@@ -33,6 +33,34 @@ HangoutUpdater.prototype.getHangouts = function() {
 };
 
 /**
+ * Return an array of g+ ids for every person in all we know about hangouts.
+ */
+HangoutUpdater.prototype.getAllParticipants = function(opt_callback) {
+  var hangouts = this.controller.getHangoutBackend().getHangouts();
+  var allParticipants = [];
+  
+  var i = 0;
+  for (i = 0; i < hangouts.length; i++) {
+    var hangoutItem = hangouts[i];
+    allParticipants.push(hangoutItem.owner.id);
+    var j = 0;
+    for (j = 0; j < hangoutItem.data.participants.length; j++) {
+      var participant = hangoutItem.data.participants[j];
+      if (participant.status){
+        allParticipants.push(participant.id);
+      }
+    }
+  }
+  
+  if (opt_callback) {
+    opt_callback(allParticipants);
+  }
+  else {
+    return allParticipants;
+  }
+};
+
+/**
  * From http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
  */
 HangoutUpdater.prototype.stripHTML = function(html) {

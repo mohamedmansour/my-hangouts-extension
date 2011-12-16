@@ -9,6 +9,7 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updater = new HangoutUpdater(this);
+  this.mapBackend = new MapBackend(this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
   this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
@@ -143,8 +144,15 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
 /**
  * @returns a list of hangouts.
  */
-BackgroundController.prototype.getHangouts = function() {
-  return this.updater.getHangouts();
+BackgroundController.prototype.getHangoutBackend = function() {
+  return this.updater;
+};
+
+/**
+ * The map backend
+ */
+BackgroundController.prototype.getMapBackend = function() {
+  return this.mapBackend;
 };
 
 /**
