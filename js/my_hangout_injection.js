@@ -9,6 +9,13 @@ MyHangoutInjection = function() {
 };
 
 /**
+ * For unique situations, we want to just process it directly.
+ */
+MyHangoutInjection.prototype.showProcessed = function() {
+  alert('processed');
+};
+
+/**
  * Finally, everything has been sent correctly, show the preview.
  */
 MyHangoutInjection.prototype.showPreview = function() {
@@ -19,7 +26,6 @@ MyHangoutInjection.prototype.showPreview = function() {
   overlayDOM.setAttribute('width', '99.90%');
   overlayDOM.setAttribute('height', '100%');
   overlayDOM.setAttribute('style', 'background-color: transparent; position: fixed; top: 0; left: 0; overflow: hidden; z-index: 99999');
-  document.body.appendChild(overlayDOM);
   document.body.appendChild(overlayDOM);
 };
 
@@ -32,23 +38,30 @@ MyHangoutInjection.prototype.onPlusClicked = function(e) {
   var activeVideo = videos[0].client;
   var thumbnailVideo = videos[1].client;
 
-  // Store the image in temporary cache, so the iframe could recieve it.
+  // Get the setting from the background page so we can decide if the user wants to show the dialog or not.
+  var self = this;
   chrome.extension.sendRequest({
-    service: 'Capture', 
-    method: 'storeTemporaryCapture',
-    arguments: [{
-      hangout: document.location.href,
-      time: new Date(),
-      description: 'nil',
-      active: activeVideo.toDataURL(),
-      active_height: activeVideo.height,
-      active_width: activeVideo.width,
-      thumbnail: thumbnailVideo.toDataURL(),
-      thumbnail_height: thumbnailVideo.height,
-      thumbnail_width: thumbnailVideo.width,
-      type: this.isHangoutExtra ? 1 : 0
-    }]
-  }, this.showPreview);
+    service: 'GetSetting',
+    data: 'moment_skip_dialog'
+  }, function(moment_skip_dialog) {
+    // Store the image in temporary cache, so the iframe could recieve it.
+    chrome.extension.sendRequest({
+      service: 'Capture', 
+      method: moment_skip_dialog ? 'processCapture' : 'storeTemporaryCapture',
+      arguments: [{
+        hangout: document.location.href,
+        time: new Date(),
+        description: 'nil',
+        active: activeVideo.toDataURL(),
+        active_height: activeVideo.height,
+        active_width: activeVideo.width,
+        thumbnail: thumbnailVideo.toDataURL(),
+        thumbnail_height: thumbnailVideo.height,
+        thumbnail_width: thumbnailVideo.width,
+        type: self.isHangoutExtra ? 1 : 0
+      }]
+    }, moment_skip_dialog ? self.showProcessed : self.showPreview);
+  });
 };
 
 /**
