@@ -72,7 +72,7 @@ HangoutUpdater.prototype.stripHTML = function(html) {
 
 HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   // If it is inactive, just continue to the next.
-  if (!hangout.data.active) {
+  if (!hangout.data || !hangout.data.active) { // Deal with onAir hangouts if you have access.
     return false;
   }
   
