@@ -42,16 +42,15 @@ MapBackend.prototype.startUpdates = function() {
  */
 MapBackend.prototype.loadPeople = function() {
   var self = this;
-  this.controller.getHangoutBackend().getAllParticipants(function(allParticipants) {
-    var newParticipants = [];
-    for (var i = 0; i < allParticipants.length; i++) {
-      var id = allParticipants[i];
-      if (!self.cache.people[id]) {
-        newParticipants.push(id);
-      }
+  var allParticipants = this.controller.getHangoutBackend().getAllParticipants();
+  var newParticipants = [];
+  for (var i = 0; i < allParticipants.length; i++) {
+    var id = allParticipants[i];
+    if (!self.cache.people[id]) {
+      newParticipants.push(id);
     }
-    self.cachePeople(newParticipants);
-  });
+  }
+  self.cachePeople(newParticipants);
 };
 
 /**
@@ -59,18 +58,17 @@ MapBackend.prototype.loadPeople = function() {
  */
 MapBackend.prototype.loadLocations = function() {
   var self = this;
-  this.controller.getHangoutBackend().getAllParticipants(function(allParticipants) {
-    for (var i = 0; i < allParticipants.length; i++) {
-      var id = allParticipants[i];
-      var personCacheItem = self.cache.people[id];
-      if (personCacheItem && personCacheItem.address && personCacheItem.address !== '?') {
-        var address = personCacheItem.address;
-        if (!self.cache.location[address]) {
-          self.cacheMapLocation(address);
-        }
+  var allParticipants = this.controller.getHangoutBackend().getAllParticipants();
+  for (var i = 0; i < allParticipants.length; i++) {
+    var id = allParticipants[i];
+    var personCacheItem = self.cache.people[id];
+    if (personCacheItem && personCacheItem.address && personCacheItem.address !== '?') {
+      var address = personCacheItem.address;
+      if (!self.cache.location[address]) {
+        self.cacheMapLocation(address);
       }
     }
-  });
+  }
 };
 
 /** 

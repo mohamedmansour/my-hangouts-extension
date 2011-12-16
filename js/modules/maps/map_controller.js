@@ -56,29 +56,28 @@ MapController.prototype.startUpdates = function() {
 MapController.prototype.addMarkersFromCache = function() {
   var self = this;
   this.clearMarkers();
-  this.bkg.getHangoutBackend().getAllParticipants(function(gpIds) {
-    var i = 0;
-    for (i = 0; i < gpIds.length; i++) {
-      var id = gpIds[i];
-      var personCacheItem = self.mapBackend.getPersonFromCache(id);
-      if (personCacheItem) {
-        var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
-        if (locationCacheItem) {
-          var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
-            id: 'person-' + personCacheItem.data.id,
-            classname: 'personMarker',
-            image: personCacheItem.data.photo + '?sz=24',
-            dimension: new google.maps.Size(24,24),
-            anchor: new google.maps.Point(12,12),
-            title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
-          });
-          self.markersArray.push(marker);
-          // Marker click
-          self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
-        }
+  var gpIds = this.bkg.getHangoutBackend().getAllParticipants();
+  var i = 0;
+  for (i = 0; i < gpIds.length; i++) {
+    var id = gpIds[i];
+    var personCacheItem = self.mapBackend.getPersonFromCache(id);
+    if (personCacheItem) {
+      var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
+      if (locationCacheItem) {
+        var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
+          id: 'person-' + personCacheItem.data.id,
+          classname: 'personMarker',
+          image: personCacheItem.data.photo + '?sz=24',
+          dimension: new google.maps.Size(24,24),
+          anchor: new google.maps.Point(12,12),
+          title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
+        });
+        self.markersArray.push(marker);
+        // Marker click
+        self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
       }
     }
-  });
+  }
 };
 
 /**
@@ -86,13 +85,14 @@ MapController.prototype.addMarkersFromCache = function() {
  * detailed hangout information.
  */
 MapController.prototype.addPersonMarkerClickedEvent = function(userID, marker, location) {
+  console.log(userID, location);
   google.maps.event.addListener(marker, 'click', function() {
     var currentHangout = this.getHangoutObjectFromPerson(userID);
     if (currentHangout) {
       var hangoutPopupDOM = $('#hangouts-popup-template').tmpl({hangout: currentHangout});
       var infowindow = new google.maps.InfoWindow();
       infowindow.setContent(hangoutPopupDOM.html());
-      infowindow.setPosition(location);
+      infowindow.setPosition(new google.maps.LatLng(location.lat(),location.lng()));
       infowindow.open(this.map);
     }
   }.bind(this));

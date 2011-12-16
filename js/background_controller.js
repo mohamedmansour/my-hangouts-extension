@@ -8,7 +8,7 @@ BackgroundController = function() {
   var db = this.initDatabase();
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
-  this.updater = new HangoutUpdater(this);
+  this.updaterBackend = new HangoutUpdater(this);
   this.mapBackend = new MapBackend(this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
@@ -145,7 +145,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
  * @returns a list of hangouts.
  */
 BackgroundController.prototype.getHangoutBackend = function() {
-  return this.updater;
+  return this.updaterBackend;
 };
 
 /**
@@ -159,7 +159,7 @@ BackgroundController.prototype.getMapBackend = function() {
  * Get the next hangout update from the list.
  */
 BackgroundController.prototype.refreshPublicHangouts = function() {
-  this.updater.doNext();
+  this.updaterBackend.doNext();
 };
 
 /**
