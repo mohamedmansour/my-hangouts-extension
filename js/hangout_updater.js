@@ -74,14 +74,16 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         if (cache.is_public) hangout.is_public = cache;
 
         // Update the hangouts collection.
-        hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >= 0;
+        hangout.data = hangout.data;
         self.hangouts[cache.index] = hangout;
 
         // Notify
         self.circleNotifier.notify(hangout);
         continue;
       }
-      hangout.data.extra = hangout.html.indexOf(self.NAMED_HANGOUT_ID_STRING) >= 0;
+      hangout.data.is_extra = hangout.data.type == 1;
+      hangout.data.is_normal = hangout.data.type == 2;
+      hangout.data.is_onair = hangout.data.type == 3;
       self.hangouts.push(hangout);
       
       // Preserve in the cache the visibility status and the index in the collection.
