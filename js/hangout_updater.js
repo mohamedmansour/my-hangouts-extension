@@ -268,15 +268,13 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
 HangoutUpdater.prototype.doneCheckingForDeletion = function(){
   // Remove all the dead hangouts, which are intentionally null.
   var readyHangouts = [];
-  var cleanedHangouts = [];
   for (var i = 0; i < this.hangouts.length; i++){
     if (this.hangouts[i]){
       readyHangouts.push(this.hangouts[i]);
-      cleanedHangouts.push(this.hangouts[i]);
     }
   }
-  this.readyHangouts = readyHangouts;
-  this.hangouts = cleanedHangouts;
+  this.readyHangouts = $.extend(true, [], readyHangouts);
+  this.hangouts = $.extend(true, [], readyHangouts);;
 
   // Notify our users for the new hangouts and draw the new badge.
   this.circleNotifier.notify(this.readyHangouts);
