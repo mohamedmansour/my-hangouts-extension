@@ -53,10 +53,10 @@ body, html {
   cursor: pointer;
 }
 .menu-item:hover {
-  background-color: rgba(255,255,255,0.9);
+  background-color: #4c4c4c;
 }
 .menu-item.selected {
-  border-color: rgba(255,255,255,0.9);
+  border-color: #dd4b39;
 }
 
 #menu-options {
@@ -74,8 +74,10 @@ body, html {
 }
 
 .popup-page h2 {
-  color: #4d90fe;
+  /*color: #4d90fe;*/
   font-size: 18px;
+  color:rgba(0,0,0,0.75);
+  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
 }
 
 #hangouts-container {
