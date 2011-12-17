@@ -176,6 +176,7 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
   var doRefresh = refresh;
   self.controller.plus.search(function(res) {
     var data = res.data;
+    var newHangouts = {};
 
     // Capture the error
     self.error = !res.status
@@ -197,7 +198,8 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
       if (!hangout) {
         continue;
       }
-
+	  
+	  newHangouts[hangout.data.id] = true;
       var cache = self.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
@@ -216,31 +218,46 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
         is_public: hangout.is_public
       };
     }
-
-    // Go through the hangouts we have and remove any that were returned not active.
-    // This should be defined at the end since our cache index is not being used at this point.
-    /* TODO: DISABLE for now, it was creating duplicates.
-    for (var i = 0; i < data.length; i++) {
-      var hangout = data[i];
-      if (hangout.data.active === false) {
-        var hgIndexToDelete = -1; 
-        var cache = self.cache[hangout.data.id];
-        if (cache) {
-          hgIndexToDelete = cache.index;
-        }
-        
-        // Delete the dead hang out
-        if (hgIndexToDelete > -1) {
-          self.hangouts.splice(hgIndexToDelete, 1);
-          delete self.cache[hangout.data.id];
-        }
+    
+	// look for any hangouts that we have that were not in the search result and make sure they are 
+	// not dead. Many instances data length returns zero.. not sure what this is about, but 
+	// for now I am skipping this processing for that case
+    for (var i = 0;  data.length > 0 && i < self.hangouts.length; i++) {
+      var hangout = self.hangouts[i];
+      var id = hangout.data.id
+      if (!newHangouts[id]){
+        console.log('checking for dead hangout: '+id);
+        var url = hangout.url
+        var postId = url.substring(url.lastIndexOf('/')+1)
+        self.controller.plus.lookupPost(function(res) {
+          if (!res.data.data.active|| !res.status){
+            self.removeHangout(res.data.data.id);
+          }
+        },hangout.owner.id, postId);
       }
     }
-    */
+
+
     self.circleNotifier.notify(self.hangouts);
     self.controller.drawBadgeIcon(self.hangouts.length, true);
   }, obj.query, {precache: 4, type: 'hangout', burst: true});
 };
+
+HangoutUpdater.prototype.removeHangout = function(id){
+	var deleteIndex = -1;
+	for ( var i = 0; i < this.hangouts.length; i++){
+		if ( id = this.hangouts[i].data.id ) {
+			deleteIndex = i;
+			break;
+		}
+	}
+	
+	if (deleteIndex>=0){
+		console.log('remove hangout id: '+id+ ':'+ this.hangouts[deleteIndex]);
+		this.hangouts.splice(deleteIndex, 1);
+		delete this.cache[id];
+	}
+}
   
 /**
  * Executes the next state.
@@ -273,7 +290,7 @@ HangoutUpdater.prototype.doNext = function() {
  * Reset the state after 3rd try to keep results fresh.
  */
 HangoutUpdater.prototype.state0 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY, true);
+  this.search(this.HANGOUT_SEARCH_QUERY, false);
 };
 
 
