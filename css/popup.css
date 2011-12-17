@@ -3,6 +3,7 @@ body, html {
   font: normal 13px arial,sans-serif;
   margin-top: 0;
   overflow-x: hidden;
+  background:url(../img/wood-bg.jpg);
 }
 #hangout-bar {
   background-color: #2D2D2D;
@@ -36,7 +37,7 @@ body, html {
 }
 #popup-container {
   width: 600px;
-  margin-top: 28px;
+  margin-top: 36px;
   position: relative;
   top: 0;
   left: 0;
@@ -52,10 +53,10 @@ body, html {
   cursor: pointer;
 }
 .menu-item:hover {
-  background-color: #4a4a4a;
+  background-color: rgba(255,255,255,0.9);
 }
 .menu-item.selected {
-  border-color: #dd4b39;
+  border-color: rgba(255,255,255,0.9);
 }
 
 #menu-options {
@@ -87,15 +88,16 @@ body, html {
 }
 
 .hangout-item {
-  background-color: #eee;
-  border-radius: 5px;
+  background-color: rgba(255,255,255,0.7);
+  border-radius: 0px;
   height: 65px;
-  margin: 5px 0;
+  margin: 0;
   clear: both;
   position: relative;
+  border:1px solid rgba(255,255,255,0.6);
 }
 .hangout-item:hover {
-  background-color: #ccc;
+  background-color: rgba(255,255,255,0.9);
 }
 .hangout-overlay {
   position: absolute;
@@ -168,6 +170,7 @@ body, html {
 .hangout-participants img:hover {
   box-shadow: 0 0 15px white; 
   background-color: white;
+  -webkit-transform: scale(1.2); -webkit-transition:0.1s;
 }
 .hangout-participants ul {
   margin: 0;
@@ -184,7 +187,7 @@ body, html {
 .hangout-name {
   position: absolute;
   left: 160px;
-  color: #aaa;
+  color: rgba(0,0,0,0.7);
 }
 
 .hangout-item:hover .hangout-name {
@@ -232,7 +235,7 @@ body, html {
   color: #eee;
   text-align: center;
   font-weight: bold;
-  opacity: 0.75;
+  opacity: 0.9;
   cursor: pointer;
 }
 .in_my_circle img {
@@ -298,4 +301,3 @@ body, html {
   width: 20px;
   height: 20px;
 }
-  
