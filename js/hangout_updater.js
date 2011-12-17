@@ -219,20 +219,22 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
       };
     }
     
-    
-	//
-    for (var i = 0; i < self.hangouts.length; i++) {
-		var hangout = self.hangouts[i];
-		var id = hangout.data.id
-		if (!newHangouts[id]){
-			var url = hangout.url
-			var postId = url.substring(url.lastIndexOf('/')+1)
-			self.plus.lookupPost(function(res) {
-				self.removeHangOut(id);
-			},hangout.owner.id, postId);
-			
-			
-		}
+	// look for any hangouts that we have that were not in the search result and make sure they are 
+	// not dead. Many instances data length returns zero.. not sure what this is about, but 
+	// for now I am skipping this processing for that case
+    for (var i = 0;  data.length > 0 && i < self.hangouts.length; i++) {
+      var hangout = self.hangouts[i];
+      var id = hangout.data.id
+      if (!newHangouts[id]){
+        console.log('checking for dead hangout: '+id);
+        var url = hangout.url
+        var postId = url.substring(url.lastIndexOf('/')+1)
+        self.controller.plus.lookupPost(function(res) {
+          if (!res.data.data.active|| !res.status){
+            self.removeHangout(res.data.data.id);
+          }
+        },hangout.owner.id, postId);
+      }
     }
 
 
@@ -244,16 +246,16 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
 HangoutUpdater.prototype.removeHangout = function(id){
 	var deleteIndex = -1;
 	for ( var i = 0; i < this.hangouts.length; i++){
-		if ( id = this.hangouts[i].id ) {
+		if ( id = this.hangouts[i].data.id ) {
 			deleteIndex = i;
 			break;
 		}
 	}
 	
 	if (deleteIndex>=0){
-		console.log('removed hangout id: '+id);
+		console.log('remove hangout id: '+id+ ':'+ this.hangouts[deleteIndex]);
 		this.hangouts.splice(deleteIndex, 1);
-		delete self.cache[id];
+		delete this.cache[id];
 	}
 }
   
@@ -288,7 +290,7 @@ HangoutUpdater.prototype.doNext = function() {
  * Reset the state after 3rd try to keep results fresh.
  */
 HangoutUpdater.prototype.state0 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY, true);
+  this.search(this.HANGOUT_SEARCH_QUERY, false);
 };
 
 
