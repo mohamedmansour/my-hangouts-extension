@@ -836,7 +836,6 @@ GooglePlusAPI.prototype.lookupPost = function(callback, userID, postID) {
   var params = userID + '?updateId=' + postID;
   this._requestService(function(response) {
     var item = self._parsePost(response[1]);
-    console.log(item);
     self._fireCallback(callback, { status: true, data: item });
   }, this.ACTIVITY_API + params);
 };
