@@ -1,4 +1,4 @@
-/**
+**
  * Updater State Machine to execute different states each iteration.
  *
  * @param {BackgroundController} controller The background controller.
@@ -12,7 +12,8 @@ HangoutUpdater = function(controller) {
   this.errorCount = 0;
   this.error = false;
   this.cache = {};
-  this.hangouts = [];
+  this.hangouts = [];      // These hangouts are currently being processed.
+  this.readyHangouts = []; //  These are hangouts that are guaranteed to be processed.
   this.MAX_ASSUMED_SCORE = 50;
   this.HANGOUT_SEARCH_QUERY = {
     query: '"is hanging out" | "hangout named"'
@@ -30,14 +31,14 @@ HangoutUpdater.prototype.hasError = function() {
  * @return List of hangouts.
  */
 HangoutUpdater.prototype.getHangouts = function() {
-  return this.hangouts;
+  return this.readyHangouts;
 };
 
 /**
  * Return an array of g+ ids for every person in all we know about hangouts.
  */
 HangoutUpdater.prototype.getAllParticipants = function(opt_callback) {
-  var hangouts = this.controller.getHangoutBackend().getHangouts();
+  var hangouts = this.getHangouts();
   var allParticipants = [];
   
   var i = 0;
@@ -176,6 +177,14 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
   var doRefresh = refresh;
   self.controller.plus.search(function(res) {
     var data = res.data;
+    
+    // TODO: Fix Search API so we know the response is a burst.
+    //       So if there are no hangouts going on, absolutely no hangouts, then this 
+    //       will be incorrect.
+    if (data.length == 0) {
+      return;
+    }
+    
     var newHangouts = {};
 
     // Capture the error
@@ -198,65 +207,78 @@ HangoutUpdater.prototype.search = function(obj, refresh) {
       if (!hangout) {
         continue;
       }
-	  
-	  newHangouts[hangout.data.id] = true;
-      var cache = self.cache[hangout.data.id];
+      var hangoutID = hangout.data.id;
+      newHangouts[hangoutID] = true;
+      var cache = self.cache[hangoutID];
       if (cache) {
         // Preserve public status. It weighs more than limited.
         if (cache.is_public) hangout.is_public = true;
 
         // Update the hangouts collection.
         self.hangouts[cache.index] = hangout;
-        continue;
       }
-
-      self.hangouts.push(hangout);
-      
-      // Preserve in the cache the visibility status and the index in the collection.
-      self.cache[hangout.data.id] = {
-        index: self.hangouts.length - 1,
-        is_public: hangout.is_public
-      };
+      else {
+        self.hangouts.push(hangout);
+        
+        // Preserve in the cache the visibility status and the index in the collection.
+        self.cache[hangoutID] = {
+          index: self.hangouts.length - 1,
+          is_public: hangout.is_public
+        };
+      }
     }
     
-	// look for any hangouts that we have that were not in the search result and make sure they are 
-	// not dead. Many instances data length returns zero.. not sure what this is about, but 
-	// for now I am skipping this processing for that case
-    for (var i = 0;  data.length > 0 && i < self.hangouts.length; i++) {
+    // Look for any hangouts that we have that were not in the search result and make sure they are 
+    // not dead. Many instances data length returns zero.. not sure what this is about, but 
+    // for now I am skipping this processing for that case
+    
+    // Since we are dealing with asynchronous events, we need to keep track of when we are deleting
+    // hangouts, by marking them for delete, and once we are done checking, we issue the delete job.
+    var totalHangoutsToCheck = self.hangouts.length;
+    var doneDeletionCheck = function() { 
+      --totalHangoutsToCheck || self.doneCheckingForDeletion(); 
+    };
+    
+    // Start checking to see any dead hangouts from this round.
+    for (var i = 0; i < self.hangouts.length; i++) {
       var hangout = self.hangouts[i];
-      var id = hangout.data.id
-      if (!newHangouts[id]){
-        console.log('checking for dead hangout: '+id);
-        var url = hangout.url
-        var postId = url.substring(url.lastIndexOf('/')+1)
-        self.controller.plus.lookupPost(function(res) {
-          if (!res.data.data.active|| !res.status){
-            self.removeHangout(res.data.data.id);
+      var hangoutID = hangout.data.id;
+      if (!newHangouts[hangoutID]) {
+        var url = hangout.url;
+        var postId = url.substring(url.lastIndexOf('/') + 1);
+        self.controller.plus.lookupPost(function(lookupResponse) {
+          if (!lookupResponse.status || !lookupResponse.data.data.active){
+            console.log('Dead hangout mark for deletion: ' + hangoutID);
+            delete self.cache[hangoutID];
+            self.hangouts[i] = null;
+            doneDeletionCheck();
           }
-        },hangout.owner.id, postId);
+        }, hangout.owner.id, postId);
+      }
+      else {
+        doneDeletionCheck();
       }
     }
-
-
-    self.circleNotifier.notify(self.hangouts);
-    self.controller.drawBadgeIcon(self.hangouts.length, true);
-  }, obj.query, {precache: 4, type: 'hangout', burst: true});
+  }, obj.query, {precache: 4, type: 'hangout'});
 };
 
-HangoutUpdater.prototype.removeHangout = function(id){
-	var deleteIndex = -1;
-	for ( var i = 0; i < this.hangouts.length; i++){
-		if ( id = this.hangouts[i].data.id ) {
-			deleteIndex = i;
-			break;
-		}
-	}
-	
-	if (deleteIndex>=0){
-		console.log('remove hangout id: '+id+ ':'+ this.hangouts[deleteIndex]);
-		this.hangouts.splice(deleteIndex, 1);
-		delete this.cache[id];
-	}
+/**
+ * Done checking for deletion. We need to cleanup the null'd data and then notify.
+ */
+HangoutUpdater.prototype.doneCheckingForDeletion = function(){
+  // Remove all the dead hangouts, which are intentionally null.
+  var readyHangouts = [];
+  for (var i = 0; i < this.hangouts.length; i++){
+    if (this.hangouts[i]){
+      readyHangouts.push(this.hangouts[i]);
+    }
+  }
+  this.readyHangouts = $.extend(true, [], readyHangouts);
+  this.hangouts = $.extend(true, [], readyHangouts);;
+
+  // Notify our users for the new hangouts and draw the new badge.
+  this.circleNotifier.notify(this.readyHangouts);
+  this.controller.drawBadgeIcon(this.readyHangouts.length, true);
 }
   
 /**

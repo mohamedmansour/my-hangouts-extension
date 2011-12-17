@@ -127,7 +127,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   ctx.font = 'bold 11px arial, sans-serif';
   ctx.fillStyle = '#fff';
 
-  chrome.browserAction.setTitle({title: 'There are ' + count + ' people hanging out!'});
+  chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
   if (count > 19){
     ctx.fillText('19+', 1, 14);
   }
@@ -136,6 +136,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   }
   else if (count >= 0) {
     ctx.fillText(count + '', 6, 14);
+    chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
   }
   else {
     ctx.fillText('?', 6, 14);

@@ -31,7 +31,7 @@ CircleNotifier.prototype.notify = function(hangouts) {
   if (!this.notify_circles) {
     return;
   }
-  var notifyCount = 0;
+  var notifyHangouts = null;
   for (var h in hangouts) {
     var hangout = hangouts[h];
     this.notified[hangout.data.id] = this.notified[hangout.data.id] || {};
@@ -43,8 +43,7 @@ CircleNotifier.prototype.notify = function(hangouts) {
             var circleID = participant.circle_ids[c];
             if (this.circles_to_notify[circleID]) {
               this.notified[hangout.data.id][participant.id] = true;
-              notifyCount++;
-              console.log('NOTIFY USER ', participant.name);
+              notifyHangouts[participant.id] = hangout;
             }
           }
         }
@@ -55,8 +54,8 @@ CircleNotifier.prototype.notify = function(hangouts) {
     }
   }
   // Only display notifications if anything exists.
-  if (notifyCount > 0) {
-    this.showNotification();
+  if (notifyHangouts) {
+    this.showNotification(notifyHangouts);
   }
 };
 
@@ -64,12 +63,15 @@ CircleNotifier.prototype.notify = function(hangouts) {
  * Shows the HTML5 notification popup, if it is already visible, it will 
  * update it in realtime so the user will not have many notifications.
  */
-CircleNotifier.prototype.showNotification = function() {
+CircleNotifier.prototype.showNotification = function(notifyHangouts) {
   if (this.notification) {
-    this.sendNotificationUpdate();
+    this.sendNotificationUpdate(notifyHangouts);
   }
   else {
     this.notification = this.createNotification();
+    this.notification.ondisplay = function() {
+      this.sendNotificationUpdate(notifyHangouts);
+    }.bind(this);
     this.notification.show();
   }
 };
@@ -78,9 +80,9 @@ CircleNotifier.prototype.showNotification = function() {
  * Since we live in the extension context, we have total control of the views
  * in this regard, we send data to the controller.
  */
-CircleNotifier.prototype.sendNotificationUpdate = function() {
+CircleNotifier.prototype.sendNotificationUpdate = function(notifyHangouts) {
   chrome.extension.getViews({type:'notification'}).forEach(function(win) {
-    win.controller.refresh();
+    win.controller.refresh(notifyHangouts);
   });
 };
 
@@ -90,17 +92,8 @@ CircleNotifier.prototype.sendNotificationUpdate = function() {
  */
 CircleNotifier.prototype.createNotification = function() {
   var notification = webkitNotifications.createHTMLNotification('notification.html');
-  notification.ondisplay = this.onNotificationDisplay.bind(this);
   notification.onclose  = this.onNotificationClose.bind(this);
   return notification;
-};
-
-/**
- * When a notification is first displayed, once created, it should fetch refresh itself.
- * We are doing this to have a real-time notification.
- */
-CircleNotifier.prototype.onNotificationDisplay = function() {
-  this.sendNotificationUpdate();
 };
 
 /**
