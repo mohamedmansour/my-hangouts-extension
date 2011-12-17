@@ -47,7 +47,7 @@ CaptureEffectsController.prototype.open = function(id) {
   });
 };
 CaptureEffectsController.prototype.openEditMode = function() {
-  $(document).delegate("li", "click", function() {
+  $(document).on("click", "li", function() {
 	  $(this).addClass('select');
 	  $('li').fadeOut(800);
 	  $('#edit').delay(400).fadeIn(400);
@@ -57,7 +57,7 @@ CaptureEffectsController.prototype.dispose = function() {
 	$(this.glfxCanvas).remove();
 	$('#edit').fadeOut(200);
 	$('li').delay(400).fadeIn(200).removeClass('select');	
-	$(document).undelegate("li", "click");
+	$(document).off("click", "li");
 };
 
 CaptureEffectsController.prototype.onSaveClicked = function() {
@@ -109,19 +109,24 @@ CaptureEffectsController.prototype.getEffectCanvas = function() {
 };
 
 CaptureEffectsController.prototype.onWindowResize = function() {
-  var head = document.getElementById('edit-head').offsetHeight;
-  var sidebar = document.getElementById('fx-container').offsetWidth;
-  var h = $(window).height() - head;
-  var w = $(window).width() - sidebar;
-  var ch = $('canvas').height();
-  var cw = $('canvas').width();
-  if ((ch < h) || (ch > h)) {
-    $('canvas').css('height', h).css('width', 'auto');			
+  //set boundaries
+  var windowHeight = $(window).height() - $('#edit-head').height();
+  var windowWidth = $(window).width() - $('#fx-container').width();
+  
+  //resize to boundaries
+  $('#canvas-container').css('height', windowHeight);
+  $('#canvas-container').css('width', windowWidth);
+  
+  //do some math
+  if ($('canvas').height() != windowHeight) {
+	$('canvas').height(windowHeight).width('auto');
   }
-  if ((cw > w)) {
-    $('canvas').css('height', 'auto').css('width', w);
+  if ($('canvas').width() > windowWidth) {
+      $('canvas').height('auto').width(windowWidth);
   }
-  $('#fx-container').css('height', h);
+  
+  //adjust height of fx-container
+  $('#fx-container').css('height', windowHeight);
 };
 
 CaptureEffectsController.prototype.onEffectClose = function(e) {
