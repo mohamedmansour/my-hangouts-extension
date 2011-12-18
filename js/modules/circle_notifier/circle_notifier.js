@@ -31,7 +31,7 @@ CircleNotifier.prototype.notify = function(hangouts) {
   if (!this.notify_circles) {
     return;
   }
-  var notifyHangouts = null;
+  var notifyHangouts = {};
   for (var h in hangouts) {
     var hangout = hangouts[h];
     this.notified[hangout.data.id] = this.notified[hangout.data.id] || {};
