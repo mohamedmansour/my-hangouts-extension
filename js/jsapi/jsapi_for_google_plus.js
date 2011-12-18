@@ -347,9 +347,9 @@ GooglePlusAPI.prototype._verifySession = function(name, args) {
  * @param {Function<Object>} callback The callback to fire back.
  * @param {Object} The error data to send in the callback.
  */
-GooglePlusAPI.prototype._isResponseSuccess = function(callback, response) {
+GooglePlusAPI.prototype._isResponseSuccess = function(callback, response,cbParams) {
   if (response.error) {
-    this._fireCallback(callback, { status: false, data: response.error + ' - ' + response.text});
+    this._fireCallback(callback, { status: false, data: response.error + ' - ' + response.text, cbParams:cbParams});
     return false;
   }
   else {
@@ -840,23 +840,24 @@ GooglePlusAPI.prototype.lookupUsers = function(callback, ids) {
  * @param {string} userID The profile ID
  * @param {string} postID The post ID
  */
-GooglePlusAPI.prototype.lookupPost = function(callback, userID, postID) {
+GooglePlusAPI.prototype.lookupPost = function(callback, userID, postID, cbParams) {
   var self = this;
   if (!userID || !postID) {
     this._fireCallback(callback, {
       status: false,
-      data: 'You must specifify a userID and postID parameters.'
+      data: 'You must specifify a userID and postID parameters.',
+      cbParams:cbParams
     });
     return;
   }
   var params = userID + '?updateId=' + postID;
   this._requestService(function(response) {
-    if (!self._isResponseSuccess(callback, response)) {
+    if (!self._isResponseSuccess(callback, response, cbParams)) {
       return;
     }
 
     var item = self._parsePost(response[1]);
-    self._fireCallback(callback, { status: true, data: item });
+    self._fireCallback(callback, { status: true, data: item, cbParams:cbParams });
   }, this.ACTIVITY_API + params);
 };
 
