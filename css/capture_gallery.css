@@ -170,7 +170,9 @@ ul.gallery  li div:hover .controls {
 	color:rgba(0,0,0,0.8);
 	text-shadow:1px 1px 1px rgba(0,0,0,0.5);
 }
-#edit-body { position:absolute; top:65px; }
+#edit-body { position:absolute; top:65px; width:100%; }
+
+#canvas-container { position:absolute; top:0; right:0; background:#00CCCC; }
 
 #fx-container {
 	width:240px;
@@ -245,8 +247,6 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 }
 #canvasPreview {
 	position:absolute;
-	left:240px;
-	top:0;
 }
 
 
