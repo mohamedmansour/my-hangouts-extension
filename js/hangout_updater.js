@@ -31,7 +31,15 @@ HangoutUpdater.prototype.hasError = function() {
  * @return List of hangouts.
  */
 HangoutUpdater.prototype.getHangouts = function() {
-  return this.hangouts;
+  // return non-null hangouts.... null indicates hangout is about to be deleted.
+  // i am sure there is a more javascripty way to do this....
+  var hangouts = [];
+  for (var i=0; i< this.hangouts.length; i++ ){
+    if (this.hangouts[i]){
+      hangouts.push(this.hangouts[i]);
+    }
+  }
+  return hangouts;
 };
 
 /**
