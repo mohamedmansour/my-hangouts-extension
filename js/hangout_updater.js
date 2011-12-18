@@ -31,7 +31,15 @@ HangoutUpdater.prototype.hasError = function() {
  * @return List of hangouts.
  */
 HangoutUpdater.prototype.getHangouts = function() {
-  return this.hangouts;
+  // return non-null hangouts.... null indicates hangout is about to be deleted.
+  // i am sure there is a more javascripty way to do this....
+  var hangouts = [];
+  for (var i=0; i< this.hangouts.length; i++ ){
+    if (this.hangouts[i]){
+      hangouts.push(this.hangouts[i]);
+    }
+  }
+  return hangouts;
 };
 
 /**
@@ -257,9 +265,13 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
   }
   
   this.updatingResult = false;
-  
-  this.circleNotifier.notify(this.hangouts);
-  this.controller.drawBadgeIcon(this.hangouts.length, true);
+  this.updateDependants();
+}
+
+HangoutUpdater.prototype.updateDependants = function() {
+  var hangouts = this.getHangouts();
+  this.circleNotifier.notify(hangouts);
+  this.controller.drawBadgeIcon(hangouts.length, true);
 }
 
 HangoutUpdater.prototype.cleanHangouts = function() {
@@ -268,6 +280,7 @@ HangoutUpdater.prototype.cleanHangouts = function() {
   }
   
   this.cleaningHangouts = true;
+  
   var j = 0;
   for( var i = 0; i < this.hangouts.length; i++) {
     if ( !this.hangouts[j] ) {
@@ -281,7 +294,7 @@ HangoutUpdater.prototype.cleanHangouts = function() {
   for (var i = 0; i < this.hangouts.length; i++) {
     var hangout = this.hangouts[i];
     var id = hangout.data.id
-    console.log('checking for dead hangout: '+id);
+   // console.log('checking for dead hangout: '+id);
     var url = hangout.url;
     var postId = url.substring(url.lastIndexOf('/')+1);
     this.controller.plus.lookupPost(function(res) {
@@ -293,9 +306,8 @@ HangoutUpdater.prototype.cleanHangouts = function() {
 
   
   this.cleaningHangouts = false;
+  this.updateDependants();
 
-  this.circleNotifier.notify(this.hangouts);
-  this.controller.drawBadgeIcon(this.hangouts.length, true);
 };
 
 HangoutUpdater.prototype.removeHangout = function(id){
