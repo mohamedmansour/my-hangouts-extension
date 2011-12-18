@@ -130,13 +130,15 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
     updatedHangout.data.name = updatedHangout.data.id + '.';
   }
   else {
-    updatedHangout.data.name = updatedHangout.owner.name + ' is hanging out.';
+    updatedHangout.data.name = updatedHangout.owner.name + ' is hanging out';
     if (totalParticipants == 1) {
-      updatedHangout.data.name += ' with ' + updatedHangout.data.participants[0].name + '.';
+      updatedHangout.data.name += ' with ' + updatedHangout.data.participants[0].name;
     }
     if (totalParticipants > 1 ) {
-      updatedHangout.data.name += ' with ' + totalParticipants +  ' people.';
+      updatedHangout.data.name += ' with ' + totalParticipants +  ' people';
     }
+    updatedHangout.data.name +='.';
+    
   }
 
   // Fill in circle data.
