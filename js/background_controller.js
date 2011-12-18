@@ -8,14 +8,11 @@ BackgroundController = function() {
   var db = this.initDatabase();
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
-  this.updaterBackend = new HangoutUpdater(this);
-  this.mapBackend = new MapBackend(this);
+  this.updater = new HangoutUpdater(this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
   this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
-  this.REFRESH_INTERVAL = 2000; // Look for new results every 5 seconds.
-  this.CLEAN_INTERVAL = 15000;
   this.myFollowersMap = {};
   this.myCirclesList = [];
 };
@@ -74,11 +71,9 @@ BackgroundController.prototype.onUpdate = function(previous, current) {
  */
 BackgroundController.prototype.init = function() {
   this.plus.init(function(status) {
-    window.setInterval(this.queryPublicHangouts.bind(this), this.UPDATE_INTERVAL);
+    window.setInterval(this.refreshPublicHangouts.bind(this), this.UPDATE_INTERVAL);
     window.setInterval(this.refreshCircles.bind(this), this.UPDATE_CIRCLES_INTERVAL);
-    window.setInterval(this.refreshPublicHangouts.bind(this), this.REFRESH_INTERVAL);
-    window.setInterval(this.cleanPublicHangouts.bind(this), this.CLEAN_INTERVAL);
-    this.queryPublicHangouts();
+    this.refreshPublicHangouts();
     this.refreshCircles();
   }.bind(this));
 
@@ -101,9 +96,6 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
     case 'RemoveOverlay':
       chrome.tabs.sendRequest(sender.tab.id, {method: 'RemoveOverlayUI'});
       break;
-    case 'GetSetting':
-      sendResponse(settings[request.data]);
-      break;
     case 'OpenURL':
       chrome.tabs.create({url: chrome.extension.getURL(request.data)});
       break;
@@ -121,17 +113,64 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
  */
 BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   var ctx = document.createElement('canvas').getContext('2d');
+
+  /**
+   * Private method which fills a rectangle that has rounded corners
+   * Used to imitate style of the Google+ Notification icon
+   *
+   * TOTHINK: Maybe this method should be defined somewhere else...
+   * A possibility would be to extend the canvas context prototype
+   * by seperate methods for filling and stroking in order to keep a 
+   * consistent interface.
+   *
+   * @param {Object} context The canvas context on which to draw.
+   * @param {number} x The x-coordinate of the upper left corner of the 
+   * desired rounded rectangle
+   * @param {number} y The y-coordinate of the upper left corner of the
+   * desired rounded rectangle
+   * @param {number} width The desired rectangle's width.
+   * @param {number} height The desired rectangle's height.
+   * @param {number} radius The radius with which the corners should be rounded
+   */
+  var fillAndStrokeRoundRect = function(context, x, y, width, height, radius) {
+    context.beginPath();
+    // Let's start in the upper left corner of the shape and draw clockwise
+    context.moveTo(x + radius, y);
+    context.lineTo(x + width - radius, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + radius);
+    context.lineTo(x + width, y + height - radius);
+    context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    context.lineTo(x + radius, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - radius);
+    context.lineTo(x, y + radius);
+    context.quadraticCurveTo(x, y, x + radius, y);
+    context.fill();
+    context.stroke();
+  }
+
   if (newItem) {
     ctx.fillStyle = 'rgba(48, 121, 237, 1)';
+    ctx.strokeStyle = 'rgba(43, 108, 212, 0.5)';
+    
+    // Sadly, the fix below makes the active badge look not like the original
+    // one - therefore we have to have two different fill calls (with 
+    // different coordinates)
+    fillAndStrokeRoundRect(ctx, 0, 0, 19, 19, 2);
   }
   else {
-    ctx.fillStyle = 'rgba(208, 208, 208, 1)';
-  }
-  ctx.fillRect(0, 0, 19, 19);
-  ctx.font = 'bold 11px arial, sans-serif';
-  ctx.fillStyle = '#fff';
+    ctx.fillStyle = 'rgba(237, 237, 237, 1)';
+    ctx.strokeStyle = 'rgba(150, 150, 150, 0.4)';
 
-  chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
+    // We are offsetting the rectangle by half a unit in order to achieve a 
+    // crisp border on the inactive badge (see characteristics of lineWidth: 
+    // http://goo.gl/DFnaA)
+    fillAndStrokeRoundRect(ctx, 0.5, 0.5, 18, 18, 2);
+  }
+
+  ctx.font = 'bold 11px arial, sans-serif';
+  ctx.fillStyle = newItem ? '#fff' : '#999';
+
+  chrome.browserAction.setTitle({title: 'There are ' + count + ' people hanging out!'});
   if (count > 19){
     ctx.fillText('19+', 1, 14);
   }
@@ -139,10 +178,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
     ctx.fillText(count + '', 3, 14);
   }
   else if (count >= 0) {
-    ctx.fillText(count + '', 6, 14);
-    if ( count == 0 ){
-      chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
-    }
+    ctx.fillText(count + '', 6.5, 14);
   }
   else {
     ctx.fillText('?', 6, 14);
@@ -154,39 +190,16 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
 /**
  * @returns a list of hangouts.
  */
-BackgroundController.prototype.getHangoutBackend = function() {
-  return this.updaterBackend;
+BackgroundController.prototype.getHangouts = function() {
+  return this.updater.getHangouts();
 };
 
 /**
- * The map backend
- */
-BackgroundController.prototype.getMapBackend = function() {
-  return this.mapBackend;
-};
-
-/**
- * Get the next hangout query update from the list.
- */
-BackgroundController.prototype.queryPublicHangouts = function() {
-  this.updaterBackend.doNext();
-};
-
-/**
- * Get the pull whatever search results we have and update the hangouts.
+ * Get the next hangout update from the list.
  */
 BackgroundController.prototype.refreshPublicHangouts = function() {
-  this.updaterBackend.update();
+  this.updater.doNext();
 };
-/**
- *  Remove deadhangouts
- */
-BackgroundController.prototype.cleanPublicHangouts = function() {
-  this.updaterBackend.cleanHangouts();
-};
-
-
-
 
 /**
  * Refresh internal circles database. Then add them to some internal map.
