@@ -122,6 +122,10 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
 BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   var ctx = document.createElement('canvas').getContext('2d');
 
+  // If count is zero or smaller, show the badge as inactive,
+  // regardless of newItem's value
+  newItem = newItem & (count > 0);
+  
   /**
    * Private method which fills a rectangle that has rounded corners
    * Used to imitate style of the Google+ Notification icon
