@@ -82,7 +82,8 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
  */
 CircleNotifier.prototype.sendNotificationUpdate = function(notifyHangouts) {
   chrome.extension.getViews({type:'notification'}).forEach(function(win) {
-    win.controller.refresh(notifyHangouts);
+    if ( win.controller )    /// PATCH: I don;t know what this is supposed to be , but is null breaking stuff. TODO?
+      win.controller.refresh(notifyHangouts);
   });
 };
 
