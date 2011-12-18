@@ -1,4 +1,4 @@
-**
+/**
  * Updater State Machine to execute different states each iteration.
  *
  * @param {BackgroundController} controller The background controller.
@@ -7,14 +7,14 @@
 HangoutUpdater = function(controller) {
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 2;
+  this.maxState = 0;
   this.circleNotifier = new CircleNotifier(this);
   this.errorCount = 0;
   this.error = false;
   this.cache = {};
-  this.hangouts = [];      // These hangouts are currently being processed.
-  this.readyHangouts = []; //  These are hangouts that are guaranteed to be processed.
+  this.hangouts = [];
   this.MAX_ASSUMED_SCORE = 50;
+  this.searchResults = [];
   this.HANGOUT_SEARCH_QUERY = {
     query: '"is hanging out" | "hangout named"'
   };
@@ -31,19 +31,22 @@ HangoutUpdater.prototype.hasError = function() {
  * @return List of hangouts.
  */
 HangoutUpdater.prototype.getHangouts = function() {
-  return this.readyHangouts;
+  return this.hangouts;
 };
 
 /**
  * Return an array of g+ ids for every person in all we know about hangouts.
  */
 HangoutUpdater.prototype.getAllParticipants = function(opt_callback) {
-  var hangouts = this.getHangouts();
+  var hangouts = this.controller.getHangoutBackend().getHangouts();
   var allParticipants = [];
   
   var i = 0;
   for (i = 0; i < hangouts.length; i++) {
     var hangoutItem = hangouts[i];
+    if(!hangoutItem){
+      continue;
+    }
     allParticipants.push(hangoutItem.owner.id);
     var j = 0;
     for (j = 0; j < hangoutItem.data.participants.length; j++) {
@@ -69,7 +72,7 @@ HangoutUpdater.prototype.stripHTML = function(html) {
   var tmp = document.createElement('div');
   tmp.innerHTML = html;
   return tmp.textContent || tmp.innerText;
-}
+};
 
 HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   // If it is inactive, just continue to the next.
@@ -80,9 +83,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var updatedHangout = hangout;
   
   // Type.
-  updatedHangout.data.is_normal = hangout.data.type == 0;
-  updatedHangout.data.is_extra = hangout.data.type == 1;
-  updatedHangout.data.is_onair = hangout.data.type == 2;
+  updatedHangout.data.is_normal = hangout.data.type === 0;
+  updatedHangout.data.is_extra = hangout.data.type === 1;
+  updatedHangout.data.is_onair = hangout.data.type === 2;
 
   // Fill in circle information for each participant.
   var circleCount = 0;
@@ -172,113 +175,137 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
  * @param {Object} obj The search object where keys are "query" and "extra"
  * @param {boolean} refresh Reset the data with fresh hangouts.
  */
-HangoutUpdater.prototype.search = function(obj, refresh) {
+HangoutUpdater.prototype.search = function(obj) {
   var self = this;
-  var doRefresh = refresh;
+
   self.controller.plus.search(function(res) {
-    var data = res.data;
-    
-    // TODO: Fix Search API so we know the response is a burst.
-    //       So if there are no hangouts going on, absolutely no hangouts, then this 
-    //       will be incorrect.
-    if (data.length == 0) {
-      return;
+    self.updatingSearch = true;
+    if(res.data.length > 0 ) {
+      self.searchResults.push(res.data);
     }
     
-    var newHangouts = {};
-
     // Capture the error
-    self.error = !res.status
+    self.error = !res.status;
     if (self.error) {
       self.controller.drawBadgeIcon(-1, false);
       return;
     }
+    self.updatingSearch = false;
+  }, obj.query, {precache: 4, type: 'hangout', burst: true});
+  
+};
 
-    // It is time to refresh data, do it now, then stop asking for it.
-    if (doRefresh) {
-      self.hangouts.length = 0;
-      self.cache = {};
-      doRefresh = false;
-    }
+HangoutUpdater.prototype.update = function(refreshDeprecated) {
+  if ( this.updatingSearch || this.cleaningHangouts ) { // don't updae the hangouts if the results are updating ... as if.... 
+    return; 
+  }
+  
+  this.updatingResult = true;
+  
+  var newHangouts = {};
+  var doRefresh = refreshDeprecated;
+
+
+    // It is time to refresh data, do it now, then stop asking for it. ( Should not need this anymore
+  if (doRefresh) {
+    this.hangouts.length = 0;
+    this.cache = {};
+    doRefresh = false;
+  }
+
+  
+  // go through all the search results in turn and update the hangouts as needed.
+  while(this.searchResults.length > 0) {
+    
+    var data = this.searchResults.splice(0,1)[0]; // pop off the top element.
+    
 
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
-      var hangout = self.preprocessHangoutData(data[i]);
+      var hangout = this.preprocessHangoutData(data[i]);
       if (!hangout) {
         continue;
       }
-      var hangoutID = hangout.data.id;
-      newHangouts[hangoutID] = true;
-      var cache = self.cache[hangoutID];
+
+      var cache = this.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
-        if (cache.is_public) hangout.is_public = true;
+        if (cache.is_public) {
+            hangout.is_public = true;
+        }
 
         // Update the hangouts collection.
-        self.hangouts[cache.index] = hangout;
-      }
-      else {
-        self.hangouts.push(hangout);
-        
-        // Preserve in the cache the visibility status and the index in the collection.
-        self.cache[hangoutID] = {
-          index: self.hangouts.length - 1,
-          is_public: hangout.is_public
-        };
-      }
-    }
-    
-    // Look for any hangouts that we have that were not in the search result and make sure they are 
-    // not dead. Many instances data length returns zero.. not sure what this is about, but 
-    // for now I am skipping this processing for that case
-    
-    // Since we are dealing with asynchronous events, we need to keep track of when we are deleting
-    // hangouts, by marking them for delete, and once we are done checking, we issue the delete job.
-    var totalHangoutsToCheck = self.hangouts.length;
-    var doneDeletionCheck = function() { 
-      --totalHangoutsToCheck || self.doneCheckingForDeletion(); 
-    };
-    
-    // Start checking to see any dead hangouts from this round.
-    for (var i = 0; i < self.hangouts.length; i++) {
-      var hangout = self.hangouts[i];
-      var hangoutID = hangout.data.id;
-      if (!newHangouts[hangoutID]) {
-        var url = hangout.url;
-        var postId = url.substring(url.lastIndexOf('/') + 1);
-        self.controller.plus.lookupPost(function(lookupResponse) {
-          if (!lookupResponse.status || !lookupResponse.data.data.active){
-            console.log('Dead hangout mark for deletion: ' + hangoutID);
-            delete self.cache[hangoutID];
-            self.hangouts[i] = null;
-            doneDeletionCheck();
+        for ( var j = 0; j<this.hangouts.length;j++){
+          if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
+            this.hangouts[j] = hangout;
+            break;
           }
-        }, hangout.owner.id, postId);
+        }
+        continue;
       }
-      else {
-        doneDeletionCheck();
-      }
-    }
-  }, obj.query, {precache: 4, type: 'hangout'});
-};
 
-/**
- * Done checking for deletion. We need to cleanup the null'd data and then notify.
- */
-HangoutUpdater.prototype.doneCheckingForDeletion = function(){
-  // Remove all the dead hangouts, which are intentionally null.
-  var readyHangouts = [];
-  for (var i = 0; i < this.hangouts.length; i++){
-    if (this.hangouts[i]){
-      readyHangouts.push(this.hangouts[i]);
+      this.hangouts.push(hangout);
+      
+      // Preserve in the cache the visibility status and the index in the collection.
+      this.cache[hangout.data.id] = {
+        index: this.hangouts.length - 1,
+        is_public: hangout.is_public
+      };
     }
   }
-  this.readyHangouts = $.extend(true, [], readyHangouts);
-  this.hangouts = $.extend(true, [], readyHangouts);;
+  
+  this.updatingResult = false;
+  
+  this.circleNotifier.notify(this.hangouts);
+  this.controller.drawBadgeIcon(this.hangouts.length, true);
+}
 
-  // Notify our users for the new hangouts and draw the new badge.
-  this.circleNotifier.notify(this.readyHangouts);
-  this.controller.drawBadgeIcon(this.readyHangouts.length, true);
+HangoutUpdater.prototype.cleanHangouts = function() {
+  if ( this.updatingResult ) {
+    return;
+  }
+  
+  this.cleaningHangouts = true;
+  var j = 0;
+  for( var i = 0; i < this.hangouts.length; i++) {
+    if ( !this.hangouts[j] ) {
+      this.hangouts.splice(j, 1); 
+    } else {
+      j++;
+    }
+  }
+  
+  var self = this;
+  for (var i = 0; i < this.hangouts.length; i++) {
+    var hangout = this.hangouts[i];
+    var id = hangout.data.id
+    console.log('checking for dead hangout: '+id);
+    var url = hangout.url;
+    var postId = url.substring(url.lastIndexOf('/')+1);
+    this.controller.plus.lookupPost(function(res) {
+      if (!res.status || !res.data.data.active){
+        self.removeHangout(res.cbParams.id);
+      }
+    },hangout.owner.id, postId, {id:id});
+  }
+
+  
+  this.cleaningHangouts = false;
+
+  this.circleNotifier.notify(this.hangouts);
+  this.controller.drawBadgeIcon(this.hangouts.length, true);
+};
+
+HangoutUpdater.prototype.removeHangout = function(id){
+	var deleteIndex = -1;
+	for ( var i = 0; i < this.hangouts.length; i++){
+		if ( id === this.hangouts[i].data.id ) {
+      console.log('remove hangout id: '+id+ ':'+ this.hangouts[i]);
+      this.hangouts[i] = null;
+      delete this.cache[id];
+      break;
+		}
+	}
 }
   
 /**
@@ -309,20 +336,10 @@ HangoutUpdater.prototype.doNext = function() {
 };
 
 /**
- * Reset the state after 3rd try to keep results fresh.
+ * We don;t reset the list any more, so just the one state.
  */
 HangoutUpdater.prototype.state0 = function() {
   this.search(this.HANGOUT_SEARCH_QUERY, false);
 };
 
 
-/**
- * Requery the hangouts list
- */
-HangoutUpdater.prototype.state1 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY, false);
-};
-
-HangoutUpdater.prototype.state2 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY, false);
-};

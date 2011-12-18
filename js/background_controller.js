@@ -12,8 +12,10 @@ BackgroundController = function() {
   this.mapBackend = new MapBackend(this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
-  this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
+  this.UPDATE_INTERVAL = 20000; // Every 20 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
+  this.REFRESH_INTERVAL = 2000; // Look for new results every 5 seconds.
+  this.CLEAN_INTERVAL = 15000;
   this.myFollowersMap = {};
   this.myCirclesList = [];
 };
@@ -72,9 +74,11 @@ BackgroundController.prototype.onUpdate = function(previous, current) {
  */
 BackgroundController.prototype.init = function() {
   this.plus.init(function(status) {
-    window.setInterval(this.refreshPublicHangouts.bind(this), this.UPDATE_INTERVAL);
+    window.setInterval(this.queryPublicHangouts.bind(this), this.UPDATE_INTERVAL);
     window.setInterval(this.refreshCircles.bind(this), this.UPDATE_CIRCLES_INTERVAL);
-    this.refreshPublicHangouts();
+    window.setInterval(this.refreshPublicHangouts.bind(this), this.REFRESH_INTERVAL);
+    window.setInterval(this.cleanPublicHangouts.bind(this), this.CLEAN_INTERVAL);
+    this.queryPublicHangouts();
     this.refreshCircles();
   }.bind(this));
 
@@ -136,7 +140,9 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   }
   else if (count >= 0) {
     ctx.fillText(count + '', 6, 14);
-    chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
+    if ( count == 0 ){
+      chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
+    }
   }
   else {
     ctx.fillText('?', 6, 14);
@@ -160,11 +166,27 @@ BackgroundController.prototype.getMapBackend = function() {
 };
 
 /**
- * Get the next hangout update from the list.
+ * Get the next hangout query update from the list.
  */
-BackgroundController.prototype.refreshPublicHangouts = function() {
+BackgroundController.prototype.queryPublicHangouts = function() {
   this.updaterBackend.doNext();
 };
+
+/**
+ * Get the pull whatever search results we have and update the hangouts.
+ */
+BackgroundController.prototype.refreshPublicHangouts = function() {
+  this.updaterBackend.update();
+};
+/**
+ *  Remove deadhangouts
+ */
+BackgroundController.prototype.cleanPublicHangouts = function() {
+  this.updaterBackend.cleanHangouts();
+};
+
+
+
 
 /**
  * Refresh internal circles database. Then add them to some internal map.
