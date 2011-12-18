@@ -172,7 +172,7 @@ ul.gallery  li div:hover .controls {
 }
 #edit-body { position:absolute; top:65px; width:100%; }
 
-#canvas-container { position:absolute; top:0; right:0; background:#00CCCC; }
+#canvas-container { position:absolute; top:0; right:0; background:rgba(255,255,255,0.6); }
 
 #fx-container {
 	width:240px;

@@ -125,6 +125,9 @@ CaptureEffectsController.prototype.onWindowResize = function() {
       $('canvas').height('auto').width(windowWidth);
   }
   
+  var xspace = ((windowWidth - $('canvas').width())/2);
+  $('#canvasPreview').css('right',xspace);
+  
   //adjust height of fx-container
   $('#fx-container').css('height', windowHeight);
 };
