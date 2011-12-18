@@ -126,48 +126,15 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   // regardless of newItem's value
   newItem = newItem & (count > 0);
   
-  /**
-   * Private method which fills a rectangle that has rounded corners
-   * Used to imitate style of the Google+ Notification icon
-   *
-   * TOTHINK: Maybe this method should be defined somewhere else...
-   * A possibility would be to extend the canvas context prototype
-   * by seperate methods for filling and stroking in order to keep a 
-   * consistent interface.
-   *
-   * @param {Object} context The canvas context on which to draw.
-   * @param {number} x The x-coordinate of the upper left corner of the 
-   * desired rounded rectangle
-   * @param {number} y The y-coordinate of the upper left corner of the
-   * desired rounded rectangle
-   * @param {number} width The desired rectangle's width.
-   * @param {number} height The desired rectangle's height.
-   * @param {number} radius The radius with which the corners should be rounded
-   */
-  var fillAndStrokeRoundRect = function(context, x, y, width, height, radius) {
-    context.beginPath();
-    // Let's start in the upper left corner of the shape and draw clockwise
-    context.moveTo(x + radius, y);
-    context.lineTo(x + width - radius, y);
-    context.quadraticCurveTo(x + width, y, x + width, y + radius);
-    context.lineTo(x + width, y + height - radius);
-    context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    context.lineTo(x + radius, y + height);
-    context.quadraticCurveTo(x, y + height, x, y + height - radius);
-    context.lineTo(x, y + radius);
-    context.quadraticCurveTo(x, y, x + radius, y);
-    context.fill();
-    context.stroke();
-  }
-
   if (newItem) {
     ctx.fillStyle = 'rgba(48, 121, 237, 1)';
     ctx.strokeStyle = 'rgba(43, 108, 212, 0.5)';
     
     // Sadly, the fix below makes the active badge look not like the original
-    // one - therefore we have to have two different fill calls (with 
+    // one - therefore we have to have two different fill and stroke calls (with 
     // different coordinates)
-    fillAndStrokeRoundRect(ctx, 0, 0, 19, 19, 2);
+    ctx.fillRoundRect(0, 0, 19, 19, 2);
+    ctx.strokeRoundRect(0, 0, 19, 19, 2);
   }
   else {
     ctx.fillStyle = 'rgba(237, 237, 237, 1)';
@@ -176,13 +143,14 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
     // We are offsetting the rectangle by half a unit in order to achieve a 
     // crisp border on the inactive badge (see characteristics of lineWidth: 
     // http://goo.gl/DFnaA)
-    fillAndStrokeRoundRect(ctx, 0.5, 0.5, 18, 18, 2);
+    ctx.fillRoundRect(0.5, 0.5, 18, 18, 2);
+    ctx.strokeRoundRect(0.5, 0.5, 18, 18, 2);
   }
 
   ctx.font = 'bold 11px arial, sans-serif';
   ctx.fillStyle = newItem ? '#fff' : '#999';
 
-  chrome.browserAction.setTitle({title: 'There are ' + count + ' people hanging out!'});
+  chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
   if (count > 19){
     ctx.fillText('19+', 1, 14);
   }
@@ -190,7 +158,10 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
     ctx.fillText(count + '', 3, 14);
   }
   else if (count >= 0) {
-    ctx.fillText(count + '', 6.5, 14);
+    ctx.fillText(count + '', 6, 14);
+    if ( count == 0 ){
+      chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
+    }
   }
   else {
     ctx.fillText('?', 6, 14);
