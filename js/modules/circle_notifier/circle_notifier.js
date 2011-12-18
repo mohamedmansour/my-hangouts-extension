@@ -31,7 +31,7 @@ CircleNotifier.prototype.notify = function(hangouts) {
   if (!this.notify_circles) {
     return;
   }
-  var notifyHangouts = null;
+  var notifyHangouts = {};
   for (var h in hangouts) {
     var hangout = hangouts[h];
     this.notified[hangout.data.id] = this.notified[hangout.data.id] || {};
@@ -82,7 +82,8 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
  */
 CircleNotifier.prototype.sendNotificationUpdate = function(notifyHangouts) {
   chrome.extension.getViews({type:'notification'}).forEach(function(win) {
-    win.controller.refresh(notifyHangouts);
+    if ( win.controller )    /// PATCH: I don;t know what this is supposed to be , but is null breaking stuff. TODO?
+      win.controller.refresh(notifyHangouts);
   });
 };
 
