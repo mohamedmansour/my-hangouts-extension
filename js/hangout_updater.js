@@ -15,6 +15,8 @@ HangoutUpdater = function(controller) {
   this.hangouts = [];
   this.MAX_ASSUMED_SCORE = 50;
   this.searchResults = [];
+  this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
+
   this.HANGOUT_SEARCH_QUERY = {
     query: '"is hanging out" | "hangout named"'
   };
@@ -187,9 +189,10 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
  */
 HangoutUpdater.prototype.search = function(obj) {
   var self = this;
-
+  
   self.controller.plus.search(function(res) {
     self.updatingSearch = true;
+    //console.log('search type : '+ res.type + ' returned '+ res.data.length);
     if(res.data.length > 0 ) {
       self.searchResults.push(res.data);
     }
@@ -201,12 +204,12 @@ HangoutUpdater.prototype.search = function(obj) {
       return;
     }
     self.updatingSearch = false;
-  }, obj.query, {precache: 4, type: 'hangout', burst: true});
+  }, obj.query, {precache: 4, type: 'hangout', burst: true, burst_size:self.BURST_SIZE});
   
 };
 
 HangoutUpdater.prototype.update = function(refreshDeprecated) {
-  if ( this.updatingSearch || this.cleaningHangouts ) { // don't updae the hangouts if the results are updating ... as if.... 
+  if ( this.updatingSearch || this.cleaningHangouts ) { // don't update the hangouts if the results are updating ... as if.... 
     return; 
   }
   

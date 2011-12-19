@@ -41,6 +41,9 @@ GooglePlusAPI = function(opt) {
   this._session = null;
   this._info = null;
 
+  this.BURST_INTERVAL = 2000; // time between requesting 'more/burst' search results
+
+
   this._db.open();
 };
 
@@ -957,7 +960,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
             if (--burst_size > 0) {
               setTimeout(function() {
                 doRequest([]);
-              }.bind(this), 2000);
+              }.bind(this), self.BURST_INTERVAL);
             }
           }
         }
