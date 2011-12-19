@@ -284,8 +284,9 @@ HangoutUpdater.prototype.cleanHangouts = function() {
   
   this.cleaningHangouts = true;
   
+  var l = this.hangouts.length;
   var j = 0;
-  for( var i = 0; i < this.hangouts.length; i++) {
+  for( var i = 0; i < l; i++) {
     if ( !this.hangouts[j] ) {
       this.hangouts.splice(j, 1); 
     } else {
@@ -316,7 +317,7 @@ HangoutUpdater.prototype.cleanHangouts = function() {
 HangoutUpdater.prototype.removeHangout = function(id){
 	var deleteIndex = -1;
 	for ( var i = 0; i < this.hangouts.length; i++){
-		if ( id === this.hangouts[i].data.id ) {
+		if ( this.hangouts[i] && id === this.hangouts[i].data.id ) {
       console.log('remove hangout id: '+id+ ':'+ this.hangouts[i]);
       this.hangouts[i] = null;
       delete this.cache[id];
