@@ -318,7 +318,7 @@ HangoutUpdater.prototype.removeHangout = function(id){
 	var deleteIndex = -1;
 	for ( var i = 0; i < this.hangouts.length; i++){
 		if ( this.hangouts[i] && id === this.hangouts[i].data.id ) {
-      console.log('remove hangout id: '+id+ ':'+ this.hangouts[i]);
+      console.log('remove hangout id: '+id+ ':', this.hangouts[i]);
       this.hangouts[i] = null;
       delete this.cache[id];
       break;
