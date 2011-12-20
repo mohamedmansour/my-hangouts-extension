@@ -207,9 +207,6 @@ BackgroundController.prototype.cleanPublicHangouts = function() {
   this.updaterBackend.cleanHangouts();
 };
 
-
-
-
 /**
  * Refresh internal circles database. Then add them to some internal map.
  */
@@ -248,4 +245,19 @@ BackgroundController.prototype.getPerson = function(id) {
  */
 BackgroundController.prototype.getCircles = function() {
   return this.myCircles;
+};
+
+/**
+ * Opens a special window depending on the target of the DOM we are hitting.
+ *
+ * @param {HTMLElement} target The target where the URL lives.
+ * @param {string} href The URL to open.
+ */
+BackgroundController.prototype.openSpecialWindow = function(target, href) {
+  if (target.is('.button') && settings.open_hangout_new_window) {
+    window.open(href,'hangoutwin', 'toolbar=0,location=1,resizable=1');
+  }
+  else {
+    chrome.tabs.create({url: href});
+  }
 };

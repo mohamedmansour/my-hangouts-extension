@@ -87,7 +87,7 @@ PopupController.prototype.processHangouts = function() {
       else return 0;
     });
     this.renderHangouts(this.hangouts);
-    $('a.clickable').click(this.onLinkClicked);
+    $('a.clickable').click(this.onLinkClicked.bind(this));
   }
 };
 
@@ -102,7 +102,8 @@ PopupController.prototype.onLinkClicked = function(e) {
   if (!href) {
     href = $(e.target).parent().attr('href');
   }
-  chrome.tabs.create({url: href});
+  // For buttons, decide whether to open in a new tab or window.
+  this.bkg.controller.openSpecialWindow($(e.target), href);
 };
 
 /**
