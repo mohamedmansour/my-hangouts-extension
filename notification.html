@@ -18,7 +18,7 @@
     <div class="hangout-item">
       {{each(i, participant) hangout.participants}}
         {{if participant.status}}
-          <a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=19" title="${participant.name}" /></a>
+          <a href="https://plus.google.com/${participant.id}/about" class="clickable">${participant.name}</a>
         {{/if}}
       {{/each}}
       is in a hangout. 

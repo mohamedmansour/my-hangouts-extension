@@ -292,10 +292,6 @@ body, html {
 }
   
 #popup-open:hover {
-  background-image: url(/img/open.png);
   background-position: 0px 0px;
-  display: inline-block;
-  width: 20px;
-  height: 20px;
 }
   
