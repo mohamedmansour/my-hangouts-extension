@@ -6,11 +6,19 @@
 CircleNotifier = function(updater) {
   this.updater =  updater;
   this.controller = updater.controller;
+  
+  // The registered circles to notify, this is updated in real time from settings.
   this.circles_to_notify = {};
   this.notify_circles = false;
-  this.initializeListeners();
-  this.notified = {};
+  
+  // Keep tracks of notifications.
+  this.notified = {};             // Total, browser session.
+  this.notificationSession = {};  // Notification, popup session.
+  
+  // The current notification being displayed.
   this.notification = null;
+  
+  this.initializeListeners();
 };
 
 /**
@@ -28,17 +36,16 @@ CircleNotifier.prototype.initializeListeners = function() {
  *
  * @param {Object} hangout The current hangout the participant is in.
  * @param {Object} participant The current participant to check so we could add.
- * @param {Object} hangoutsToNotify The global map to add so we could notify.
  */
-CircleNotifier.prototype.addParticipantToNotification = function(hangout, participant, hangoutsToNotify) {
+CircleNotifier.prototype.addParticipantToNotification = function(hangout, participant) {
   if (participant.circle_ids && participant.status) {
     if (!this.notified[hangout.data.id][participant.id]) {
       for (var c in participant.circle_ids) {
         var circleID = participant.circle_ids[c];
         if (this.circles_to_notify[circleID]) {
           this.notified[hangout.data.id][participant.id] = true;
-          hangoutsToNotify[hangout.data.id] = hangoutsToNotify[hangout.data.id] || { detail: hangout, participants: []};
-          hangoutsToNotify[hangout.data.id].participants.push(participant);
+          this.notificationSession[hangout.data.id] = this.notificationSession[hangout.data.id] || { detail: hangout, participants: []};
+          this.notificationSession[hangout.data.id].participants.push(participant);
           return;
         }
       }
@@ -57,21 +64,21 @@ CircleNotifier.prototype.notify = function(hangouts) {
   if (!this.notify_circles) {
     return;
   }
-  var notifyHangouts = {};
   for (var h in hangouts) {
     var hangout = hangouts[h];
     this.notified[hangout.data.id] = this.notified[hangout.data.id] || {};
     // Check owner.
-    this.addParticipantToNotification(hangout, hangout.owner, notifyHangouts);
+    this.addParticipantToNotification(hangout, hangout.owner);
     // Check participants.
     for (var p in hangout.data.participants) {
       var participant = hangout.data.participants[p];
-      this.addParticipantToNotification(hangout, participant, notifyHangouts);
+      this.addParticipantToNotification(hangout, participant);
     }
   }
-  // Only display notifications if anything exists.
-  if (!$.isEmptyObject(notifyHangouts)) {
-    this.showNotification(notifyHangouts);
+
+  // Always update the popup when it is open or session exists.
+  if (this.notification || !$.isEmptyObject(this.notificationSession)) { 
+    this.showNotification(this.notificationSession);
   }
 };
 
@@ -117,6 +124,7 @@ CircleNotifier.prototype.createNotification = function() {
  */
 CircleNotifier.prototype.onNotificationClose = function() {
   this.notification = null;
+  this.notificationSession = {};
 };
 
 /**
