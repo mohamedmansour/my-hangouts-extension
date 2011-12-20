@@ -1,9 +1,49 @@
-.hangout-item ul {
-  margin: 0;
-  padding: 0;
+body, html {
+  font: normal 13px arial,sans-serif;
+  margin-top: 0;
 }
-.hangout-item li {
+
+.hangout-item {
+  margin: 5px;
+}
+
+.hangout-item-sidebar {
+  float: left;
+  width: 30px;
+}
+.hangout-item-content {
+  margin-left: 40px;
+  border-left: 5px solid #eee;
+  padding-left: 5px;
+  min-height: 20px;
+}
+a:visited, a:link {
+  color: blue;
+  cursor: pointer;
+}
+
+a.button {
+  text-decoration: none;
   display: inline-block;
-  margin: 0;
-  padding: 0;
+  cursor: pointer;
+  line-height: 20px;
+  border: 1px solid #3079ED;
+  border-radius:3px;
+  -webkit-border-radius:3px;
+  color: white;
+  background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  padding: 0 5px;
+  height: 20px;
+  outline: 0;
+  -webkit-box-shadow: 0px 0px 6px #dddcff;
+  box-shadow: 0px 0px 6px #dddcff;
+}
+
+h1 {
+  font-size: 12px;
+  color: #444;
+  font-weight: bold;
 }

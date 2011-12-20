@@ -24,6 +24,32 @@ CircleNotifier.prototype.initializeListeners = function() {
 };
 
 /**
+ * Adds the participant to the notification bucket so we can send it off.
+ *
+ * @param {Object} hangout The current hangout the participant is in.
+ * @param {Object} participant The current participant to check so we could add.
+ * @param {Object} hangoutsToNotify The global map to add so we could notify.
+ */
+CircleNotifier.prototype.addParticipantToNotification = function(hangout, participant, hangoutsToNotify) {
+  if (participant.circle_ids && participant.status) {
+    if (!this.notified[hangout.data.id][participant.id]) {
+      for (var c in participant.circle_ids) {
+        var circleID = participant.circle_ids[c];
+        if (this.circles_to_notify[circleID]) {
+          this.notified[hangout.data.id][participant.id] = true;
+          hangoutsToNotify[hangout.data.id] = hangoutsToNotify[hangout.data.id] || { detail: hangout, participants: []};
+          hangoutsToNotify[hangout.data.id].participants.push(participant);
+          return;
+        }
+      }
+    }
+    else {
+      this.notified[hangout.data.id][participant.id] = {};
+    }
+  }
+};
+
+/**
  * Figure out if we should notify any participant in this hangout.
  */
 CircleNotifier.prototype.notify = function(hangouts) {
@@ -35,23 +61,12 @@ CircleNotifier.prototype.notify = function(hangouts) {
   for (var h in hangouts) {
     var hangout = hangouts[h];
     this.notified[hangout.data.id] = this.notified[hangout.data.id] || {};
+    // Check owner.
+    this.addParticipantToNotification(hangout, hangout.owner, notifyHangouts);
+    // Check participants.
     for (var p in hangout.data.participants) {
       var participant = hangout.data.participants[p];
-      if (participant.circle_ids && participant.status) {
-        if (!this.notified[hangout.data.id][participant.id]) {
-          for (var c in participant.circle_ids) {
-            var circleID = participant.circle_ids[c];
-            if (this.circles_to_notify[circleID]) {
-              this.notified[hangout.data.id][participant.id] = true;
-              notifyHangouts[hangout.data.id] = notifyHangouts[hangout.data.id] || { detail: hangout, participants: []};
-              notifyHangouts[hangout.data.id].participants.push(participant);
-            }
-          }
-        }
-        else {
-          this.notified[hangout.data.id][participant.id] = {};
-        }
-      }
+      this.addParticipantToNotification(hangout, participant, notifyHangouts);
     }
   }
   // Only display notifications if anything exists.
@@ -71,7 +86,7 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
   else {
     this.notification = this.createNotification();
     this.notification.show();
-    setTimeout(this.sendNotificationUpdate.bind(this), 250, notifyHangouts);
+    setTimeout(this.sendNotificationUpdate.bind(this), 500, notifyHangouts);
   }
 };
 

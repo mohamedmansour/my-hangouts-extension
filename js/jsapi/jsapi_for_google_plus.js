@@ -148,6 +148,7 @@ GooglePlusAPI.prototype._parsePost = function(element) {
         // Perhaps we want to deal with this later.
     }
     else {
+      item.owner.status = true;
       item.data = {};
       item.data.url = hangoutURL;
       item.data.type = hangoutType;
