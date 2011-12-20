@@ -1,8 +1,14 @@
+/**
+ * Manages the notification popup.
+ */
 NotificationController = function() {
   this.index = 0;
   this.bkg = chrome.extension.getBackgroundPage();
 };
 
+/**
+ * Initilizes the popup event listeners.
+ */
 NotificationController.prototype.init = function() {
   $(document).on('click', 'a.clickable', this.onLinkClicked.bind(this));
 };
@@ -21,6 +27,10 @@ NotificationController.prototype.onLinkClicked = function(e) {
   this.bkg.controller.openSpecialWindow($(e.target), href);
 };
 
+/**
+ * Refreshes the notification listing with the new hangouts.
+ * @param {Object} hangouts a map of hangouts with the notified participants.
+ */
 NotificationController.prototype.refresh = function(hangouts) {
-  $('#hangouts-template').tmpl({hangouts: hangouts}).appendTo($('body'));
+  $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
 };
