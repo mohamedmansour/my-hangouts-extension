@@ -1,0 +1,9 @@
+.hangout-item ul {
+  margin: 0;
+  padding: 0;
+}
+.hangout-item li {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}

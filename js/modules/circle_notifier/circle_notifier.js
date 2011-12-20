@@ -43,7 +43,8 @@ CircleNotifier.prototype.notify = function(hangouts) {
             var circleID = participant.circle_ids[c];
             if (this.circles_to_notify[circleID]) {
               this.notified[hangout.data.id][participant.id] = true;
-              notifyHangouts[participant.id] = hangout;
+              notifyHangouts[hangout.data.id] = notifyHangouts[hangout.data.id] || { detail: hangout, participants: []};
+              notifyHangouts[hangout.data.id].participants.push(participant);
             }
           }
         }
@@ -54,7 +55,7 @@ CircleNotifier.prototype.notify = function(hangouts) {
     }
   }
   // Only display notifications if anything exists.
-  if (notifyHangouts) {
+  if (!$.isEmptyObject(notifyHangouts)) {
     this.showNotification(notifyHangouts);
   }
 };
@@ -69,10 +70,8 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
   }
   else {
     this.notification = this.createNotification();
-    this.notification.ondisplay = function() {
-      this.sendNotificationUpdate(notifyHangouts);
-    }.bind(this);
     this.notification.show();
+    setTimeout(this.sendNotificationUpdate.bind(this), 250, notifyHangouts);
   }
 };
 
@@ -81,9 +80,12 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
  * in this regard, we send data to the controller.
  */
 CircleNotifier.prototype.sendNotificationUpdate = function(notifyHangouts) {
+  console.log("Show Notifications!", notifyHangouts);
   chrome.extension.getViews({type:'notification'}).forEach(function(win) {
-    if ( win.controller )    /// PATCH: I don;t know what this is supposed to be , but is null breaking stuff. TODO?
+    console.log("Windows Notifications!", win);
+    if (win.controller) {
       win.controller.refresh(notifyHangouts);
+    }
   });
 };
 
