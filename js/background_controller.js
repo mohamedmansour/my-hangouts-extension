@@ -124,15 +124,34 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
  */
 BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   var ctx = document.createElement('canvas').getContext('2d');
+
+  // If count is zero or smaller, show the badge as inactive,
+  // regardless of newItem's value
+  newItem = newItem & (count > 0);
+  
   if (newItem) {
     ctx.fillStyle = 'rgba(48, 121, 237, 1)';
+    ctx.strokeStyle = 'rgba(43, 108, 212, 0.5)';
+    
+    // Sadly, the fix below makes the active badge look not like the original
+    // one - therefore we have to have two different fill and stroke calls (with 
+    // different coordinates)
+    ctx.fillRoundRect(0, 0, 19, 19, 2);
+    ctx.strokeRoundRect(0, 0, 19, 19, 2);
   }
   else {
-    ctx.fillStyle = 'rgba(208, 208, 208, 1)';
+    ctx.fillStyle = 'rgba(237, 237, 237, 1)';
+    ctx.strokeStyle = 'rgba(150, 150, 150, 0.4)';
+
+    // We are offsetting the rectangle by half a unit in order to achieve a 
+    // crisp border on the inactive badge (see characteristics of lineWidth: 
+    // http://goo.gl/DFnaA)
+    ctx.fillRoundRect(0.5, 0.5, 18, 18, 2);
+    ctx.strokeRoundRect(0.5, 0.5, 18, 18, 2);
   }
-  ctx.fillRect(0, 0, 19, 19);
+
   ctx.font = 'bold 11px arial, sans-serif';
-  ctx.fillStyle = '#fff';
+  ctx.fillStyle = newItem ? '#fff' : '#999';
 
   chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
   if (count > 19){
