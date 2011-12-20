@@ -29,10 +29,10 @@ MapController.prototype.init = function() {
 
 MapController.prototype.bindUI = function() {
   if (this.popup.displayAsTab) {
-    $('#hangout-bar').hide();
-    $('#options-container').hide();
-    $('#hangouts-container').hide();
-    $('#popup-open').hide();
+    $('#hangout-bar').remove();
+    $('#options-container').remove();
+    $('#hangouts-container').remove();
+    $('#popup-open').remove();
     $('#maps-container')
         .css('width', $(window).width() + 'px')
         .css('position', 'fixed')
@@ -50,18 +50,30 @@ MapController.prototype.bindUI = function() {
         .css('color', '#444')
         .css('margin', '0 100px')
         .css('padding', '0 0 0 10px');
-    $('#popup-container')
-        .css('width', '100%')
-        .css('height', '100%');
-    $('#map-canvas')
-        .css('height', $(window).height() + 'px');
     $('body')
         .css('background', 'white url(/img/wood-bg.jpg)');
     this.map.setZoom(3);
+    
+    $(window).resize(this.onResize.bind(this));
+    
+    // Lazy load the height.
+    setTimeout(function() {
+      this.onResize();
+    }.bind(this), 250);
   }
   else {
     $('#popup-open').click(this.onOpenAsWindow.bind(this));
   }
+};
+
+MapController.prototype.onResize = function() {
+  $('#map-canvas')
+      .css('height', $(window).height() + 'px')
+      .css('width', $(window).width() + 'px');
+  $('#popup-container')
+      .css('width', '100%')
+      .css('height', '100%');
+  google.maps.event.trigger(this.map, 'resize');
 };
 
 MapController.prototype.onOpenAsWindow = function(e) {
