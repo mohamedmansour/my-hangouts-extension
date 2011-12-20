@@ -16,7 +16,7 @@ MapController = function(popupController) {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
   this.imageSize  = new google.maps.Size(20, 20);
-  this.markersArray = [];
+  this.markersCache = {};
   this.startUpdates();
 };
 
@@ -69,18 +69,6 @@ MapController.prototype.onOpenAsWindow = function(e) {
 };
 
 /**
- *
- */
-MapController.prototype.clearMarkers = function() {
-  if (this.markersArray) {
-    for (i in this.markersArray) {
-      this.markersArray[i].setMap(null);
-    }
-    this.markersArray.length = 0;
-  }
-};
-
-/**
  * Start the markers update, in real time.
  */
 MapController.prototype.startUpdates = function() {
@@ -96,29 +84,51 @@ MapController.prototype.startUpdates = function() {
  */
 MapController.prototype.addMarkersFromCache = function() {
   var self = this;
-  this.clearMarkers();
   var gpIds = this.bkg.getHangoutBackend().getAllParticipants();
-  var i = 0;
-  for (i = 0; i < gpIds.length; i++) {
-    var id = gpIds[i];
-    var personCacheItem = self.mapBackend.getPersonFromCache(id);
-    if (personCacheItem) {
-      var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
-      if (locationCacheItem) {
-        var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
-          id: 'person-' + personCacheItem.data.id,
-          classname: 'personMarker',
-          image: personCacheItem.data.photo + '?sz=24',
-          dimension: new google.maps.Size(24,24),
-          anchor: new google.maps.Point(12,12),
-          title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
-        });
-        self.markersArray.push(marker);
-        // Marker click
-        self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
+
+  // Quickly figure out what markers to add.
+  var idMap = {};
+  var newMarkerCache = {};
+  gpIds.forEach(function(id, index) {
+    idMap[id] = true; // Cache it since we want to know it exists.
+
+    // If it is already on the Map, just forget about it, we already rendered it.
+    if (!self.markersCache[id]) {
+      var personCacheItem = self.mapBackend.getPersonFromCache(id);
+      if (personCacheItem) {
+        var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
+        if (locationCacheItem) {
+          var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
+            id: 'person-' + personCacheItem.data.id,
+            classname: 'personMarker',
+            image: personCacheItem.data.photo + '?sz=24',
+            dimension: new google.maps.Size(24,24),
+            anchor: new google.maps.Point(12,12),
+            title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
+          });
+          self.markersCache[id] = marker;
+          newMarkerCache[id] = marker;
+
+          // Marker click
+          self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
+        }
       }
     }
-  }
+    else {
+      newMarkerCache[id] = self.markersCache[id];
+    }
+  });
+
+  // Remove the ones that are not in the idMap cache.
+  $.each(self.markersCache, function(markerID) {
+    var marker = self.markersCache[markerID];
+    if (!idMap[markerID]) {
+      marker.setMap(null);
+    }
+  });
+
+  // Replace the cache with the newly formed one.
+  self.markersCache = newMarkerCache;
 };
 
 /**
