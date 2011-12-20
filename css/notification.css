@@ -29,7 +29,6 @@ a.button {
   line-height: 20px;
   border: 1px solid #3079ED;
   border-radius:3px;
-  -webkit-border-radius:3px;
   color: white;
   background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
   font-size: 10px;
@@ -40,6 +39,11 @@ a.button {
   outline: 0;
   -webkit-box-shadow: 0px 0px 6px #dddcff;
   box-shadow: 0px 0px 6px #dddcff;
+}
+
+.full a.button {
+  border: 1px solid #FA4B39;
+  background-image: -webkit-linear-gradient(top, #DD4B39, #FA4B39);
 }
 
 h1 {

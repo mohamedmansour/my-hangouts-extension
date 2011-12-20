@@ -294,37 +294,35 @@ HangoutUpdater.prototype.cleanHangouts = function() {
     }
   }
   
-  var self = this;
   for (var i = 0; i < this.hangouts.length; i++) {
     var hangout = this.hangouts[i];
-    var id = hangout.data.id
-   // console.log('checking for dead hangout: '+id);
+    var hangoutId = hangout.data.id
+    // console.log('checking for dead hangout: '+id);
     var url = hangout.url;
     var postId = url.substring(url.lastIndexOf('/')+1);
-    this.controller.plus.lookupPost(function(res) {
-      if (!res.status || !res.data.data.active){
-        self.removeHangout(res.cbParams.id);
-      }
-    },hangout.owner.id, postId, {id:id});
+    this.removeHangout(hangout.owner.id, postId, hangoutId);
   }
-
   
   this.cleaningHangouts = false;
   this.updateDependants();
-
 };
 
-HangoutUpdater.prototype.removeHangout = function(id){
-	var deleteIndex = -1;
-	for ( var i = 0; i < this.hangouts.length; i++){
-		if ( this.hangouts[i] && id === this.hangouts[i].data.id ) {
-      console.log('remove hangout id: '+id+ ':', this.hangouts[i]);
-      this.hangouts[i] = null;
-      delete this.cache[id];
-      break;
-		}
-	}
-}
+HangoutUpdater.prototype.removeHangout = function(userID, postID, hangoutID) {
+  var self = this;
+  this.controller.plus.lookupPost(function(res) {
+    if (!res.status || !res.data.data.active) {
+      var deleteIndex = -1;
+      for ( var i = 0; i < self.hangouts.length; i++){
+        if ( self.hangouts[i] && hangoutID === self.hangouts[i].data.id ) {
+          console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
+          self.hangouts[i] = null;
+          delete self.cache[hangoutID];
+          break;
+        }
+      }
+    }
+  }, userID, postID);
+};
   
 /**
  * Executes the next state.

@@ -16,9 +16,11 @@
   </div>
   <script type="text/x-jquery-tmpl" id="hangouts-template">
     {{each(i, hangout) hangouts}}
-    <div class="hangout-item">
+    <div class="hangout-item {{if hangout.detail.isFull}}full{{/if}}">
       <div class="hangout-item-sidebar">
-        <a class="button clickable" href="${hangout.detail.data.url}">Join</a>
+        <a class="button clickable" href="${hangout.detail.data.url}">
+          {{if hangout.detail.isFull}}Full{{else}}Join{{/if}}
+        </a>
       </div>
       <div class="hangout-item-content">
       {{each(i, participant) hangout.participants}}
@@ -26,6 +28,7 @@
           <a href="https://plus.google.com/${participant.id}/about" class="clickable">${participant.name}</a>
         {{/if}}
       {{/each}}
+      (${hangout.detail.totalParticipants}/10)
       </div>
     </div>
     {{/each}}
