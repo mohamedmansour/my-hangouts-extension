@@ -95,9 +95,7 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
  * in this regard, we send data to the controller.
  */
 CircleNotifier.prototype.sendNotificationUpdate = function(notifyHangouts) {
-  console.log("Show Notifications!", notifyHangouts);
   chrome.extension.getViews({type:'notification'}).forEach(function(win) {
-    console.log("Windows Notifications!", win);
     if (win.controller) {
       win.controller.refresh(notifyHangouts);
     }
