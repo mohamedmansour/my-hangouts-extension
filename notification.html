@@ -16,14 +16,13 @@
   <script type="text/x-jquery-tmpl" id="hangouts-template">
     {{each(i, hangout) hangouts}}
     <div class="hangout-item">
-      <ul>
-        <li><a class="button clickable" href="${hangout.detail.data.url}">Join</a></li>
       {{each(i, participant) hangout.participants}}
         {{if participant.status}}
-        <li><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=19" title="${participant.name}" /></a></li>
+          <a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=19" title="${participant.name}" /></a>
         {{/if}}
       {{/each}}
-      </ul>
+      is in a hangout. 
+      <a class="button clickable" href="${hangout.detail.data.url}">Join</a>
     </div>
     {{/each}}
   </script>
