@@ -194,25 +194,28 @@ body, html {
 .button {
   display: inline-block;
   cursor: pointer;
-  line-height: 50px;
   margin: 0px 10px;
   border: 1px solid #3079ED;
   border-radius:3px;
-  -webkit-border-radius:3px;
   color: white;
   background-image: -webkit-linear-gradient(top, #4d90fe, #4787ed);
   font-size: 11px;
   font-weight: bold;
   text-align: center;
-  margin-right: 16px;
   height: 27px;
-  line-height: 25px;
+  line-height: 27px;
   min-width: 54px;
   outline: 0;
   padding: 0 8px;
   -webkit-box-shadow: 0px 0px 6px #dddcff;//bbbbff;
   box-shadow: 0px 0px 6px #dddcff;
 }
+
+.minified-button {
+  margin: 0;
+  min-width: 10px;
+}
+
 .button:hover {
   background-image: -webkit-linear-gradient(top, #2d90fe, #2787ed);
 }
@@ -253,33 +256,34 @@ body, html {
 }
 .hangout-popup {
   position: relative;
+  overflow-x: hidden;
+  height: 85px;
 }
-.hangout-popup-name{
+.hangout-popup-name {
   position: absolute;
   left: 50px;
+  font-size: 0.9em;
 }
 .hangout-popup-header {
-  height: 40px;
+  height: 75px;
+  float: left;
 }
 
 .hangout-popup-header .hangout-popup-owner {
-  float: left;
+  display: block;
 }
 
 .hangout-popup-header .hangout-button {
-  float: left;
-}
-
-.hangout-popup .hangout-button {
-  position: absolute;
-  right: 0;
-}
-.hangout-popup .hangout-button a {
-  min-width: 25px;
+  display: block;
 }
 
 .hangout-popup .hangout-participants {
   white-space: normal;
+  position: absolute;
+  left: 50px;
+  top: 25px;
+  font-size: 0.9em;
+  height: 50px;
 }
 
 #popup-open {
