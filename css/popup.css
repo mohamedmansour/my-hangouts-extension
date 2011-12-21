@@ -286,6 +286,11 @@ body, html {
   height: 50px;
 }
 
+#popup-subtitle {
+  font-size: 0.6em;
+  color: #444;
+}
+
 #popup-open {
   background-image: url(/img/open.png);
   background-position: 20px 0px;
