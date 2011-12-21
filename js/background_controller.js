@@ -155,8 +155,8 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   ctx.fillStyle = newItem ? '#fff' : '#999';
 
   chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
-  if (count > 19){
-    ctx.fillText('19+', 1, 14);
+  if (count > 99){
+    ctx.fillText('99+', 1, 14);
   }
   else if (count > 9){
     ctx.fillText(count + '', 3, 14);
