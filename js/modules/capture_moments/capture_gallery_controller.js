@@ -23,9 +23,9 @@ CaptureGalleryController.prototype.init = function() {
  * Bind the UI controlls from the view to their events.
  */
 CaptureGalleryController.prototype.bindUIControls = function(parent) {
-  $('.delete', parent).click(this.deleteCapture.bind(this));
-  $('.download', parent).click(this.downloadCapture.bind(this));
-  $('.effects', parent).click(this.showEffectsWindow.bind(this));
+  $('.gallery').on('click', '.delete', this.deleteCapture.bind(this));
+  $('.gallery').on('click', '.download', this.downloadCapture.bind(this));
+  $('.gallery').on('click', '.effects', this.showEffectsWindow.bind(this));
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {
@@ -53,7 +53,6 @@ CaptureGalleryController.prototype.renderMoment = function(moment) {
   moment.time = $.timeago(new Date(moment.time));
   var newMoment = this.momentsTemplate.tmpl(moment);
   newMoment.appendTo('.gallery');
-  this.bindUIControls(newMoment);
 };
 
 CaptureGalleryController.prototype.deleteCapture = function(e) {
