@@ -5,6 +5,7 @@
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  */
 HangoutUpdater = function(controller) {
+  this.LOGGER_ENABLED = false;
   this.controller = controller;
   this.currentState = 0;
   this.maxState = 0;
@@ -314,7 +315,9 @@ HangoutUpdater.prototype.removeHangout = function(userID, postID, hangoutID) {
       var deleteIndex = -1;
       for ( var i = 0; i < self.hangouts.length; i++){
         if ( self.hangouts[i] && hangoutID === self.hangouts[i].data.id ) {
-          console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
+          if (self.LOGGER_ENABLED) {
+            console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
+          }
           self.hangouts[i] = null;
           delete self.cache[hangoutID];
           break;

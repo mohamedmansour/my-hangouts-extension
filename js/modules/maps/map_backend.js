@@ -2,6 +2,8 @@
  * Map Location Cache Backend.
  */
 MapBackend = function(controller) {
+  this.LOGGER_ENABLED = false;
+
   this.controller = controller;
 
   // This should be in a database, perhaps?
@@ -87,7 +89,9 @@ MapBackend.prototype.cachePeople = function(gpIds) {
         address: user.data.location ? user.data.location : '?',
         data: user.data
       };
-      console.log('cached person:'+ id + ' at '+  self.cache.people[id].address);
+      if (self.LOGGER_ENABLED) {
+        console.log('cached person:'+ id + ' at '+  self.cache.people[id].address);
+      }
     }
   }, gpIds);
 };
@@ -105,7 +109,9 @@ MapBackend.prototype.cacheMapLocation = function(address) {
   }
   coder.geocode({ address: address }, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
-      console.log('location: ' + address, results);
+      if (self.LOGGER_ENABLED) {
+        console.log('location: ' + address, results);
+      }
       self.cache.location[address] = results[0];
     }
     else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
