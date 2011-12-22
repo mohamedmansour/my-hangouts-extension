@@ -68,7 +68,7 @@ body, html {
 .popup-page {
   width: 100%;
   position: absolute;
-  left: 600px;
+  display:none;
   overflow-x: hidden;
 }
 
