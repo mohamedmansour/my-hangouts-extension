@@ -8,7 +8,7 @@ HangoutUpdater = function(controller) {
   this.LOGGER_ENABLED = false;
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 0;
+  this.maxState = 2;
   this.circleNotifier = new CircleNotifier(this);
   this.errorCount = 0;
   this.error = false;
@@ -18,9 +18,8 @@ HangoutUpdater = function(controller) {
   this.searchResults = [];
   this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
 
-  this.HANGOUT_SEARCH_QUERY = {
-    query: '"is hanging out" | "hangout named" -"hung out" -"had a hangout"'
-  };
+  this.HANGOUT_SEARCH_QUERY =  '"is hanging out"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
+  this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"'
 };
 
 /**
@@ -390,17 +389,36 @@ HangoutUpdater.prototype.doNext = function() {
   }
 };
 /**
- * We don;t reset the list any more, so just the one state.
+ * query stages:
  */
-HangoutUpdater.prototype.state0 = function() {
-  var queryStr = this.HANGOUT_SEARCH_QUERY.query;
+ 
+ HangoutUpdater.prototype.state0 = function() {
+  var queryStr = this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED;
+  console.log( queryStr );
+  this.search({ query: queryStr}, false);
+};
+
+HangoutUpdater.prototype.state1 = function() {
+  var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY);
+  console.log( queryStr );
+  this.search({ query: queryStr}, false);
+};
+
+HangoutUpdater.prototype.state2 = function() {
+  var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY_NAMED);
+  console.log( queryStr );
+  this.search({ query: queryStr}, false);
+};
+
+
+HangoutUpdater.prototype.buildqueryWithExcludeList = function(queryStr) {
   for(var i = 0; i< this.hangouts.length; i++){ 
     if( this.hangouts[i] ){
       // we are updating the existing list with a lookupPost, so exculde the hangouts we already have to get better results.
       queryStr += ' -"'+this.hangouts[i].owner.name+'"'
     }
   }
- console.log( queryStr );
- this.search({ query: queryStr}, false);
-};
+  return queryStr;
+}
+
 
