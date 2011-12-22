@@ -34,7 +34,9 @@ MapController.prototype.bindUI = function() {
     $('#hangouts-container').remove();
     $('#popup-open').remove();
     $('#maps-container')
+        .show()
         .css('width', $(window).width() + 'px')
+        .css('height', $(window).height() + 'px')
         .css('position', 'fixed')
         .css('left', '0')
         .css('top', '0')
@@ -52,19 +54,45 @@ MapController.prototype.bindUI = function() {
         .css('padding', '0 0 0 10px');
     $('body')
         .css('background', 'white url(/img/wood-bg.jpg)');
-    this.map.setZoom(3);
     
     $(window).resize(this.onResize.bind(this));
     
     // Lazy load the height.
     setTimeout(function() {
       this.onResize();
+      this._fitMarkers();  
     }.bind(this), 250);
   }
   else {
     $('#popup-open').click(this.onOpenAsWindow.bind(this));
   }
 };
+
+/**
+ * Calculates a bounding box around the currently shown markers and calls
+ * the map to adjust itself to these bounds.
+ */
+MapController.prototype._fitMarkers = function() {
+  var self = this;
+  var bounds = new google.maps.LatLngBounds();
+
+  $.each(this.markersCache, function(markerID) {
+    bounds.extend(self.markersCache[markerID].getPosition());  
+  });
+
+  this.map.fitBounds(bounds);
+}
+
+/**
+ * This callback should be called everytime the map view gets visible to
+ * to the user.
+ */
+MapController.prototype.onDisplay = function() {
+  // Delay the adjustments as some animation may still be running
+  setTimeout(function() {
+    this._fitMarkers();
+  }.bind(this), 600);
+}
 
 MapController.prototype.onResize = function() {
   $('#map-canvas')

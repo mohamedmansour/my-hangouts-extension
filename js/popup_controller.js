@@ -47,6 +47,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       break;
     case 'menu-maps':
       this.togglePage('maps');
+      this.map.onDisplay();
       break;
     case 'menu-options':
       this.togglePage('options');
