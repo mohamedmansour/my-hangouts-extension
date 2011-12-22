@@ -350,6 +350,18 @@ HangoutUpdater.prototype.updateHangout = function(hangout) {
 	}
 	return false;
 }
+
+// TODO: finish this and implement to reduce overhead of update
+
+HangoutUpdater.prototype.compareHangout=function(h0,h1) {
+  if ( h0.totalParticipants > h1.totalParticipants ){
+    return 1;
+  } else if (h0.totalParticipants < h1.totalParticipants){
+    return -1;
+  } else {
+    return 0;/// compare participants...? 1. are they in the same order? are dead particpants removed.
+  }
+}
   
 /**
  * Executes the next state.
@@ -383,8 +395,10 @@ HangoutUpdater.prototype.doNext = function() {
 HangoutUpdater.prototype.state0 = function() {
   var queryStr = this.HANGOUT_SEARCH_QUERY.query;
   for(var i = 0; i< this.hangouts.length; i++){ 
-    // we are updating the existing list with a lookupPost, so exculde the hangouts we already have to get better results.
-	 queryStr += 'AND -"'+this.hangouts[i].owner.name+'"'
+    if( this.hangouts[i] ){
+      // we are updating the existing list with a lookupPost, so exculde the hangouts we already have to get better results.
+      queryStr += 'AND -"'+this.hangouts[i].owner.name+'"'
+    }
   }
  console.log( queryStr );
  this.search({ query: queryStr}, false);
