@@ -3,11 +3,11 @@
 <head>
   <title>My Hangouts Circle Notifier</title>
   <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="/css/common.css" />
-  <link rel="stylesheet" type="text/css" href="/css/notification.css" />
-  <script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
-  <script type="text/javascript" src="/js/modules/circle_notifier/notification_controller.js"></script>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/notification.css" />
+  <script src="/js/libs/jquery-1.7.1.min.js"></script>
+  <script src="/js/libs/jquery.tmpl.min.js"></script>
+  <script src="/js/modules/circle_notifier/notification_controller.js"></script>
 </head>
 <body>
   <div id="notification-container">
@@ -33,7 +33,7 @@
     </div>
     {{/each}}
   </script>
-  <script type="text/javascript">
+  <script>
     var controller = new NotificationController();
     controller.init();
   </script>
