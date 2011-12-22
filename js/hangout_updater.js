@@ -19,7 +19,7 @@ HangoutUpdater = function(controller) {
   this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
 
   this.HANGOUT_SEARCH_QUERY = {
-    query: '"is hanging out" | "hangout named"'
+    query: '"is hanging out" | "hangout named" -"hung out" -"had a hangout"'
   };
 };
 
@@ -397,7 +397,7 @@ HangoutUpdater.prototype.state0 = function() {
   for(var i = 0; i< this.hangouts.length; i++){ 
     if( this.hangouts[i] ){
       // we are updating the existing list with a lookupPost, so exculde the hangouts we already have to get better results.
-      queryStr += 'AND -"'+this.hangouts[i].owner.name+'"'
+      queryStr += ' -"'+this.hangouts[i].owner.name+'"'
     }
   }
  console.log( queryStr );
