@@ -193,7 +193,7 @@ HangoutUpdater.prototype.search = function(obj) {
   
   self.controller.plus.search(function(res) {
     self.updatingSearch = true;
-    //console.log('search type : '+ res.type + ' returned '+ res.data.length);
+   // console.log('search type : '+ res.type + ' returned '+ res.data.length);
     if(res.data.length > 0 ) {
       self.searchResults.push(res.data);
     }
@@ -377,12 +377,16 @@ HangoutUpdater.prototype.doNext = function() {
     this.currentState++;
   }
 };
-
 /**
  * We don;t reset the list any more, so just the one state.
  */
 HangoutUpdater.prototype.state0 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY, false);
+  var queryStr = this.HANGOUT_SEARCH_QUERY.query;
+  for(var i = 0; i< this.hangouts.length; i++){ 
+    // we are updating the existing list with a lookupPost, so exculde the hangouts we already have to get better results.
+	 queryStr += 'AND -"'+this.hangouts[i].owner.name+'"'
+  }
+ console.log( queryStr );
+ this.search({ query: queryStr}, false);
 };
-
 
