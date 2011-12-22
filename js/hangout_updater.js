@@ -8,7 +8,7 @@ HangoutUpdater = function(controller) {
   this.LOGGER_ENABLED = false;
   this.controller = controller;
   this.currentState = 0;
-  this.maxState = 0;
+  this.maxState = 2;
   this.circleNotifier = new CircleNotifier(this);
   this.errorCount = 0;
   this.error = false;
@@ -18,9 +18,8 @@ HangoutUpdater = function(controller) {
   this.searchResults = [];
   this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
 
-  this.HANGOUT_SEARCH_QUERY = {
-    query: '"is hanging out" | "hangout named"'
-  };
+  this.HANGOUT_SEARCH_QUERY =  '"is hanging out"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
+  this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"'
 };
 
 /**
@@ -193,7 +192,7 @@ HangoutUpdater.prototype.search = function(obj) {
   
   self.controller.plus.search(function(res) {
     self.updatingSearch = true;
-    //console.log('search type : '+ res.type + ' returned '+ res.data.length);
+   // console.log('search type : '+ res.type + ' returned '+ res.data.length);
     if(res.data.length > 0 ) {
       self.searchResults.push(res.data);
     }
@@ -240,7 +239,8 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
       if (!hangout) {
         continue;
       }
-
+	
+	  //TODO: Consider moving all this logic to the updateHangout function.
       var cache = this.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
@@ -249,12 +249,8 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
         }
 
         // Update the hangouts collection.
-        for ( var j = 0; j<this.hangouts.length;j++){
-          if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
-            this.hangouts[j] = hangout;
-            break;
-          }
-        }
+		this.updateHangout(hangout);
+
         continue;
       }
 
@@ -277,6 +273,10 @@ HangoutUpdater.prototype.updateDependants = function() {
   this.circleNotifier.notify(hangouts);
   this.controller.drawBadgeIcon(hangouts.length, true);
 }
+
+/**
+ * 	cleanHangouts - scan the hangouts array and removde dead or refresh current entries
+ */
 
 HangoutUpdater.prototype.cleanHangouts = function() {
   if ( this.updatingResult ) {
@@ -301,14 +301,17 @@ HangoutUpdater.prototype.cleanHangouts = function() {
     // console.log('checking for dead hangout: '+id);
     var url = hangout.url;
     var postId = url.substring(url.lastIndexOf('/')+1);
-    this.removeHangout(hangout.owner.id, postId, hangoutId);
+    this.refreshHangout(hangout.owner.id, postId, hangoutId);
   }
   
   this.cleaningHangouts = false;
   this.updateDependants();
 };
 
-HangoutUpdater.prototype.removeHangout = function(userID, postID, hangoutID) {
+/**
+ * refreshHangout -- remove or update the indicated hangout from the hangout array
+ */
+HangoutUpdater.prototype.refreshHangout = function(userID, postID, hangoutID) {
   var self = this;
   this.controller.plus.lookupPost(function(res) {
     if (!res.status || !res.data.data.active) {
@@ -316,16 +319,48 @@ HangoutUpdater.prototype.removeHangout = function(userID, postID, hangoutID) {
       for ( var i = 0; i < self.hangouts.length; i++){
         if ( self.hangouts[i] && hangoutID === self.hangouts[i].data.id ) {
           if (self.LOGGER_ENABLED) {
-            console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
+           // console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
           }
           self.hangouts[i] = null;
           delete self.cache[hangoutID];
           break;
         }
       }
-    }
+    } else if ( res.data.data.active ) {
+		//TODO: We might want to see if anything has actually changed before doing this:compare participants
+		var hangout = self.preprocessHangoutData(res.data);
+		//console.log('update hangout:',hangout);
+		self.updateHangout(hangout);
+	}
   }, userID, postID);
 };
+
+/**
+ * UpdateHangout - update the indicated, pre-processed hangout in the hangout array
+ * @hangout - the new pre-processed hangout 
+ * return true if updated and false otherwise.
+ */
+HangoutUpdater.prototype.updateHangout = function(hangout) {
+	for ( var j = 0; j<this.hangouts.length;j++){
+	  if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
+		this.hangouts[j] = hangout;
+		return true;
+	  }
+	}
+	return false;
+}
+
+// TODO: finish this and implement to reduce overhead of update
+
+HangoutUpdater.prototype.compareHangout=function(h0,h1) {
+  if ( h0.totalParticipants > h1.totalParticipants ){
+    return 1;
+  } else if (h0.totalParticipants < h1.totalParticipants){
+    return -1;
+  } else {
+    return 0;/// compare participants...? 1. are they in the same order? are dead particpants removed.
+  }
+}
   
 /**
  * Executes the next state.
@@ -353,12 +388,37 @@ HangoutUpdater.prototype.doNext = function() {
     this.currentState++;
   }
 };
-
 /**
- * We don;t reset the list any more, so just the one state.
+ * query stages:
  */
-HangoutUpdater.prototype.state0 = function() {
-  this.search(this.HANGOUT_SEARCH_QUERY, false);
+ 
+ HangoutUpdater.prototype.state0 = function() {
+  var queryStr = this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED;
+  console.log( queryStr );
+  this.search({ query: queryStr}, false);
 };
+
+HangoutUpdater.prototype.state1 = function() {
+  var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY);
+  console.log( queryStr );
+  this.search({ query: queryStr}, false);
+};
+
+HangoutUpdater.prototype.state2 = function() {
+  var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY_NAMED);
+  console.log( queryStr );
+  this.search({ query: queryStr}, false);
+};
+
+
+HangoutUpdater.prototype.buildqueryWithExcludeList = function(queryStr) {
+  for(var i = 0; i< this.hangouts.length; i++){ 
+    if( this.hangouts[i] ){
+      // we are updating the existing list with a lookupPost, so exculde the hangouts we already have to get better results.
+      queryStr += ' -"'+this.hangouts[i].owner.name+'"'
+    }
+  }
+  return queryStr;
+}
 
 
