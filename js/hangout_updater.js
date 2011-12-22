@@ -240,7 +240,8 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
       if (!hangout) {
         continue;
       }
-
+	
+	  //TODO: Consider moving all this logic to the updateHangout function.
       var cache = this.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
@@ -249,12 +250,8 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
         }
 
         // Update the hangouts collection.
-        for ( var j = 0; j<this.hangouts.length;j++){
-          if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
-            this.hangouts[j] = hangout;
-            break;
-          }
-        }
+		this.updateHangout(hangout);
+
         continue;
       }
 
@@ -277,6 +274,10 @@ HangoutUpdater.prototype.updateDependants = function() {
   this.circleNotifier.notify(hangouts);
   this.controller.drawBadgeIcon(hangouts.length, true);
 }
+
+/**
+ * 	cleanHangouts - scan the hangouts array and removde dead or refresh current entries
+ */
 
 HangoutUpdater.prototype.cleanHangouts = function() {
   if ( this.updatingResult ) {
@@ -301,14 +302,17 @@ HangoutUpdater.prototype.cleanHangouts = function() {
     // console.log('checking for dead hangout: '+id);
     var url = hangout.url;
     var postId = url.substring(url.lastIndexOf('/')+1);
-    this.removeHangout(hangout.owner.id, postId, hangoutId);
+    this.refreshHangout(hangout.owner.id, postId, hangoutId);
   }
   
   this.cleaningHangouts = false;
   this.updateDependants();
 };
 
-HangoutUpdater.prototype.removeHangout = function(userID, postID, hangoutID) {
+/**
+ * refreshHangout -- remove or update the indicated hangout from the hangout array
+ */
+HangoutUpdater.prototype.refreshHangout = function(userID, postID, hangoutID) {
   var self = this;
   this.controller.plus.lookupPost(function(res) {
     if (!res.status || !res.data.data.active) {
@@ -316,16 +320,36 @@ HangoutUpdater.prototype.removeHangout = function(userID, postID, hangoutID) {
       for ( var i = 0; i < self.hangouts.length; i++){
         if ( self.hangouts[i] && hangoutID === self.hangouts[i].data.id ) {
           if (self.LOGGER_ENABLED) {
-            console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
+           // console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
           }
           self.hangouts[i] = null;
           delete self.cache[hangoutID];
           break;
         }
       }
-    }
+    } else if ( res.data.data.active ) {
+		//TODO: We might want to see if anything has actually changed before doing this:compare participants
+		var hangout = self.preprocessHangoutData(res.data);
+		//console.log('update hangout:',hangout);
+		self.updateHangout(hangout);
+	}
   }, userID, postID);
 };
+
+/**
+ * UpdateHangout - update the indicated, pre-processed hangout in the hangout array
+ * @hangout - the new pre-processed hangout 
+ * return true if updated and false otherwise.
+ */
+HangoutUpdater.prototype.updateHangout = function(hangout) {
+	for ( var j = 0; j<this.hangouts.length;j++){
+	  if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
+		this.hangouts[j] = hangout;
+		return true;
+	  }
+	}
+	return false;
+}
   
 /**
  * Executes the next state.
