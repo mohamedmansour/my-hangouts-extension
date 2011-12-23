@@ -22,6 +22,7 @@ OptionsController.prototype.bindUI = function() {
     circleChooserDOM.append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
   });
   circleChooserDOM.val(this.settings.circles_to_notify);
+  circleChooserDOM.attr('disabled', !self.settings.notify_circles);
   circleChooserDOM.chosen().change(function(e) {
     self.settings.circles_to_notify = $(e.target).val() || [];
   });
@@ -31,6 +32,7 @@ OptionsController.prototype.bindUI = function() {
   circleNotifyDOM.prop('checked', this.settings.notify_circles);
   circleNotifyDOM.change(function(e) {
     self.settings.notify_circles = $(e.target).is(':checked');
+    circleChooserDOM.attr('disabled', !self.settings.notify_circles).trigger('liszt:updated');
   });
 
   // Notify autoclose preference.
