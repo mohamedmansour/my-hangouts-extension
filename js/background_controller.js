@@ -13,6 +13,7 @@ BackgroundController = function() {
   this.REFRESH_INTERVAL = 2000; // Look for new results every 5 seconds.
   this.CLEAN_INTERVAL = 15000;
   this.myFollowersMap = {};
+  this.myCirclesMap = {};
   this.myCirclesList = [];
  
   this.onExtensionLoaded();
@@ -227,9 +228,23 @@ BackgroundController.prototype.refreshCircles = function() {
             }
           });
           if (bannedCircle) {
-            res.data = res.data.slice(bannedCircle);
+            res.data.splice(bannedCircle, 1);
           }
-          self.myCircles = res.data;
+          self.myCirclesList = res.data;
+          
+          // The position for circles are using strange hex format, so
+          // we will maintain the position ourselves here.
+          var position = 0;
+          self.myCirclesList.forEach(function(circle) {
+            // We make a clone, so we can change contents since it was immutable.
+            self.myCirclesMap[circle.id] = {
+              count: circle.count,
+              description: circle.description,
+              id: circle.id,
+              name: circle.name,
+              position: position++
+            };
+          });
         }
       });
       self.plus.getDatabase().getPersonEntity().findMap(function(res) {
@@ -252,12 +267,23 @@ BackgroundController.prototype.getPerson = function(id) {
 };
 
 /**
- * Gets a list of circles that the current user is registered with.
+ * Gets a list/map of circles that the current user is registered with.
  *
+ * @return {Object} an object of circles where each key is an id for the circle.
  * @return {Array<Object>} a list of circle objects in correct order.
  */
-BackgroundController.prototype.getCircles = function() {
-  return this.myCircles;
+BackgroundController.prototype.getCircles = function(asMap) {
+  return asMap ? this.myCirclesMap : this.myCirclesList;
+};
+
+/**
+ * Fetches the Circle for a specific ID.
+ *
+ * @param {string} The ID for the circle.
+ * @return {Object} The circle found otherwise is undefined.
+ */
+BackgroundController.prototype.getCircle = function(circleID) {
+  return this.myCirclesMap[circleID];
 };
 
 /**
