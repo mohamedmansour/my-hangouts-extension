@@ -98,13 +98,16 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.data.is_onair = hangout.data.type === 2;
 
   // Fill in circle information for each participant.
+  var circlePositionScore = 0;
   var circleCount = 0;
   var scoreCount = 0;
   var participants = [];
   for (var j = 0; j < updatedHangout.data.participants.length; j++) {
     var participant = updatedHangout.data.participants[j];
     if (participant.status) {
-      if (this.fillCircleInfo(participant)) {
+      var score = this.fillCircleInfo(participant);
+      if (score > 0) {
+        circlePositionScore += score;
         circleCount++;
       }
       scoreCount += this.getParticipantScore(participant.id);
@@ -114,7 +117,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.data.participants = participants;
 
   // Populate the Owner Information
-  if (this.fillCircleInfo(updatedHangout.owner)) {
+  var score = this.fillCircleInfo(updatedHangout.owner);
+  if (score > 0) {
+    circlePositionScore += score;
     circleCount++;
   }
   scoreCount += this.getParticipantScore(updatedHangout.owner.id);
@@ -127,11 +132,18 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.totalParticipants = totalParticipants + 1; // include the owner.
 
   // Process score for each participant so we can make sure their weight are equal.
-  var normalizedScore = scoreCount / (this.MAX_ASSUMED_SCORE * updatedHangout.totalParticipants);
+  var normalizedRelevancyScore = scoreCount / (this.MAX_ASSUMED_SCORE * updatedHangout.totalParticipants);
   var normalizedCircleScore = circleCount / updatedHangout.totalParticipants;
   var normalizedTotalParticipantsScore = updatedHangout.totalParticipants / 10;
-  var rank = normalizedScore + normalizedCircleScore + normalizedTotalParticipantsScore;
-
+  var normalizedCirclePositionScore =  circlePositionScore / updatedHangout.totalParticipants;
+  var rank = normalizedRelevancyScore + normalizedCircleScore + normalizedTotalParticipantsScore + normalizedCirclePositionScore;
+  console.log(hangout.data.id, {
+    normalizedRelevancyScore:normalizedRelevancyScore,
+    normalizedCircleScore: normalizedCircleScore,
+    normalizedTotalParticipantsScore: normalizedTotalParticipantsScore,
+    normalizedCirclePositionScore: normalizedCirclePositionScore,
+    rank: rank
+  });
   // Custom name to each hangout.
   if (updatedHangout.data.is_onair) {
     updatedHangout.data.name = updatedHangout.data.extra_data[1] + ' - OnAir';
@@ -171,16 +183,23 @@ HangoutUpdater.prototype.getParticipantScore = function(id) {
 
 /**
  * Fill in the circle information for the user.
+ *
+ * @return {number} The circle score, 0 if no score.
  */
 HangoutUpdater.prototype.fillCircleInfo = function(user) {
   var person = this.controller.getPerson(user.id);
+  var self = this;
   if (person) {
     // TODO(mohamed): Merge into one, the UI should handle the circle names by iterating.
-    user.circle_ids = person.circles.map(function(e) {return e.id});
+    user.circle_ids = person.circles.map(function(e) {return e.id;});
     user.circles = person.circles.map(function(e) {return  ' ' + e.name});
-    return true;
   }
-  return false;
+  if (user.circle_ids && user.circle_ids.length > 0)  {
+    var totalCircles = self.controller.getCircles().length;
+    var circle = self.controller.getCircle(user.circle_ids[0]);
+    return 1 - ((1 / totalCircles) * circle.position);
+  }
+  return 0;
 };
 
 /**

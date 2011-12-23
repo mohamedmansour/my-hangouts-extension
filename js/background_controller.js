@@ -236,13 +236,15 @@ BackgroundController.prototype.refreshCircles = function() {
           // we will maintain the position ourselves here.
           var position = 0;
           self.myCirclesList.forEach(function(circle) {
+            position++;
+
             // We make a clone, so we can change contents since it was immutable.
             self.myCirclesMap[circle.id] = {
               count: circle.count,
               description: circle.description,
               id: circle.id,
               name: circle.name,
-              position: position++
+              position: position
             };
           });
         }
