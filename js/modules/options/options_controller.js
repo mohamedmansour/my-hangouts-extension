@@ -33,11 +33,13 @@ OptionsController.prototype.bindUI = function() {
   circleNotifyDOM.change(function(e) {
     self.settings.notify_circles = $(e.target).is(':checked');
     circleChooserDOM.attr('disabled', !self.settings.notify_circles).trigger('liszt:updated');
+    autocloseNotificationDOM.attr('disabled', !self.settings.notify_circles);
   });
 
   // Notify autoclose preference.
   var autocloseNotificationDOM = $('#option-auto-close-notify');
   autocloseNotificationDOM.prop('checked', this.settings.auto_close_notify);
+  autocloseNotificationDOM.attr('disabled', !self.settings.notify_circles);
   autocloseNotificationDOM.change(function(e) {
     self.settings.auto_close_notify = $(e.target).is(':checked');
   });
