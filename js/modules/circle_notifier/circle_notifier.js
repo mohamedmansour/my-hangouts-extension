@@ -10,7 +10,8 @@ CircleNotifier = function(updater) {
   // The registered circles to notify, this is updated in real time from settings.
   this.circles_to_notify = {};
   this.notify_circles = false;
-  
+  this.auto_close_notify = false;
+
   // Keep tracks of notifications.
   this.notified = {};             // Total, browser session.
   this.notificationSession = {};  // Notification, popup session.
@@ -22,13 +23,27 @@ CircleNotifier = function(updater) {
 };
 
 /**
+ * Content within the notification should be lazy loaded since it takes time
+ * for the popup to become visible. onload event listener doesn't work well
+ * since extensions know about that popup "AFTER" the onload event fires.
+ */
+CircleNotifier.DISPLAY_CONTENT_TIMEOUT = 500;
+
+/**
+ * Autoclose timeout for the notification. Will close after 10 seconds.
+ */
+CircleNotifier.AUTO_CLOSE_TIMEOUT = 10000;
+
+/**
  * Initialize listeners for the settings.
  */
 CircleNotifier.prototype.initializeListeners = function() {
   settings.addListener('circles_to_notify', this.onSettingsChangeListener.bind(this));
   settings.addListener('notify_circles', this.onSettingsChangeListener.bind(this));
+  settings.addListener('option-auto-close-notify', this.onSettingsChangeListener.bind(this));
   this.onSettingsChangeListener('circles_to_notify', settings.circles_to_notify);
   this.onSettingsChangeListener('notify_circles', settings.notify_circles);
+  this.onSettingsChangeListener('auto_close_notify', settings.auto_close_notify);
 };
 
 /**
@@ -93,7 +108,13 @@ CircleNotifier.prototype.showNotification = function(notifyHangouts) {
   else {
     this.notification = this.createNotification();
     this.notification.show();
-    setTimeout(this.sendNotificationUpdate.bind(this), 500, notifyHangouts);
+    setTimeout(this.sendNotificationUpdate.bind(this),
+               CircleNotifier.DISPLAY_CONTENT_TIMEOUT,
+               notifyHangouts);
+    if (this.auto_close_notify) {
+      setTimeout(this.onNotificationCancel.bind(this),
+                 CircleNotifier.AUTO_CLOSE_TIMEOUT);
+    }
   }
 };
 
@@ -120,6 +141,15 @@ CircleNotifier.prototype.createNotification = function() {
 };
 
 /**
+ * Cancel the notification forcefully.
+ */
+CircleNotifier.prototype.onNotificationCancel = function() {
+  if (this.notification) {
+    this.notification.cancel();
+  }
+};
+
+/**
  * When a notification is closed, we must destroy the notification so we can recreate it.
  */
 CircleNotifier.prototype.onNotificationClose = function() {
@@ -141,7 +171,10 @@ CircleNotifier.prototype.onSettingsChangeListener = function(key, val) {
       }
     }
   }
-  else if(key == 'notify_circles') {
+  else if (key == 'notify_circles') {
     this.notify_circles = val;
+  }
+  else if (key == 'auto_close_notify') {
+    this.auto_close_notify = val;
   }
 };

@@ -33,6 +33,13 @@ OptionsController.prototype.bindUI = function() {
     self.settings.notify_circles = $(e.target).is(':checked');
   });
 
+  // Notify autoclose preference.
+  var autocloseNotificationDOM = $('#option-auto-close-notify');
+  autocloseNotificationDOM.prop('checked', this.settings.auto_close_notify);
+  autocloseNotificationDOM.change(function(e) {
+    self.settings.auto_close_notify = $(e.target).is(':checked');
+  });
+
   // Notify circles preference.
   var hangoutOpenWindowDOM = $('#option-hangout-window');
   hangoutOpenWindowDOM.prop('checked', this.settings.open_hangout_new_window);

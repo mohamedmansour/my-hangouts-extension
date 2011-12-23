@@ -37,6 +37,14 @@ settings = {
     settings.notify('notify_circles', val);
     localStorage['notify_circles'] = val;
   },
+  get auto_close_notify() {
+    var key = localStorage['auto_close_notify'];
+    return (typeof key == 'undefined') ? false : key === 'true';
+  },
+  set auto_close_notify(val) {
+    settings.notify('auto_close_notify', val);
+    localStorage['auto_close_notify'] = val;
+  },
   get open_hangout_new_window() {
     var key = localStorage['open_hangout_new_window'];
     return (typeof key == 'undefined') ? false : key === 'true';
