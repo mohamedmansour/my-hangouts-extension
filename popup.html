@@ -3,18 +3,18 @@
 <head>
   <title>My Hangouts World</title>
   <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="/css/common.css" />
-  <link rel="stylesheet" type="text/css" href="/css/chosen.css" />
-  <link rel="stylesheet" type="text/css" href="/css/popup.css" />
-  <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyDnMniG_y2Fo35Tw28QnR4OeUTVBMXIWi4&sensor=true"></script>
-  <script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.tmpl.min.js"></script>
-  <script type="text/javascript" src="/js/libs/jquery.timeago.js"></script>
-  <script type="text/javascript" src="/js/libs/chosen.jquery.min.js"></script>
-  <script type="text/javascript" src="/js/libs/simplemarker.1.4.min.js"></script>
-  <script type="text/javascript" src="/js/modules/maps/map_controller.js"></script>
-  <script type="text/javascript" src="/js/modules/options/options_controller.js"></script>
-  <script type="text/javascript" src="/js/popup_controller.js"></script>
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/chosen.css" />
+  <link rel="stylesheet" href="/css/popup.css" />
+  <script src="http://maps.google.com/maps/api/js?key=AIzaSyDnMniG_y2Fo35Tw28QnR4OeUTVBMXIWi4&sensor=true"></script>
+  <script src="/js/libs/jquery-1.7.1.min.js"></script>
+  <script src="/js/libs/jquery.tmpl.min.js"></script>
+  <script src="/js/libs/jquery.timeago.js"></script>
+  <script src="/js/libs/chosen.jquery.min.js"></script>
+  <script src="/js/libs/simplemarker.1.4.min.js"></script>
+  <script src="/js/modules/maps/map_controller.js"></script>
+  <script src="/js/modules/options/options_controller.js"></script>
+  <script src="/js/popup_controller.js"></script>
 </head>
 <body>
   <div id="hangout-bar">
@@ -38,7 +38,7 @@
 		</div>    
     <div id="options-container" class="popup-page">
       <h2>Circle preferences</h2>
-      <select id="option-circles" data-placeholder="Choose your Circles..." multiple style="width: 100%;"></select>
+      <select id="option-circles" data-placeholder="Choose your Circles..." multiple style="width: 580px;"></select>
       <p><label for="option-circles-notify"><input id="option-circles-notify" type="checkbox" /> Notify me when a user in my circles above entered a hangout.</label></p>
       <h2>Hangout preferences</h2>
       <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
@@ -95,7 +95,7 @@
     </div>
     {{/each}}
   </script>
-  <script type="text/javascript">
+  <script>
     var popupController = new PopupController();
     popupController.init();
   </script>

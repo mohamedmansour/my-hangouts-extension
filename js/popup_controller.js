@@ -29,6 +29,7 @@ PopupController.prototype.init = function() {
 
 PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
+  $('#' + this.currentPage + '-container').show();
   $('.menu-item').click(this.onMenuItemClick.bind(this));
   if (window.location.hash == '#window') {
     this.displayAsTab = true;
@@ -46,6 +47,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       break;
     case 'menu-maps':
       this.togglePage('maps');
+      this.map.onDisplay();
       break;
     case 'menu-options':
       this.togglePage('options');
@@ -139,15 +141,11 @@ PopupController.prototype.relayout = function() {
  * Toggle the page from options and hangouts.
  */
 PopupController.prototype.togglePage = function(newpage) {
-  var goLeftBy = -600;
-  if (this.navigationPositions[newpage] < this.navigationPositions[this.currentPage]) {
-    goLeftBy = 600;
-  }
-  $('#' + this.currentPage + '-container').animate({left: goLeftBy, overflow: 'hidden'}, 500);
-  $('#menu-' + this.currentPage).toggleClass('selected');
+  $('#' + this.currentPage + '-container').fadeOut().slideUp();
+  $('#menu-' + this.currentPage).removeClass('selected');
   this.currentPage = newpage;
-  $('#' + this.currentPage + '-container').animate({left: 0, overflow: 'auto'}, 500);
-  $('#menu-' + this.currentPage).toggleClass('selected');
+  $('#' + this.currentPage + '-container').fadeIn().slideDown();
+  $('#menu-' + this.currentPage).addClass('selected');
   this.relayout();
 };
 
