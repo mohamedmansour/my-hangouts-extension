@@ -61,6 +61,14 @@ settings = {
     settings.notify('moment_skip_dialog', val);
     localStorage['moment_skip_dialog'] = val;
   },
+  get only_show_circle_hangouts() {
+    var key = localStorage['only_show_circle_hangouts'];
+    return (typeof key == 'undefined') ? false : key === 'true';
+  },
+  set only_show_circle_hangouts(val) {
+    settings.notify('only_show_circle_hangouts', val);
+    localStorage['only_show_circle_hangouts'] = val;
+  },
 };
 
 // Settings event listeners.

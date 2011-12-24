@@ -57,4 +57,11 @@ OptionsController.prototype.bindUI = function() {
   momentSkipDialogCaptureDOM.change(function(e) {
     self.settings.moment_skip_dialog = $(e.target).is(':checked');
   });
+
+  // Only show hangouts that are in your circles.
+  var onlyShowCircleHangouts = $('#option-show-circle-hangouts');
+  onlyShowCircleHangouts.prop('checked', this.settings.only_show_circle_hangouts);
+  onlyShowCircleHangouts.change(function(e) {
+    self.settings.only_show_circle_hangouts = $(e.target).is(':checked');
+  });
 };
