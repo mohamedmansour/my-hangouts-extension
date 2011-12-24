@@ -149,7 +149,7 @@ PopupController.prototype.onHangoutDetailClick = function(e) {
   }));
   this.togglePage('hangout-detail');
 
-  var height = hangout.totalParticipants / 2 * 80;
+  var height = Math.ceil(hangout.totalParticipants / 2) * 80;
   $('.popup-page').height(height);
   $('#popup-container').height(height);
 };
