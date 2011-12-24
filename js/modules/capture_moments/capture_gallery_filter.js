@@ -14,6 +14,8 @@ CaptureEffectsController = function(galleryController) {
   this.glfxCanvas = fx.canvas();
   this.texture = null;
   this.originalData = {};
+  this.filterTemplate = $('#filter-template');
+	this.filterCount = 0;
 };
 
 CaptureEffectsController.prototype.init = function() {
@@ -135,7 +137,10 @@ CaptureEffectsController.prototype.onEffectClose = function(e) {
 };
 
 CaptureEffectsController.prototype.onAddEffectClicked = function() {
-  // TODO
+	var id = this.filterCount++;
+  var newFilter = this.filterTemplate.tmpl({_id:id});
+	newFilter.insertBefore('.add-effect-btn');
+	this.renderEffects('#effects'+id);
 };
 
 CaptureEffectsController.prototype.bindUI = function() {
@@ -286,7 +291,7 @@ CaptureEffectsController.prototype.loadEffects = function() {
   };
 };
 
-CaptureEffectsController.prototype.renderEffects = function() {
+CaptureEffectsController.prototype.renderEffects = function(s) {
   // Create the filter selector
   var html = '';
   for (var category in this.filters) {
@@ -296,9 +301,14 @@ CaptureEffectsController.prototype.renderEffects = function() {
       html += '<option>' + list[i].name + '</option>';
     }
   }
-  $('#filters').html(html);
-  $('#filters').change(this.onFilterEffectChange.bind(this));
-  //switchToFilter(1);
+  if (s == undefined) {
+  	$('.filters').html(html);
+  	$('.filters').change(this.onFilterEffectChange.bind(this));
+  	//switchToFilter(1);
+	} else {
+		$(s+' .filters').html(html);
+		$(s+' .filters').change(this.onFilterEffectChange.bind(this));
+	}
 };
 
 /**
