@@ -17,7 +17,7 @@ HangoutUpdater = function(controller) {
   this.MAX_ASSUMED_SCORE = 50;
   this.searchResults = [];
   this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
-
+  this.stateCounter = 0;
   this.HANGOUT_SEARCH_QUERY =  '"is hanging out"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
   this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"'
 };
@@ -216,9 +216,9 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
  * @param {Object} obj The search object where keys are "query" and "extra"
  * @param {boolean} refresh Reset the data with fresh hangouts.
  */
-HangoutUpdater.prototype.search = function(obj) {
+HangoutUpdater.prototype.search = function(obj,onDone) {
   var self = this;
-  
+  console.log(obj.query);
   self.controller.plus.search(function(res) {
 
     // Capture the error
@@ -236,7 +236,10 @@ HangoutUpdater.prototype.search = function(obj) {
     }
     
     self.updatingSearch = false;
-  }, obj.query, {precache: 4, type: 'hangout', burst: true, burst_size:self.BURST_SIZE});
+    if ( onDone ){ 
+      onDone();
+    }
+  }, obj.query, {precache: 4, type: 'hangout', burst: obj.burst, burst_size:self.BURST_SIZE});
   
 };
 
@@ -414,27 +417,44 @@ HangoutUpdater.prototype.doNext = function() {
   else {
     this.currentState++;
   }
+  
+  this.stateCounter++;
 };
 
 /**
  * query stages:
  */
  HangoutUpdater.prototype.state0 = function() {
-  var queryStr = this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED;
-  console.log( queryStr );
-  this.search({ query: queryStr}, false);
+  var self = this;
+  if (this.stateCounter == 0){
+    this.search({ query:this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED}, function(){ 
+      self.update();
+      self.search( {query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) }, function(){
+        self.update();
+        self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) }, function(){
+          self.update();
+          self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) }, function(){
+            self.update();
+            self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) } );
+          });
+        });
+      });
+    });
+  } else {
+    this.search( { query: this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED, burst:true } );
+  }
 };
 
 HangoutUpdater.prototype.state1 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY);
   console.log( queryStr );
-  this.search({ query: queryStr}, false);
+  this.search({ query: queryStr, burst: true}, false);
 };
 
 HangoutUpdater.prototype.state2 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY_NAMED);
   console.log( queryStr );
-  this.search({ query: queryStr}, false);
+  this.search({ query: queryStr, burst: true}, false);
 };
 
 
