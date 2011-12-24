@@ -123,7 +123,7 @@ body, html {
   z-index: 100;
 }
 .hangout-overlay:hover {
-  width: 100px;
+  width: 150px;
   box-shadow: -5px 0px 10px rgba(0,0,0,0.2);
 }
 .full .hangout-overlay {
@@ -311,4 +311,34 @@ body, html {
 #popup-open:hover {
   background-position: 0px 0px;
 }
-  
+
+#hangout-detail-container ul {
+  width: 570px;
+  margin: 0 5px;
+  padding:0 ;
+}
+
+#hangout-detail-container ul  li {
+  float: left;
+  width: 285px;
+  list-style-type: none;
+  height: 64px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.detail-card-header {
+  height: 50px;
+  line-height: 50px;
+  margin: 0 5px;
+  font-size: 1.2em;
+}
+
+.participant-card-image {
+  float: left;
+}
+
+.participant-card-detail {
+  margin-left: 70px;
+  font-size: 0.9em;
+}

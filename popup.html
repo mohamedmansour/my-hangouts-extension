@@ -32,6 +32,7 @@
   </div>
   <div id="popup-container">
     <div id="hangouts-container" class="popup-page"></div>
+    <div id="hangout-detail-container" class="popup-page"></div>
     <div id="maps-container" class="popup-page">
       <h2>Hangouts Around the World <span id="popup-subtitle">Click each image to see which hangout they are in!</span><span id="popup-open" title="Open map in new window."></span></h2>
       <div id="map-canvas"></div>
@@ -49,6 +50,36 @@
       -->
     </div>
   </div>
+  <script type="text/x-jquery-tmpl" id="hangout-detail-template">
+    <div>
+      <div class="detail-card-header">
+        ${hangout.name}
+      </div>
+      <ul>
+      {{each(i, participant) hangout.participants}}
+        {{if participant.status}}
+        <li{{if participant.circles}} class="in_my_circle"{{/if}}>
+          <div class="participant-card-image">
+            <a href="https://plus.google.com/${participant.id}/about" class="clickable">
+              <img src="${participant.image}?sz=64" title="${participant.name}" />
+            </a>
+            {{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}
+          </div>
+          <div class="participant-card-detail">
+            <strong>Name: </strong> ${participant.name} <br/>
+            {{if participant.location}}
+            <strong>Location: </strong> ${participant.location}<br/>
+            {{/if}}
+            {{if participant.occupation}}
+            <strong>Occupation: </strong> ${participant.occupation}
+            {{/if}}
+          </div>
+        </li>
+        {{/if}}
+      {{/each}}
+      </ul>
+    </div>
+  </script>
   <script type="text/x-jquery-tmpl" id="hangouts-popup-template">
     <div>
       <div class="hangout-popup">
@@ -71,13 +102,14 @@
   </script>
   <script type="text/x-jquery-tmpl" id="hangouts-template">
     {{each(i, hangout) hangouts}}
-    <div class="hangout-item{{if hangout.isFull}} full{{/if}}">
+    <div class="hangout-item{{if hangout.isFull}} full{{/if}}" id="${hangout.data.id}">
       <div class="hangout-overlay">
         <div class="hangout-show">
           <span class="hangout-show-count">{{if hangout.isFull}}FULL{{else}}${hangout.totalParticipants}{{/if}}</span>
           <span class="hangout-show-visibility">{{if hangout.is_public}}public{{else}}limited{{/if}}</span>
         </div>
         <div class="hangout-extra">
+          <span class="detail">detail</span>
           <a href="${hangout.url}" class="clickable"><img src="/img/link.png" alt="Original post"/></a>
         </div>
       </div>

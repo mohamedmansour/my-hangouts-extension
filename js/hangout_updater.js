@@ -45,6 +45,16 @@ HangoutUpdater.prototype.getHangouts = function() {
 };
 
 /**
+ * Checks the cache for the hangout. 
+ *
+ * @param {string} id the hangout ID
+ * @return {object} the hangout
+ */
+HangoutUpdater.prototype.getHangout = function(id) {
+  return this.cache[id];
+};
+
+/**
  * Return an array of g+ ids for every person in all we know about hangouts.
  */
 HangoutUpdater.prototype.getAllParticipants = function(opt_callback) {
@@ -276,11 +286,8 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
 
       this.hangouts.push(hangout);
       
-      // Preserve in the cache the visibility status and the index in the collection.
-      this.cache[hangout.data.id] = {
-        index: this.hangouts.length - 1,
-        is_public: hangout.is_public
-      };
+      // Preserve in the cache.
+      this.cache[hangout.data.id] = hangout;
     }
   }
   
@@ -363,6 +370,7 @@ HangoutUpdater.prototype.updateHangout = function(hangout) {
 	for ( var j = 0; j < this.hangouts.length; j++){
 	  if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
       this.hangouts[j] = hangout;
+      this.cache[hangout.data.id] = hangout;
       return true;
 	  }
 	}
