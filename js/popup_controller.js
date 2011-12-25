@@ -144,7 +144,8 @@ PopupController.prototype.onHangoutDetailClick = function(e) {
     hangout: {
       id: hangout.data.id,
       participants: participants,
-      name: hangout.data.name
+      name: hangout.data.name,
+      url: hangout.data.url
     }
   }));
   this.togglePage('hangout-detail');

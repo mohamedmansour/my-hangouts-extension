@@ -54,7 +54,7 @@
   <script type="text/x-jquery-tmpl" id="hangout-detail-template">
     <div>
       <div class="detail-card-header">
-        ${hangout.name}
+        ${hangout.name} <a class="button clickable" href="${hangout.url}">Join Hangout</a>
       </div>
       <ul>
       {{each(i, participant) hangout.participants}}
