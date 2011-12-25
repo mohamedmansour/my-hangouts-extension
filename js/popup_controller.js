@@ -149,7 +149,7 @@ PopupController.prototype.onHangoutDetailClick = function(e) {
   }));
   this.togglePage('hangout-detail');
 
-  var height = Math.ceil(hangout.totalParticipants / 2) * 80;
+  var height = Math.ceil(hangout.totalParticipants / 2) * 80 + 50;
   $('.popup-page').height(height);
   $('#popup-container').height(height);
 };
@@ -174,13 +174,20 @@ PopupController.prototype.relayout = function() {
   }
   var height = 300;
   if (this.currentPage == 'hangouts') {
-    height = (this.hangouts.length * 70) + 5;
+    var height = (this.hangouts.length * 70) + 5;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
   }
-  else if (this.currentPage == 'hangout-detail') {
-    height = 400;
+  else if (this.currentPage == 'maps') {
+    var height = 301;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
   }
-  $('.popup-page').height(height);
-  $('#popup-container').height(height);
+  else if (this.currentPage == 'options') {
+    var height = 300;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
+  }
 };
 
 /**
