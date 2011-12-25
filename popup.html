@@ -107,7 +107,9 @@
       <div class="hangout-overlay">
         <div class="hangout-show">
           <span class="hangout-show-count">{{if hangout.isFull}}FULL{{else}}${hangout.totalParticipants}{{/if}}</span>
-          <span class="hangout-show-visibility">{{if hangout.is_public}}public{{else}}limited{{/if}}</span>
+          <span class="hangout-show-visibility">
+          {{if hangout.data.is_onair}}On Air{{else}}{{if hangout.is_public}}public{{else}}limited{{/if}}{{/if}}
+          </span>
         </div>
         <div class="hangout-extra">
           <span class="detail"><img src="/img/detail.png" title="View detail post"/></span>
