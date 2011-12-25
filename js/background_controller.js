@@ -78,8 +78,6 @@ BackgroundController.prototype.onUpdate = function(previous, current) {
  * Initialize the main Background Controller
  */
 BackgroundController.prototype.init = function() {
-  this.updaterBackend.init();
-
   this.plus.init(function(status) {
     window.setInterval(this.queryPublicHangouts.bind(this), this.UPDATE_INTERVAL);
     window.setInterval(this.refreshCircles.bind(this), this.UPDATE_CIRCLES_INTERVAL);

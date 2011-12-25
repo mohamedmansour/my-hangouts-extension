@@ -5,6 +5,7 @@
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  */
 HangoutUpdater = function(controller) {
+  this.LOGGER_ENABLED = false;
   this.controller = controller;
   this.currentState = 0;
   this.maxState = 2;
@@ -13,39 +14,12 @@ HangoutUpdater = function(controller) {
   this.error = false;
   this.cache = {};
   this.hangouts = [];
-  this.searchResults = [];
-  this.stateCounter = 0;
-  this.only_show_circle_hangouts = false;
-
-  // Return rt result over the entire re-query interval
-  this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL);
   this.MAX_ASSUMED_SCORE = 50;
-  this.LOGGER_ENABLED = false;
-
-  // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
-  this.HANGOUT_SEARCH_QUERY =  '"is hanging out"';
-  this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"';
-};
-
-/**
- * Add some initialization routins for this updater.
- */
-HangoutUpdater.prototype.init = function() {
-  // Settings listeners.
-  settings.addListener('only_show_circle_hangouts', this.onSettingsChangeListener.bind(this))
-  this.onSettingsChangeListener('only_show_circle_hangouts', settings.only_show_circle_hangouts);
-};
-
-/**
- * Listen on settings changes in real time.
- *
- * @param {string} key The setting key that has been updated.
- * @param {string} val The new value for that setting.
- */
-HangoutUpdater.prototype.onSettingsChangeListener = function(key, val) {
-  if (key == 'only_show_circle_hangouts') {
-    this.only_show_circle_hangouts = val;
-  }
+  this.searchResults = [];
+  this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
+  this.stateCounter = 0;
+  this.HANGOUT_SEARCH_QUERY =  '"is hanging out"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
+  this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"'
 };
 
 /**
@@ -65,7 +39,7 @@ HangoutUpdater.prototype.getHangouts = function() {
   for (var i=0; i< this.hangouts.length; i++ ){
     hangout = this.hangouts[i];
     inlcudeHangout = hangout && 
-        (!this.only_show_circle_hangouts || hangout.hasParticipantInCircles);
+                          ( !settings.only_show_circle_hangouts || hangout.hasParticipantInCircles );
     if (inlcudeHangout){
       hangouts.push(hangout);
     }
@@ -175,9 +149,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var normalizedCircleScore = circleCount / updatedHangout.totalParticipants;
   var normalizedTotalParticipantsScore = updatedHangout.totalParticipants / 10;
   var normalizedCirclePositionScore =  circlePositionScore / updatedHangout.totalParticipants;
+ 
   var rank = normalizedRelevancyScore + normalizedCircleScore + normalizedTotalParticipantsScore + normalizedCirclePositionScore;
-
-  // Hangout circle count.
+ 
   updatedHangout.hasParticipantInCircles = (circleCount > 0);
   
  
