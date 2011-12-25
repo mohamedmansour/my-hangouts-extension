@@ -155,7 +155,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   ctx.font = 'bold 11px arial, sans-serif';
   ctx.fillStyle = newItem ? '#fff' : '#999';
 
-  chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
+  var browserActionText = count + ' hangouts are going on right now!';
   if (count > 99){
     ctx.fillText('99+', 1, 14);
   }
@@ -164,14 +164,28 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   }
   else if (count >= 0) {
     ctx.fillText(count + '', 6, 14);
-    if ( count == 0 ){
-      chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
+    if ( count == 0 ) {
+      browserActionText = 'There are no hangouts going on!';
     }
   }
   else {
     ctx.fillText('?', 6, 14);
-    chrome.browserAction.setTitle({title: 'Your session to Google+ was not found, please log in or reopen Chrome.'});
+    browserActionText = 'Your session to Google+ was not found, please log in or reopen Chrome.';
   }
+
+  // Draw the circle if it is filtered by circles.
+  if (newItem && settings.only_show_circle_hangouts) {
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 5, 0, Math.PI * 2, true); 
+    ctx.closePath();
+    ctx.stroke();
+    
+    browserActionText += ' - Filtered by Circles';
+  }
+
+  chrome.browserAction.setTitle({title: browserActionText});
   chrome.browserAction.setIcon({imageData: ctx.getImageData(0,0,19,19)});
 };
 
