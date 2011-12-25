@@ -129,7 +129,7 @@ PopupController.prototype.createNewParticipant = function(participant) {
  * Listens when the detail has been clicked for each hangout.
  */
 PopupController.prototype.onHangoutDetailClick = function(e) {
-  var hangoutNode = $(e.target.parentNode.parentNode.parentNode);
+  var hangoutNode = $(e.target.parentNode.parentNode.parentNode.parentNode);
   var hangout = this.bkg.controller.getHangoutBackend().getHangout(hangoutNode.attr('id'));
 
   // Get person data.
