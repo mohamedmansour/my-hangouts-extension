@@ -134,6 +134,9 @@ body, html {
   height: 65px;
   line-height: 65px;
 }
+.hangout-extra span {
+  margin-right: 10px;
+}
 .hangout-show {
   float: right;
   width: 70px;
