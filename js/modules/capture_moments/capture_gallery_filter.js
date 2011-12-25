@@ -151,6 +151,7 @@ CaptureEffectsController.prototype.bindUI = function() {
   $(window).resize(this.onWindowResize.bind(this));
 };
 
+// TODO Make these a stack of functions to apply
 CaptureEffectsController.prototype.loadEffects = function() {
   var self = this;
   this.perspectiveNubs = [175, 156, 496, 55, 161, 279, 504, 330];
@@ -324,7 +325,10 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
     var list = this.filters[category];
     for (var i = 0; i < list.length; i++) {
       if (index-- == 0) {
-        list[i].use(this);
+				// TODO: Get parent index
+				parentElement = $(e.target).parent();
+				selectedIndex = parentElement.data().index
+        list[i].use(this, selectedIndex);
       }
     }
   }
@@ -404,17 +408,17 @@ Filter.prototype.addSlider = function(name, label, min, max, value, step) {
   this.sliders.push({ name: name, label: label, min: min, max: max, value: value, step: step });
 };
 
-Filter.prototype.use = function(effectController) {
+Filter.prototype.use = function(effectController, selectedIndex) {
   // Load the texture from the image and draw it to the canvas
   var canvas = effectController.glfxCanvas;
-
+	var index = selectedIndex;
   // Clear the sliders
-  $(".sliders").empty();
+  $('#sliders'+index).empty();
   
   // Add a row for each slider
   for (var i = 0; i < this.sliders.length; i++) {
     var slider = this.sliders[i];
-    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + ':<div id="slider' + i + '"></div></div>').appendTo($(".sliders"));
+    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + ':<div id="slider' + i + '"></div></div>').appendTo($("#sliders"+index));
     var onchange = (function(this_, slider) { return function(event, ui) {
       this_[slider.name] = ui.value;
       this_.update();
