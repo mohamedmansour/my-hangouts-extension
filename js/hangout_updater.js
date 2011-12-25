@@ -443,7 +443,13 @@ HangoutUpdater.prototype.doNext = function() {
           self.update();
           self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) }, function(){
             self.update();
-            self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) } );
+            self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) }, function() {
+              self.update();
+              self.search( {query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) }, function(){
+                self.update();
+                self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) } );
+              });
+            });
           });
         });
       });
