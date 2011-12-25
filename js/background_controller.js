@@ -298,7 +298,8 @@ BackgroundController.prototype.getCircle = function(circleID) {
  */
 BackgroundController.prototype.openSpecialWindow = function(target, href) {
   if (target.is('.button') && settings.open_hangout_new_window) {
-    window.open(href,'hangoutwin', 'toolbar=0,location=1,resizable=1');
+    var id = href.substring(href.lastIndexOf('/'));
+    window.open(href,'hangoutwin-' + id, 'toolbar=0,location=1,resizable=1');
   }
   else {
     chrome.tabs.create({url: href});
