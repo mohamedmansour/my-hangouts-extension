@@ -30,15 +30,18 @@ HangoutUpdater.prototype.hasError = function() {
 };
 
 /**
- * @return List of hangouts.
+ * @return a clean, filter List of hangouts for use in UI.
  */
 HangoutUpdater.prototype.getHangouts = function() {
-  // return non-null hangouts.... null indicates hangout is about to be deleted.
-  // i am sure there is a more javascripty way to do this....
   var hangouts = [];
+  var includeHangout = false;
+  var hangout = null;
   for (var i=0; i< this.hangouts.length; i++ ){
-    if (this.hangouts[i]){
-      hangouts.push(this.hangouts[i]);
+    hangout = this.hangouts[i];
+    inlcudeHangout = hangout && 
+                          ( !settings.only_show_circle_hangouts || hangout.hasParticipantInCircles );
+    if (inlcudeHangout){
+      hangouts.push(hangout);
     }
   }
   return hangouts;
@@ -146,7 +149,12 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var normalizedCircleScore = circleCount / updatedHangout.totalParticipants;
   var normalizedTotalParticipantsScore = updatedHangout.totalParticipants / 10;
   var normalizedCirclePositionScore =  circlePositionScore / updatedHangout.totalParticipants;
+ 
   var rank = normalizedRelevancyScore + normalizedCircleScore + normalizedTotalParticipantsScore + normalizedCirclePositionScore;
+ 
+  updatedHangout.hasParticipantInCircles = (circleCount > 0);
+  
+ 
   console.log(hangout.data.id, {
     normalizedRelevancyScore:normalizedRelevancyScore,
     normalizedCircleScore: normalizedCircleScore,

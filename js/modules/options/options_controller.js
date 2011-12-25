@@ -63,5 +63,6 @@ OptionsController.prototype.bindUI = function() {
   onlyShowCircleHangouts.prop('checked', this.settings.only_show_circle_hangouts);
   onlyShowCircleHangouts.change(function(e) {
     self.settings.only_show_circle_hangouts = $(e.target).is(':checked');
+    self.popup.updateHangouts();
   });
 };
