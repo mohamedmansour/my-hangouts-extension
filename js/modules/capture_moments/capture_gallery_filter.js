@@ -151,7 +151,7 @@ CaptureEffectsController.prototype.bindUI = function() {
   $(window).resize(this.onWindowResize.bind(this));
 };
 
-// TODO Make these a stack of functions to apply
+
 CaptureEffectsController.prototype.loadEffects = function() {
   var self = this;
   this.perspectiveNubs = [175, 156, 496, 55, 161, 279, 504, 330];
@@ -305,7 +305,6 @@ CaptureEffectsController.prototype.renderEffects = function(s) {
   if (s == undefined) {
   	$('.filters').html(html);
   	$('.filters').change(this.onFilterEffectChange.bind(this));
-  	//switchToFilter(1);
 	} else {
 		$(s+' .filters').html(html);
 		$(s+' .filters').change(this.onFilterEffectChange.bind(this));
@@ -334,6 +333,7 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
   }
 };
 
+<<<<<<< HEAD
 /* Add text to a canvas
  *
  * args = {
@@ -387,6 +387,18 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
   }
 }
 
+=======
+// TODO Make these a stack of functions to apply
+CaptureEffectsController.prototype.collectEffects = function() {
+	panels = $('.fx-panel');
+	for (var i = 0; i < panels.length; i++) {
+		var s = panels[i];
+		// TODO
+	}
+}
+
+
+>>>>>>> Fixed minor bug with sliders.
 /**
  * Describes a filter.
  */
@@ -418,13 +430,14 @@ Filter.prototype.use = function(effectController, selectedIndex) {
   // Add a row for each slider
   for (var i = 0; i < this.sliders.length; i++) {
     var slider = this.sliders[i];
-    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + ':<div id="slider' + i + '"></div></div>').appendTo($("#sliders"+index));
+    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + ':<div id="slider'+index +'_' + i + '"></div></div>').appendTo($("#sliders"+index));
     var onchange = (function(this_, slider) { return function(event, ui) {
       this_[slider.name] = ui.value;
+			console.log(this_.update);
       this_.update();
       //controller.glfxCanvas.update();
     }; })(this, slider);
-    $('#slider' + i).slider({
+    $('#slider'+index+'_' + i).slider({
       slide: onchange,
       change: onchange,
       min: slider.min,
@@ -457,6 +470,5 @@ Filter.prototype.use = function(effectController, selectedIndex) {
     this[nub.name] = { x: x, y: y };
   }
   //$('#nubs').css({width:canvas.width, height:canvas.height});
-
   this.update();
 };
