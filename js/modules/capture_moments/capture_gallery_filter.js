@@ -347,7 +347,6 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
   }
 };
 
-<<<<<<< HEAD
 /* Add text to a canvas
  *
  * args = {
@@ -401,7 +400,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
   }
 }
 
-=======
+
 // TODO Make these a stack of functions to apply
 CaptureEffectsController.prototype.collectEffects = function() {
 	this.glfxCanvas = this.resetEffectCanvas();
@@ -429,7 +428,6 @@ CaptureEffectsController.prototype.collectEffects = function() {
 }
 
 
->>>>>>> Fixed minor bug with sliders.
 /**
  * Describes a filter.
  */
