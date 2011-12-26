@@ -63,9 +63,9 @@
         <li{{if participant.circles}} class="in_my_circle"{{/if}}>
           <div class="participant-card-image">
             <a href="https://plus.google.com/${participant.id}/about" class="clickable">
-              <img src="${participant.image}?sz=64" title="${participant.name}" />
+              <img src="${participant.image}?sz=64" title="${participant.name}" class="tip" />
             </a>
-            {{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}
+            {{if participant.circles}}<span title="Circles: ${participant.circles}" class="tip">${participant.circles.length}</span>{{/if}}
           </div>
           <div class="participant-card-detail">
             <strong>Name: </strong> ${participant.name} <br/>
@@ -87,14 +87,14 @@
       <div class="hangout-popup">
         <div class="hangout-popup-name">${hangout.data.name}</div>
         <div class="hangout-popup-header">
-          <div class="hangout-popup-owner{{if hangout.owner.circles}} in_my_circle{{/if}}"><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=40" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</div>
+          <div class="hangout-popup-owner{{if hangout.owner.circles}} in_my_circle{{/if}}"><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=40" title="${hangout.owner.name}" class="tip" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}" class="tip">${hangout.owner.circles.length}</span>{{/if}}</div>
           <div class="hangout-popup-button"><a class="button minified-button clickable" href="${hangout.data.url}">Join</a></div>
         </div>
         <div class="hangout-participants">
           <ul>
           {{each(i, participant) hangout.data.participants}}
             {{if participant.status}}
-            <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=20" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
+            <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=20" title="${participant.name}" class="tip" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}" class="tip">${participant.circles.length}</span>{{/if}}</li>
             {{/if}}
           {{/each}}
           </ul>
@@ -113,8 +113,8 @@
           </span>
         </div>
         <div class="hangout-extra">
-          <span class="detail"><img src="/img/detail.png" title="View detail post"/></span>
-          <span class="link"><a href="${hangout.url}" class="clickable"><img src="/img/link.png" title="Link to original post"/></a></span>
+          <span class="detail"><img src="/img/detail.png" title="View detail post" class="tip"/></span>
+          <span class="link"><a href="${hangout.url}" class="clickable"><img src="/img/link.png" title="Link to original post" class="tip"/></a></span>
         </div>
       </div>
       <div class="hangout-button"><a class="button clickable" href="${hangout.data.url}">Join</a></div>
