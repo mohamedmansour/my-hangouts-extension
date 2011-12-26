@@ -12,6 +12,7 @@
   <script src="/js/libs/jquery.timeago.js"></script>
   <script src="/js/libs/chosen.jquery.min.js"></script>
   <script src="/js/libs/simplemarker.1.4.min.js"></script>
+  <script src="/js/libs/jquery.tipTip.minified.js"></script>
   <script src="/js/modules/maps/map_controller.js"></script>
   <script src="/js/modules/options/options_controller.js"></script>
   <script src="/js/popup_controller.js"></script>
@@ -120,10 +121,10 @@
       <div class="hangout-participants">
         <div class="hangout-name">${hangout.data.name}</div>
         <ul>
-        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=48" title="${hangout.owner.name}" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}">${hangout.owner.circles.length}</span>{{/if}}</li>
+        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=48" title="${hangout.owner.name}" class="tip" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}" class="tip">${hangout.owner.circles.length}</span>{{/if}}</li>
         {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
-          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title="${participant.name}" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}">${participant.circles.length}</span>{{/if}}</li>
+          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title="${participant.name}" class="tip" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}" class="tip">${participant.circles.length}</span>{{/if}}</li>
           {{/if}}
         {{/each}}
         </ul>
@@ -131,6 +132,10 @@
     </div>
     {{/each}}
   </script>
+    <div id="tiptip_holder">
+      <div id="tiptip_arrow"><div id="tiptip_arrow_inner"></div></div>
+      <div id="tiptip_content"></div>
+    </div>
   <script>
     var popupController = new PopupController();
     popupController.init();
