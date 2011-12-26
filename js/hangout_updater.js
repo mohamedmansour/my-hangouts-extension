@@ -149,19 +149,20 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var normalizedCircleScore = circleCount / updatedHangout.totalParticipants;
   var normalizedTotalParticipantsScore = updatedHangout.totalParticipants / 10;
   var normalizedCirclePositionScore =  circlePositionScore / updatedHangout.totalParticipants;
- 
   var rank = normalizedRelevancyScore + normalizedCircleScore + normalizedTotalParticipantsScore + normalizedCirclePositionScore;
  
   updatedHangout.hasParticipantInCircles = (circleCount > 0);
   
- 
-  console.log(hangout.data.id, {
-    normalizedRelevancyScore:normalizedRelevancyScore,
-    normalizedCircleScore: normalizedCircleScore,
-    normalizedTotalParticipantsScore: normalizedTotalParticipantsScore,
-    normalizedCirclePositionScore: normalizedCirclePositionScore,
-    rank: rank
-  });
+  if (this.LOGGER_ENABLED) {
+    console.log(hangout.data.id, {
+      normalizedRelevancyScore:normalizedRelevancyScore,
+      normalizedCircleScore: normalizedCircleScore,
+      normalizedTotalParticipantsScore: normalizedTotalParticipantsScore,
+      normalizedCirclePositionScore: normalizedCirclePositionScore,
+      rank: rank
+    });
+  }
+  
   // Custom name to each hangout.
   if (updatedHangout.data.is_onair) {
     updatedHangout.data.name = updatedHangout.data.extra_data[1] + ' - OnAir';
@@ -226,7 +227,10 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
  */
 HangoutUpdater.prototype.search = function(obj, onDone) {
   var self = this;
-  console.log(obj.query);
+  
+  if (this.LOGGER_ENABLED) {
+    console.log(obj.query);
+  }
   
   // Google+ API Search Options.
   var extraSearchOptions = {
@@ -472,13 +476,17 @@ HangoutUpdater.prototype.doNext = function() {
 
 HangoutUpdater.prototype.state1 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY);
-  console.log( queryStr );
+  if (this.LOGGER_ENABLED) {
+    console.log( queryStr );
+  }
   this.search({ query: queryStr, burst: true}, false);
 };
 
 HangoutUpdater.prototype.state2 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY_NAMED);
-  console.log( queryStr );
+  if (this.LOGGER_ENABLED) {
+    console.log( queryStr );
+  }
   this.search({ query: queryStr, burst: true}, false);
 };
 
