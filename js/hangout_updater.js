@@ -224,9 +224,20 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
  * @param {Object} obj The search object where keys are "query" and "extra"
  * @param {boolean} refresh Reset the data with fresh hangouts.
  */
-HangoutUpdater.prototype.search = function(obj,onDone) {
+HangoutUpdater.prototype.search = function(obj, onDone) {
   var self = this;
   console.log(obj.query);
+  
+  // Google+ API Search Options.
+  var extraSearchOptions = {
+    precache: 4,
+    category: GooglePlusAPI.SearchCategory.RECENT,
+    privacy: GooglePlusAPI.SearchPrivacy.EVERYONE,
+    type: GooglePlusAPI.SearchType.HANGOUTS,
+    burst: obj.burst,
+    burst_size: self.BURST_SIZE
+  };
+  
   self.controller.plus.search(function(res) {
 
     // Capture the error
@@ -247,7 +258,7 @@ HangoutUpdater.prototype.search = function(obj,onDone) {
     if ( onDone ){ 
       onDone();
     }
-  }, obj.query, {precache: 4, type: 'hangout', burst: obj.burst, burst_size:self.BURST_SIZE});
+  }, obj.query, extraSearchOptions);
   
 };
 
