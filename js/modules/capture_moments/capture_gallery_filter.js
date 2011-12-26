@@ -485,11 +485,11 @@ Filter.prototype.use = function(effectController, filterName, selectedIndex) {
       var offset = $("#light").offset();
       console.log("here");
       this_[nub.name] = { x: ui.offset.left - offset.left, y: ui.offset.top - offset.top };
-    	controller.effectsController.collectEffects();
-		}; })(this, nub);
+			controller.effectsController.collectEffects();
+    }; })(this, nub);
     $('#nub' + i).draggable({
       drag: ondrag,
-      containment: 'parent',
+      //containment: 'parent',
       scroll: false
     }).css({ left: x, top: y });
     this[nub.name] = { x: x, y: y };
