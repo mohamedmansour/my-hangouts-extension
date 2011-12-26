@@ -82,9 +82,8 @@ CaptureEffectsController.prototype.onSaveClicked = function() {
   tempImage.onload = function () {
     var tempCanvas = document.createElement('canvas');
     var ctx = tempCanvas.getContext('2d');
-    ctx.canvas.width = self.originalData.thumbnail_width;
-    ctx.canvas.height = self.originalData.thumbnail_height;
-    ctx.drawImage(this, 0, 0, ctx.canvas.width, ctx.canvas.height);
+		//thumnail dimensions 250x150   
+    ctx.drawImage(this, 0, 0, 250, 150);
     self.processImage(originalData, ctx.canvas.toDataURL());    
   };
 	this.filterCount = 0;
