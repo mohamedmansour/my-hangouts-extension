@@ -42,7 +42,7 @@ CaptureEffectsController.prototype.open = function(id) {
     originalImage.src = res.data.active;
     originalImage.onload = function() {
       self.texture = self.glfxCanvas.texture(originalImage);
-      self.getEffectCanvas().update();
+      self.resetEffectCanvas().update();
       $('#canvasPreview').append(self.glfxCanvas);
       self.onWindowResize();
     };
@@ -106,8 +106,14 @@ CaptureEffectsController.prototype.processImage = function(originalData, thumbna
   });
 };
 
+CaptureEffectsController.prototype.resetEffectCanvas = function() {
+	return this.glfxCanvas.draw(this.texture);
+}
+
 CaptureEffectsController.prototype.getEffectCanvas = function() {
-  return this.glfxCanvas.draw(this.texture);
+	if (this.glfxCanvas == null)
+		return this.resetEffectCanvas();
+  else return this.glfxCanvas;
 };
 
 CaptureEffectsController.prototype.onWindowResize = function() {
@@ -132,8 +138,11 @@ CaptureEffectsController.prototype.onWindowResize = function() {
 };
 
 CaptureEffectsController.prototype.onEffectClose = function(e) {
-  $(e.target).parent().fadeOut();
+  console.log("closed");
+
+	$(e.target).parent().fadeOut();
   // TODO: Cleanup
+	console.log("closed");
 };
 
 CaptureEffectsController.prototype.onAddEffectClicked = function() {
@@ -324,10 +333,10 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
     var list = this.filters[category];
     for (var i = 0; i < list.length; i++) {
       if (index-- == 0) {
-				// TODO: Get parent index
 				parentElement = $(e.target).parent();
-				selectedIndex = parentElement.data().index
-        list[i].use(this, selectedIndex);
+				selectedIndex = parentElement.data().index;
+				console.log(list[i]);
+        list[i].use(this, list[i].name, selectedIndex);
       }
     }
   }
@@ -390,10 +399,26 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
 =======
 // TODO Make these a stack of functions to apply
 CaptureEffectsController.prototype.collectEffects = function() {
-	panels = $('.fx-panel');
-	for (var i = 0; i < panels.length; i++) {
-		var s = panels[i];
-		// TODO
+	this.glfxCanvas = this.resetEffectCanvas();
+
+	sliders = $('.fx-panel .sliders');
+	filtersToApply = []
+	for (var i = 0; i < sliders.length; i++) {
+		var s = sliders[i];
+		filterName = $(s).data('type')
+		for (var key in this.filters) {
+			group = this.filters[key];
+			filter = _.filter(group, function(obj) { return obj['name'] == filterName});
+			if (filter.length == 1) {
+				// Clone it and add to stack
+				clone = $.extend(true, {}, filter[0])
+				children = $(s).children('div')
+				filtersToApply.push(clone)
+			}
+		}
+		for (var k = 0; k < filtersToApply.length; k++) {
+			filtersToApply[k].update();
+		}
 	}
 }
 
@@ -420,22 +445,22 @@ Filter.prototype.addSlider = function(name, label, min, max, value, step) {
   this.sliders.push({ name: name, label: label, min: min, max: max, value: value, step: step });
 };
 
-Filter.prototype.use = function(effectController, selectedIndex) {
+Filter.prototype.use = function(effectController, filterName, selectedIndex) {
   // Load the texture from the image and draw it to the canvas
   var canvas = effectController.glfxCanvas;
+	// Index of the panel that was selected
 	var index = selectedIndex;
   // Clear the sliders
   $('#sliders'+index).empty();
-  
+  $('#sliders'+index).data('type', filterName);
   // Add a row for each slider
   for (var i = 0; i < this.sliders.length; i++) {
     var slider = this.sliders[i];
-    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + ':<div id="slider'+index +'_' + i + '"></div></div>').appendTo($("#sliders"+index));
+    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + 
+			':<div id="slider'+index +'_' + i + '" data-attrib="'+slider.name+'"></div></div>').appendTo($("#sliders"+index));
     var onchange = (function(this_, slider) { return function(event, ui) {
-      this_[slider.name] = ui.value;
-			console.log(this_.update);
-      this_.update();
-      //controller.glfxCanvas.update();
+	   	this_[slider.name] = ui.value;
+      controller.effectsController.collectEffects();
     }; })(this, slider);
     $('#slider'+index+'_' + i).slider({
       slide: onchange,
@@ -460,8 +485,8 @@ Filter.prototype.use = function(effectController, selectedIndex) {
       var offset = $("#light").offset();
       console.log("here");
       this_[nub.name] = { x: ui.offset.left - offset.left, y: ui.offset.top - offset.top };
-      this_.update();
-    }; })(this, nub);
+    	controller.effectsController.collectEffects();
+		}; })(this, nub);
     $('#nub' + i).draggable({
       drag: ondrag,
       containment: 'parent',
