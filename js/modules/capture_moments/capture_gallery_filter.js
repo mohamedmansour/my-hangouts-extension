@@ -417,7 +417,6 @@ CaptureEffectsController.prototype.collectEffects = function() {
 			if (filter.length == 1) {
 				// Clone it and add to stack
 				clone = $.extend(true, {}, filter[0])
-				children = $(s).children('div')
 				filtersToApply.push(clone)
 			}
 		}
@@ -486,14 +485,14 @@ Filter.prototype.use = function(effectController, filterName, selectedIndex) {
     var y = nub.y * canvas.height;
     $('<div class="nub" id="nub' + i + '"></div>').appendTo('#nubs');
     var ondrag = (function(this_, nub) { return function(event, ui) {
-      var offset = $("#light").offset();
+      var offset = $("#canvasPreview").offset();
       console.log("here");
       this_[nub.name] = { x: ui.offset.left - offset.left, y: ui.offset.top - offset.top };
 			controller.effectsController.collectEffects();
     }; })(this, nub);
     $('#nub' + i).draggable({
       drag: ondrag,
-      //containment: 'parent',
+      containment: 'canvas',
       scroll: false
     }).css({ left: x, top: y });
     this[nub.name] = { x: x, y: y };
