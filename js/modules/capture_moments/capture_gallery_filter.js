@@ -241,7 +241,7 @@ CaptureEffectsController.prototype.loadEffects = function() {
         this.addSlider('brightness', 'Brightness', -1, 1, 0.75, 0.01);
         this.addSlider('angle', 'Angle', -Math.PI, Math.PI, 0, 0.01);
       }, function() {
-        self.getEffectCanvas().lensBlur(this.radius, his.brightness, this.angle).update();
+        self.getEffectCanvas().lensBlur(this.radius, this.brightness, this.angle).update();
       })
     ],
     'Warp': [
