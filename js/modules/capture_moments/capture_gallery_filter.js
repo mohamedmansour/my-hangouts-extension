@@ -41,9 +41,10 @@ CaptureEffectsController.prototype.open = function(id) {
     var originalImage = new Image();
     originalImage.src = res.data.active;
     originalImage.onload = function() {
+			self.glfxCanvas = fx.canvas();
       self.texture = self.glfxCanvas.texture(originalImage);
-      self.resetEffectCanvas().update();
       $('#canvasPreview').append(self.glfxCanvas);
+			self.glfxCanvas.draw(self.texture).update();
       self.onWindowResize();
     };
   });
@@ -60,6 +61,9 @@ CaptureEffectsController.prototype.dispose = function() {
 	$('#edit').fadeOut(200);
 	$('li').delay(400).fadeIn(200).removeClass('select');	
 	$(document).off("click", "li");
+	// remove panels
+	this.filterCount = 0;
+	$('.fx-panel').remove();
 };
 
 CaptureEffectsController.prototype.onSaveClicked = function() {
@@ -83,6 +87,8 @@ CaptureEffectsController.prototype.onSaveClicked = function() {
     ctx.drawImage(this, 0, 0, ctx.canvas.width, ctx.canvas.height);
     self.processImage(originalData, ctx.canvas.toDataURL());    
   };
+	this.filterCount = 0;
+	$('.fx-panel').remove();
 };
 
 CaptureEffectsController.prototype.processImage = function(originalData, thumbnail) {
@@ -400,6 +406,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
 // TODO Make these a stack of functions to apply
 CaptureEffectsController.prototype.collectEffects = function() {
 	this.glfxCanvas = this.resetEffectCanvas();
+	this.glfxCanvas.update();
 
 	sliders = $('.fx-panel .sliders');
 	filtersToApply = []
