@@ -376,9 +376,10 @@ body, html {
 	font:normal 0.8em Arial, Helvetica, sans-serif;
 	color: #fff;
 	text-shadow: 0 0 2px #000;
-	background-color: rgba(0,0,0,0.8);
+	background-color: rgba(0,0,0,0.9);
 	padding: 8px;
 	border-radius: 4px;
+	max-width: 200px;
 }
 #tiptip_content h3 { margin:0; padding:0; font-size:1.05em; }
 #tiptip_content span { color:#aaa; }
