@@ -247,7 +247,10 @@ HangoutUpdater.prototype.search = function(obj, onDone) {
     // Capture the error
     self.error = !res.status;
     if (self.error) {
-      self.controller.drawBadgeIcon(-1, false);
+      if (self.LOGGER_ENABLED) {
+        console.log('search return an error.');
+        self.controller.drawBadgeIcon(-1, false);
+      }
       return;
     }
 
