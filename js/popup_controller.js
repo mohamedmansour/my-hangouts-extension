@@ -154,6 +154,7 @@ PopupController.prototype.onHangoutDetailClick = function(e) {
   var height = Math.ceil(hangout.totalParticipants / 2) * 80 + 50;
   $('.popup-page').height(height);
   $('#popup-container').height(height);
+  $(".tip").tipTip();
 };
 
 /**

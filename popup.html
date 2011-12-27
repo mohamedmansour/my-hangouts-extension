@@ -121,10 +121,10 @@
       <div class="hangout-participants">
         <div class="hangout-name">${hangout.data.name}</div>
         <ul>
-        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=48" title="${hangout.owner.name}" class="tip" /></a>{{if hangout.owner.circles}}<span title="Circles: ${hangout.owner.circles}" class="tip">${hangout.owner.circles.length}</span>{{/if}}</li>
+        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=48" title='<h3>${hangout.owner.name}</h3>{{if hangout.owner.circles}}<span>Circles:</span> ${hangout.owner.circles}{{/if}}' class="tip" /></a>{{if hangout.owner.circles}}<span>${hangout.owner.circles.length}</span>{{/if}}</li>
         {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
-          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title="${participant.name}" class="tip" /></a>{{if participant.circles}}<span title="Circles: ${participant.circles}" class="tip">${participant.circles.length}</span>{{/if}}</li>
+          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title='<h3>${participant.name}</h3>{{if participant.circles}}<span>Circles:</span> ${participant.circles}{{/if}}' class="tip" /></a>{{if participant.circles}}<span>${participant.circles.length}</span>{{/if}}</li>
           {{/if}}
         {{/each}}
         </ul>
