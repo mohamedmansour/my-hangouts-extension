@@ -18,8 +18,8 @@ HangoutUpdater = function(controller) {
   this.searchResults = [];
   this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
   this.stateCounter = 0;
-  this.HANGOUT_SEARCH_QUERY =  '"is hanging out"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
-  this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"'
+  this.HANGOUT_SEARCH_QUERY =  '"is"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
+  this.HANGOUT_SEARCH_QUERY_NAMED = '"named"'
 };
 
 /**
