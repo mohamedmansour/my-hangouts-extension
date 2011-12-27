@@ -143,11 +143,8 @@ CaptureEffectsController.prototype.onWindowResize = function() {
 };
 
 CaptureEffectsController.prototype.onEffectClose = function(e) {
-  console.log("closed");
-
 	$(e.target).parent().fadeOut();
-  // TODO: Cleanup
-	console.log("closed");
+	$(e.target).parent().remove();
 };
 
 CaptureEffectsController.prototype.onAddEffectClicked = function() {
@@ -155,6 +152,8 @@ CaptureEffectsController.prototype.onAddEffectClicked = function() {
   var newFilter = this.filterTemplate.tmpl({_id:id});
 	newFilter.insertBefore('.add-effect-btn');
 	this.renderEffects('#effects'+id);
+  $('.close').click(this.onEffectClose.bind(this));
+	
 };
 
 CaptureEffectsController.prototype.bindUI = function() {
