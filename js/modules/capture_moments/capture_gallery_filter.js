@@ -379,7 +379,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
       args.x = 0;
     if (args.y == undefined)
       args.y = 0;
-    ctx.fillText(args.text, 0, 0);
+    ctx.fillText(args.text, args.x, args.y);
     
   
     var compositeImage = new Image();
@@ -390,7 +390,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
       console.log(tex);
       //remove old canvas
       // TODO encapsulate this code
-      $(controller.effectsController.glfxCanvas).remove();
+     $(controller.effectsController.glfxCanvas).remove();
       controller.effectsController.glfxCanvas = fx.canvas();
       tex = controller.effectsController.glfxCanvas.texture(this);
       controller.effectsController.glfxCanvas.draw(tex).update();
