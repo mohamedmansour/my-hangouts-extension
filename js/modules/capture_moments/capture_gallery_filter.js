@@ -153,7 +153,7 @@ CaptureEffectsController.prototype.onAddEffectClicked = function() {
 	newFilter.insertBefore('.add-effect-btn');
 	this.renderEffects('#effects'+id);
   $('.close').click(this.onEffectClose.bind(this));
-	
+	$('.fx-panel').click(this.refreshNubs.bind(this));
 };
 
 CaptureEffectsController.prototype.bindUI = function() {
@@ -169,6 +169,7 @@ CaptureEffectsController.prototype.loadEffects = function() {
   var self = this;
   this.perspectiveNubs = [175, 156, 496, 55, 161, 279, 504, 330];
   this.filters = {
+		'None': [new Filter('None', function() {}, function() {})],
     'Adjust': [
       new Filter('Brightness / Contrast', 'brightnessContrast', function() {
         this.addSlider('brightness', 'Brightness', -1, 1, 0, 0.01);
@@ -448,8 +449,7 @@ Filter.prototype.addSlider = function(name, label, min, max, value, step) {
 };
 
 Filter.prototype.use = function(effectController, filterName, selectedIndex) {
-  // Load the texture from the image and draw it to the canvas
-  var canvas = effectController.glfxCanvas;
+  var canvas = effectController.glfxCanvas;		
 	// Index of the panel that was selected
 	var index = selectedIndex;
   // Clear the sliders
@@ -474,18 +474,20 @@ Filter.prototype.use = function(effectController, filterName, selectedIndex) {
     });
     this[slider.name] = slider.value;
   }
+	this.drawNubs(canvas, this.nubs);
+  this.update();
+};
 
-  // Add a div for each nub
-  $('#nubs').html('');
+Filter.prototype.drawNubs = function(canvas, nubs) {
+	 $('#nubs').empty();
   for (var i = 0; i < this.nubs.length; i++) {
     var nub = this.nubs[i];
-    console.log(canvas);
     var x = nub.x * canvas.width;
     var y = nub.y * canvas.height;
     $('<div class="nub" id="nub' + i + '"></div>').appendTo('#nubs');
+
     var ondrag = (function(this_, nub) { return function(event, ui) {
       var offset = $("#canvasPreview").offset();
-      console.log("here");
       this_[nub.name] = { x: ui.offset.left - offset.left, y: ui.offset.top - offset.top };
 			controller.effectsController.collectEffects();
     }; })(this, nub);
@@ -496,6 +498,27 @@ Filter.prototype.use = function(effectController, filterName, selectedIndex) {
     }).css({ left: x, top: y });
     this[nub.name] = { x: x, y: y };
   }
-  //$('#nubs').css({width:canvas.width, height:canvas.height});
-  this.update();
-};
+
+}
+
+CaptureEffectsController.prototype.refreshNubs = function (evt) {
+	// get selected div
+	parentNode = $(evt.target).parent();
+	filterName = $(parentNode).data('type')
+	console.log(filterName)
+	for (var key in this.filters) {
+		group = this.filters[key];
+		filter = _.filter(group, function(obj) { return obj['name'] == filterName});
+		if (filter.length == 1) {
+				filter[0].drawNubs(this.glfxCanvas, filter[0].nubs);
+				break;
+			}
+	}
+	// find effect
+	// check for nubs and show them again
+}
+
+/*
+
+*/
+
