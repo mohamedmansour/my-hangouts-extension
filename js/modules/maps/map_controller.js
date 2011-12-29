@@ -138,11 +138,13 @@ MapController.prototype.addMarkersFromCache = function() {
       if (personCacheItem) {
         var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
         if (locationCacheItem) {
-          var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
+          var marker = new SimpleMarker({
+            map: self.map,
+            position: locationCacheItem.geometry.location,
             id: 'person-' + personCacheItem.data.id,
-            classname: 'personMarker',
-            image: personCacheItem.data.photo + '?sz=24',
-            dimension: new google.maps.Size(24,24),
+            className: 'personMarker',
+            icon: personCacheItem.data.photo + '?sz=24',
+            size: new google.maps.Size(24,24),
             anchor: new google.maps.Point(12,12),
             title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
           });
