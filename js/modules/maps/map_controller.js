@@ -17,6 +17,7 @@ MapController = function(popupController) {
   });
   this.imageSize  = new google.maps.Size(20, 20);
   this.markersCache = {};
+  this.featureControl = new MapFeatureControl(this.map);
   this.startUpdates();
 };
 
@@ -24,6 +25,11 @@ MapController = function(popupController) {
  * Initialization code.
  */
 MapController.prototype.init = function() {
+  this.featureControl.push(
+      new DayNightOverlay(), 
+      'daynightoverlay', 
+      'Day/Night'
+  );
   this.bindUI();
 };
 
