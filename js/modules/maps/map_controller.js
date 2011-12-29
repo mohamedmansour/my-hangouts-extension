@@ -3,11 +3,21 @@
  *
  * @author jbc
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
+ * @author kaktus621@gmail.com (Martin Matysiak)
  */
 
+
+
+/**
+ * A controller which handles the interaction with Google Maps.
+ *
+ * @constructor
+ * @param {PopupController} popupController The controller of the popup in which
+ *    the maps view will be shown.
+ */
 MapController = function(popupController) {
   this.popup = popupController;
-  this.bkg = this.popup.bkg.controller; 
+  this.bkg = this.popup.bkg.controller;
   this.mapBackend = this.bkg.getMapBackend();
   var latlong = new google.maps.LatLng(0, 0);
   this.map = new google.maps.Map($('#map-canvas')[0], {
@@ -15,18 +25,29 @@ MapController = function(popupController) {
     center: latlong,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
-  this.imageSize  = new google.maps.Size(20, 20);
+  this.imageSize = new google.maps.Size(20, 20);
   this.markersCache = {};
+  this.featureControl = new MapFeatureControl(this.map);
   this.startUpdates();
 };
+
 
 /**
  * Initialization code.
  */
 MapController.prototype.init = function() {
+  this.featureControl.push(
+      new DayNightOverlay(),
+      'daynightoverlay',
+      'Day/Night'
+  );
   this.bindUI();
 };
 
+
+/**
+ * Connects the controller to the view.
+ */
 MapController.prototype.bindUI = function() {
   if (this.popup.displayAsTab) {
     $('#hangout-bar').remove();
@@ -43,7 +64,7 @@ MapController.prototype.bindUI = function() {
         .css('overflow-x', 'auto');
     $('#maps-container h2')
         .css('position', 'fixed')
-        .css('width', ($(window).width() - 200) + 'px')
+        .css('width', ($(window).width() - 350) + 'px')
         .css('height', '40px')
         .css('line-height', '40px')
         .css('z-index', 99999)
@@ -54,19 +75,20 @@ MapController.prototype.bindUI = function() {
         .css('padding', '0 0 0 10px');
     $('body')
         .css('background', 'white url(/img/wood-bg.jpg)');
-    
+
     $(window).resize(this.onResize.bind(this));
-    
+
     // Lazy load the height.
     setTimeout(function() {
       this.onResize();
-      this._fitMarkers();  
+      this._fitMarkers();
     }.bind(this), 250);
   }
   else {
     $('#popup-open').click(this.onOpenAsWindow.bind(this));
   }
 };
+
 
 /**
  * Calculates a bounding box around the currently shown markers and calls
@@ -77,11 +99,12 @@ MapController.prototype._fitMarkers = function() {
   var bounds = new google.maps.LatLngBounds();
 
   $.each(this.markersCache, function(markerID) {
-    bounds.extend(self.markersCache[markerID].getPosition());  
+    bounds.extend(self.markersCache[markerID].getPosition());
   });
 
   this.map.fitBounds(bounds);
-}
+};
+
 
 /**
  * This callback should be called everytime the map view gets visible to
@@ -92,21 +115,36 @@ MapController.prototype.onDisplay = function() {
   setTimeout(function() {
     this._fitMarkers();
   }.bind(this), 600);
-}
+};
 
+
+/**
+ * Will be called when the window size changes.
+ */
 MapController.prototype.onResize = function() {
-  $('#map-canvas')
+  $('#map-canvas, #maps-container')
       .css('height', $(window).height() + 'px')
       .css('width', $(window).width() + 'px');
   $('#popup-container')
       .css('width', '100%')
       .css('height', '100%');
+
+  if (this.popup.displayAsTab) {
+    $('#maps-container h2').css('width', ($(window).width() - 350) + 'px');
+  }
+
   google.maps.event.trigger(this.map, 'resize');
 };
 
+
+/**
+ * Will be called when the "maximize" button is clicked.
+ * @param {Event} e The triggering event object.
+ */
 MapController.prototype.onOpenAsWindow = function(e) {
   chrome.tabs.create({url: chrome.extension.getURL('popup.html#window')});
 };
+
 
 /**
  * Start the markers update, in real time.
@@ -114,13 +152,15 @@ MapController.prototype.onOpenAsWindow = function(e) {
 MapController.prototype.startUpdates = function() {
   var self = this;
   this.markersInterval = setInterval(function() {
-      self.addMarkersFromCache();
+    self.addMarkersFromCache();
   }, 2500);
   this.addMarkersFromCache();
 };
 
+
 /**
- *     Put a marker on the map for every person we know about who has been fully cached
+ * Put a marker on the map for every person we know about who has
+ * been fully cached
  */
 MapController.prototype.addMarkersFromCache = function() {
   var self = this;
@@ -132,25 +172,32 @@ MapController.prototype.addMarkersFromCache = function() {
   gpIds.forEach(function(id, index) {
     idMap[id] = true; // Cache it since we want to know it exists.
 
-    // If it is already on the Map, just forget about it, we already rendered it.
+    // If it is already on the Map, just forget about it,
+    // we already rendered it.
     if (!self.markersCache[id]) {
       var personCacheItem = self.mapBackend.getPersonFromCache(id);
       if (personCacheItem) {
-        var locationCacheItem = self.mapBackend.getLocationFromCache(personCacheItem.address);
+        var locationCacheItem = self.mapBackend.getLocationFromCache(
+            personCacheItem.address
+            );
+
         if (locationCacheItem) {
-          var marker = new SimpleMarker(self.map, locationCacheItem.geometry.location, {
+          var marker = new SimpleMarker({
+            map: self.map,
+            position: locationCacheItem.geometry.location,
             id: 'person-' + personCacheItem.data.id,
-            classname: 'personMarker',
-            image: personCacheItem.data.photo + '?sz=24',
-            dimension: new google.maps.Size(24,24),
-            anchor: new google.maps.Point(12,12),
-            title: personCacheItem.data.name + ', ' + locationCacheItem.formatted_address
+            className: 'personMarker',
+            icon: personCacheItem.data.photo + '?sz=24',
+            size: new google.maps.Size(24, 24),
+            anchor: new google.maps.Point(12, 12),
+            title: personCacheItem.data.name +
+                ', ' + locationCacheItem.formatted_address
           });
           self.markersCache[id] = marker;
           newMarkerCache[id] = marker;
 
           // Marker click
-          self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker, marker.getPosition());
+          self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker);
         }
       }
     }
@@ -171,22 +218,35 @@ MapController.prototype.addMarkersFromCache = function() {
   self.markersCache = newMarkerCache;
 };
 
+
 /**
  * For each marker, register a click event so a InfoWindow will popup with the
  * detailed hangout information.
+ *
+ * @param {string} userID The user which will be assigned to the event.
+ * @param {SimpleMarker} marker The marker object which will trigger the event.
  */
-MapController.prototype.addPersonMarkerClickedEvent = function(userID, marker, location) {
+MapController.prototype.addPersonMarkerClickedEvent = function(userID, marker) {
   google.maps.event.addListener(marker, 'click', function() {
     var currentHangout = this.getHangoutObjectFromPerson(userID);
+    var location = marker.getPosition();
     if (currentHangout) {
-      var hangoutPopupDOM = $('#hangouts-popup-template').tmpl({hangout: currentHangout});
+      var hangoutPopupDOM = $('#hangouts-popup-template').tmpl({
+        hangout: currentHangout
+      });
+
       var infowindow = new google.maps.InfoWindow();
       infowindow.setContent(hangoutPopupDOM.html());
-      infowindow.setPosition(new google.maps.LatLng(location.lat(),location.lng()));
+      infowindow.setPosition(new google.maps.LatLng(
+          location.lat(),
+          location.lng()
+          ));
+
       infowindow.open(this.map);
     }
   }.bind(this));
 };
+
 
 /**
  * Retrieve the hangout given the participant id.
@@ -201,13 +261,16 @@ MapController.prototype.getHangoutObjectFromPerson = function(id) {
       hangout = hangoutElement;
       return true;
     }
-    hangoutElement.data.participants.some(function(participantElement, participantIndex) {
-      // 99 % of the people are in one hangout, crazy people are in multiple hangouts.
-      if (participantElement.id == id && participantElement.status) {
-        hangout = hangoutElement;
-        return true;
-      }
-    });
+    hangoutElement.data.participants.some(
+        function(participantElement, participantIndex) {
+          // 99 % of the people are in one hangout,
+          // crazy people are in multiple hangouts.
+          if (participantElement.id == id && participantElement.status) {
+            hangout = hangoutElement;
+            return true;
+          }
+        }
+    );
     return hangout;
   });
   return hangout;
