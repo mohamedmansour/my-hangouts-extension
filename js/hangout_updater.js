@@ -424,9 +424,9 @@ HangoutUpdater.prototype.doNext = function() {
   if (this.hasError()) {
     this.errorCount++;
     if (this.errorCount % 2) {
-      console.log('Reinitializing session since session was destroyed');
+      console.log('DID NOT: Reinitializing session since session was destroyed');
       //this.controller.drawBadgeIcon(-1, false);
-      this.controller.plus.init(); // Reinitialize the session.
+      //this.controller.plus.init(); // Reinitialize the session.
     }
     else {
       return;
