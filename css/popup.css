@@ -444,3 +444,33 @@ body, html {
 	border-left-color: rgb(25,25,25);
 	border-left-color: rgba(25,25,25,0.92);
 }
+
+.map_feature_control {
+  margin: 5px;
+}
+
+.map_feature_control > div {
+  color: #333;
+  cursor:pointer;
+  background-color: white;
+  font-size: 13px;
+  padding: 1px 6px;
+  border: 1px solid #717B87;
+  border-left: 0px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.398438);
+  float:left;
+}
+
+.map_feature_control > div:hover {
+  color: black;
+  background-image: -webkit-linear-gradient(bottom, #e6e6e6 0%, #fff 100%);
+}
+
+.map_feature_control > div.enabled {
+  color:black;
+  font-weight:bold;
+}
+
+.map_feature_control > div:first-child {
+  border-left: 1px solid #717B87;
+}

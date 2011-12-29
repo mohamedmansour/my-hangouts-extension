@@ -7,3 +7,4 @@ My Hangout AUTHORS
 - Mike Searle - Logo Redesign - (https://plus.google.com/117344786984788205452/about)
 - James Williams - Effects Panel Integration - (https://plus.google.com/105400736676917752271/about)
 - Rayan Bouajram - UI Improvements - (https://plus.google.com/109432498811971933342/about)
+- Martin Matysiak - Maps Improvements - (https://plus.google.com/113265892681003873244/about)
