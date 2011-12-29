@@ -64,7 +64,7 @@ MapController.prototype.bindUI = function() {
         .css('overflow-x', 'auto');
     $('#maps-container h2')
         .css('position', 'fixed')
-        .css('width', ($(window).width() - 200) + 'px')
+        .css('width', ($(window).width() - 350) + 'px')
         .css('height', '40px')
         .css('line-height', '40px')
         .css('z-index', 99999)
@@ -122,12 +122,17 @@ MapController.prototype.onDisplay = function() {
  * Will be called when the window size changes.
  */
 MapController.prototype.onResize = function() {
-  $('#map-canvas')
+  $('#map-canvas, #maps-container')
       .css('height', $(window).height() + 'px')
       .css('width', $(window).width() + 'px');
   $('#popup-container')
       .css('width', '100%')
       .css('height', '100%');
+
+  if (this.popup.displayAsTab) {
+    $('#maps-container h2').css('width', ($(window).width() - 350) + 'px');
+  }
+
   google.maps.event.trigger(this.map, 'resize');
 };
 
