@@ -6,13 +6,9 @@
  */
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
+  this.mapBackend = this.bkg.controller.getMapBackend();
   this.options = new OptionsController(this);
   this.map = new MapController(this);
-  this.navigationPositions = {
-    hangouts: 1,
-    maps: 2,
-    options: 3
-  };
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
 };
@@ -31,6 +27,8 @@ PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
   $('#' + this.currentPage + '-container').show();
   $('.menu-item').click(this.onMenuItemClick.bind(this));
+  $(document).on('click', '.detail', this.onHangoutDetailClick.bind(this));
+
   if (window.location.hash == '#window') {
     this.displayAsTab = true;
   }
@@ -91,6 +89,7 @@ PopupController.prototype.processHangouts = function() {
     this.renderHangouts(this.hangouts);
     $('a.clickable').click(this.onLinkClicked.bind(this));
   }
+  $(".tip").tipTip();
 };
 
 /**
@@ -106,6 +105,56 @@ PopupController.prototype.onLinkClicked = function(e) {
   }
   // For buttons, decide whether to open in a new tab or window.
   this.bkg.controller.openSpecialWindow($(e.target), href);
+};
+
+/**
+ * Creates a new participant object that merges caches together.
+ */
+PopupController.prototype.createNewParticipant = function(participant) {
+  var person = this.mapBackend.getPersonFromCache(participant.id);
+  var personObj = {
+    circles: participant.circles,
+    id: participant.id,
+    image: participant.image,
+    name: participant.name,
+    status: participant.status
+  };
+  if (person) {
+    personObj.location = person.data.location;
+    personObj.occupation = person.data.occupation;
+  }
+  return personObj;
+};
+
+/**
+ * Listens when the detail has been clicked for each hangout.
+ */
+PopupController.prototype.onHangoutDetailClick = function(e) {
+  var hangoutNode = $(e.target.parentNode.parentNode.parentNode.parentNode);
+  var hangout = this.bkg.controller.getHangoutBackend().getHangout(hangoutNode.attr('id'));
+
+  // Get person data.
+  var participants = [];
+  participants.push(this.createNewParticipant(hangout.owner));
+  hangout.data.participants.forEach(function(participant) {
+    participants.push(this.createNewParticipant(participant));
+  }.bind(this));
+
+  // Render the template.
+  $('#hangout-detail-container').html($('#hangout-detail-template').tmpl({
+    hangout: {
+      id: hangout.data.id,
+      participants: participants,
+      name: hangout.data.name,
+      url: hangout.data.url
+    }
+  }));
+  this.togglePage('hangout-detail');
+
+  var height = Math.ceil(hangout.totalParticipants / 2) * 80 + 50;
+  $('.popup-page').height(height);
+  $('#popup-container').height(height);
+  $(".tip").tipTip();
 };
 
 /**
@@ -126,14 +175,21 @@ PopupController.prototype.relayout = function() {
   if (this.displayAsTab) {
     return;
   }
+  var height = 300;
   if (this.currentPage == 'hangouts') {
     var height = (this.hangouts.length * 70) + 5;
     $('.popup-page').height(height);
     $('#popup-container').height(height);
   }
-  else {
-    $('.popup-page').height(300);
-    $('#popup-container').height(300);
+  else if (this.currentPage == 'maps') {
+    var height = 301;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
+  }
+  else if (this.currentPage == 'options') {
+    var height = 300;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
   }
 };
 

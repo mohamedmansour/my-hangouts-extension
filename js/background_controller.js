@@ -8,11 +8,12 @@ BackgroundController = function() {
   var db = this.initDatabase();
   
   this.BLOCKED_CIRCLE_ID = '15';
-  this.UPDATE_INTERVAL = 30000; // Every 30 seconds.
+  this.UPDATE_INTERVAL = 45000; // Every 45 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
   this.REFRESH_INTERVAL = 2000; // Look for new results every 5 seconds.
   this.CLEAN_INTERVAL = 15000;
   this.myFollowersMap = {};
+  this.myCirclesMap = {};
   this.myCirclesList = [];
  
   this.onExtensionLoaded();
@@ -154,7 +155,7 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   ctx.font = 'bold 11px arial, sans-serif';
   ctx.fillStyle = newItem ? '#fff' : '#999';
 
-  chrome.browserAction.setTitle({title: count + ' hangouts are going on right now!'});
+  var browserActionText = count + ' hangouts are going on right now!';
   if (count > 99){
     ctx.fillText('99+', 1, 14);
   }
@@ -163,14 +164,28 @@ BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
   }
   else if (count >= 0) {
     ctx.fillText(count + '', 6, 14);
-    if ( count == 0 ){
-      chrome.browserAction.setTitle({title: 'There are no hangouts going on!'});
+    if ( count == 0 ) {
+      browserActionText = 'There are no hangouts going on!';
     }
   }
   else {
     ctx.fillText('?', 6, 14);
-    chrome.browserAction.setTitle({title: 'Your session to Google+ was not found, please log in or reopen Chrome.'});
+    browserActionText = 'Your session to Google+ was not found, please log in or reopen Chrome.';
   }
+
+  // Draw the circle if it is filtered by circles.
+  if (newItem && settings.only_show_circle_hangouts) {
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 5, 0, Math.PI * 2, true); 
+    ctx.closePath();
+    ctx.stroke();
+    
+    browserActionText += ' - Filtered by Circles';
+  }
+
+  chrome.browserAction.setTitle({title: browserActionText});
   chrome.browserAction.setIcon({imageData: ctx.getImageData(0,0,19,19)});
 };
 
@@ -227,9 +242,25 @@ BackgroundController.prototype.refreshCircles = function() {
             }
           });
           if (bannedCircle) {
-            res.data = res.data.slice(bannedCircle);
+            res.data.splice(bannedCircle, 1);
           }
-          self.myCircles = res.data;
+          self.myCirclesList = res.data;
+          
+          // The position for circles are using strange hex format, so
+          // we will maintain the position ourselves here.
+          var position = 0;
+          self.myCirclesList.forEach(function(circle) {
+            position++;
+
+            // We make a clone, so we can change contents since it was immutable.
+            self.myCirclesMap[circle.id] = {
+              count: circle.count,
+              description: circle.description,
+              id: circle.id,
+              name: circle.name,
+              position: position
+            };
+          });
         }
       });
       self.plus.getDatabase().getPersonEntity().findMap(function(res) {
@@ -252,12 +283,23 @@ BackgroundController.prototype.getPerson = function(id) {
 };
 
 /**
- * Gets a list of circles that the current user is registered with.
+ * Gets a list/map of circles that the current user is registered with.
  *
+ * @return {Object} an object of circles where each key is an id for the circle.
  * @return {Array<Object>} a list of circle objects in correct order.
  */
-BackgroundController.prototype.getCircles = function() {
-  return this.myCircles;
+BackgroundController.prototype.getCircles = function(asMap) {
+  return asMap ? this.myCirclesMap : this.myCirclesList;
+};
+
+/**
+ * Fetches the Circle for a specific ID.
+ *
+ * @param {string} The ID for the circle.
+ * @return {Object} The circle found otherwise is undefined.
+ */
+BackgroundController.prototype.getCircle = function(circleID) {
+  return this.myCirclesMap[circleID];
 };
 
 /**
@@ -268,7 +310,8 @@ BackgroundController.prototype.getCircles = function() {
  */
 BackgroundController.prototype.openSpecialWindow = function(target, href) {
   if (target.is('.button') && settings.open_hangout_new_window) {
-    window.open(href,'hangoutwin', 'toolbar=0,location=1,resizable=1');
+    var id = href.substring(href.lastIndexOf('/'));
+    window.open(href,'hangoutwin-' + id, 'toolbar=0,location=1,resizable=1');
   }
   else {
     chrome.tabs.create({url: href});

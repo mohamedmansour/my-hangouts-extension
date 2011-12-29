@@ -14,6 +14,8 @@ CaptureEffectsController = function(galleryController) {
   this.glfxCanvas = fx.canvas();
   this.texture = null;
   this.originalData = {};
+  this.filterTemplate = $('#filter-template');
+	this.filterCount = 0;
 };
 
 CaptureEffectsController.prototype.init = function() {
@@ -39,9 +41,10 @@ CaptureEffectsController.prototype.open = function(id) {
     var originalImage = new Image();
     originalImage.src = res.data.active;
     originalImage.onload = function() {
+			self.glfxCanvas = fx.canvas();
       self.texture = self.glfxCanvas.texture(originalImage);
-      self.getEffectCanvas().update();
       $('#canvasPreview').append(self.glfxCanvas);
+			self.glfxCanvas.draw(self.texture).update();
       self.onWindowResize();
     };
   });
@@ -58,6 +61,9 @@ CaptureEffectsController.prototype.dispose = function() {
 	$('#edit').fadeOut(200);
 	$('li').delay(400).fadeIn(200).removeClass('select');	
 	$(document).off("click", "li");
+	// remove panels
+	this.filterCount = 0;
+	$('.fx-panel').remove();
 };
 
 CaptureEffectsController.prototype.onSaveClicked = function() {
@@ -76,11 +82,12 @@ CaptureEffectsController.prototype.onSaveClicked = function() {
   tempImage.onload = function () {
     var tempCanvas = document.createElement('canvas');
     var ctx = tempCanvas.getContext('2d');
-    ctx.canvas.width = self.originalData.thumbnail_width;
-    ctx.canvas.height = self.originalData.thumbnail_height;
-    ctx.drawImage(this, 0, 0, ctx.canvas.width, ctx.canvas.height);
+		//thumnail dimensions 250x150   
+    ctx.drawImage(this, 0, 0, 250, 150);
     self.processImage(originalData, ctx.canvas.toDataURL());    
   };
+	this.filterCount = 0;
+	$('.fx-panel').remove();
 };
 
 CaptureEffectsController.prototype.processImage = function(originalData, thumbnail) {
@@ -104,8 +111,14 @@ CaptureEffectsController.prototype.processImage = function(originalData, thumbna
   });
 };
 
+CaptureEffectsController.prototype.resetEffectCanvas = function() {
+	return this.glfxCanvas.draw(this.texture);
+}
+
 CaptureEffectsController.prototype.getEffectCanvas = function() {
-  return this.glfxCanvas.draw(this.texture);
+	if (this.glfxCanvas == null)
+		return this.resetEffectCanvas();
+  else return this.glfxCanvas;
 };
 
 CaptureEffectsController.prototype.onWindowResize = function() {
@@ -130,12 +143,17 @@ CaptureEffectsController.prototype.onWindowResize = function() {
 };
 
 CaptureEffectsController.prototype.onEffectClose = function(e) {
-  $(e.target).parent().fadeOut();
-  // TODO: Cleanup
+	$(e.target).parent().fadeOut();
+	$(e.target).parent().remove();
 };
 
 CaptureEffectsController.prototype.onAddEffectClicked = function() {
-  // TODO
+	var id = this.filterCount++;
+  var newFilter = this.filterTemplate.tmpl({_id:id});
+	newFilter.insertBefore('.add-effect-btn');
+	this.renderEffects('#effects'+id);
+  $('.close').click(this.onEffectClose.bind(this));
+	$('.fx-panel').click(this.refreshNubs.bind(this));
 };
 
 CaptureEffectsController.prototype.bindUI = function() {
@@ -146,10 +164,12 @@ CaptureEffectsController.prototype.bindUI = function() {
   $(window).resize(this.onWindowResize.bind(this));
 };
 
+
 CaptureEffectsController.prototype.loadEffects = function() {
   var self = this;
   this.perspectiveNubs = [175, 156, 496, 55, 161, 279, 504, 330];
   this.filters = {
+		'None': [new Filter('None', function() {}, function() {})],
     'Adjust': [
       new Filter('Brightness / Contrast', 'brightnessContrast', function() {
         this.addSlider('brightness', 'Brightness', -1, 1, 0, 0.01);
@@ -221,7 +241,7 @@ CaptureEffectsController.prototype.loadEffects = function() {
         this.addSlider('brightness', 'Brightness', -1, 1, 0.75, 0.01);
         this.addSlider('angle', 'Angle', -Math.PI, Math.PI, 0, 0.01);
       }, function() {
-        self.getEffectCanvas().lensBlur(this.radius, his.brightness, this.angle).update();
+        self.getEffectCanvas().lensBlur(this.radius, this.brightness, this.angle).update();
       })
     ],
     'Warp': [
@@ -286,7 +306,7 @@ CaptureEffectsController.prototype.loadEffects = function() {
   };
 };
 
-CaptureEffectsController.prototype.renderEffects = function() {
+CaptureEffectsController.prototype.renderEffects = function(s) {
   // Create the filter selector
   var html = '';
   for (var category in this.filters) {
@@ -296,9 +316,13 @@ CaptureEffectsController.prototype.renderEffects = function() {
       html += '<option>' + list[i].name + '</option>';
     }
   }
-  $('#filters').html(html);
-  $('#filters').change(this.onFilterEffectChange.bind(this));
-  //switchToFilter(1);
+  if (s == undefined) {
+  	$('.filters').html(html);
+  	$('.filters').change(this.onFilterEffectChange.bind(this));
+	} else {
+		$(s+' .filters').html(html);
+		$(s+' .filters').change(this.onFilterEffectChange.bind(this));
+	}
 };
 
 /**
@@ -314,11 +338,95 @@ CaptureEffectsController.prototype.onFilterEffectChange = function(e) {
     var list = this.filters[category];
     for (var i = 0; i < list.length; i++) {
       if (index-- == 0) {
-        list[i].use(this);
+				parentElement = $(e.target).parent();
+				selectedIndex = parentElement.data().index;
+				console.log(list[i]);
+        list[i].use(this, list[i].name, selectedIndex);
       }
     }
   }
 };
+
+/* Add text to a canvas
+ *
+ * args = {
+ *    text: <text string>,
+ *    fillColor: <hex color>
+ *    font: <font name>,
+ *    fontSize: <size in pixels>  --optional, can be in font name
+ *    x: <x>,                     --optional, defaults to (0,0)
+ *    y: <y>
+ *
+ * Should always be applied last.
+ */
+
+CaptureEffectsController.prototype.addTextToCanvas = function(args) {
+  effectCanvas = controller.effectsController.getEffectCanvas()
+  // create canvas with same size as source
+  var textCanvas = document.createElement("canvas");
+  textCanvas.height = effectCanvas.height;
+  textCanvas.width = effectCanvas.width;
+  var ctx = textCanvas.getContext("2d");
+  
+  appliedEffectsImage = new Image();
+  appliedEffectsImage.src = effectCanvas.toDataURL();
+  appliedEffectsImage.onload = function () {
+    ctx.drawImage(this, 0, 0);
+    
+    ctx.fillStyle = args.fillColor;
+    ctx.font = args.font;
+    ctx.textBaseline = "top";
+    if (args.x == undefined)
+      args.x = 0;
+    if (args.y == undefined)
+      args.y = 0;
+    ctx.fillText(args.text, args.x, args.y);
+    
+  
+    var compositeImage = new Image();
+    compositeImage.src = textCanvas.toDataURL();
+    compositeImage.onload = function () {
+      console.log (effectCanvas);
+      tex = effectCanvas.texture(this);
+      console.log(tex);
+      //remove old canvas
+      // TODO encapsulate this code
+     $(controller.effectsController.glfxCanvas).remove();
+      controller.effectsController.glfxCanvas = fx.canvas();
+      tex = controller.effectsController.glfxCanvas.texture(this);
+      controller.effectsController.glfxCanvas.draw(tex).update();
+      $("#canvasPreview").append(controller.effectsController.glfxCanvas);
+    }
+  }
+}
+
+
+// TODO Make these a stack of functions to apply
+CaptureEffectsController.prototype.collectEffects = function() {
+	this.glfxCanvas = this.resetEffectCanvas();
+	this.glfxCanvas.update();
+
+	sliders = $('.fx-panel .sliders');
+	filtersToApply = []
+	for (var i = 0; i < sliders.length; i++) {
+		var s = sliders[i];
+		filterName = $(s).data('type')
+		for (var key in this.filters) {
+			group = this.filters[key];
+			filter = _.filter(group, function(obj) { return obj['name'] == filterName});
+			if (filter.length == 1) {
+				// Clone it and add to stack
+				clone = $.extend(true, {}, filter[0])
+				filtersToApply.push(clone)
+			}
+		}
+		for (var k = 0; k < filtersToApply.length; k++) {
+			filtersToApply[k].update();
+		}
+	}
+}
+
+
 /**
  * Describes a filter.
  */
@@ -340,23 +448,23 @@ Filter.prototype.addSlider = function(name, label, min, max, value, step) {
   this.sliders.push({ name: name, label: label, min: min, max: max, value: value, step: step });
 };
 
-Filter.prototype.use = function(effectController) {
-  // Load the texture from the image and draw it to the canvas
-  var canvas = effectController.glfxCanvas;
-
+Filter.prototype.use = function(effectController, filterName, selectedIndex) {
+  var canvas = effectController.glfxCanvas;		
+	// Index of the panel that was selected
+	var index = selectedIndex;
   // Clear the sliders
-  $(".sliders").empty();
-  
+  $('#sliders'+index).empty();
+  $('#sliders'+index).data('type', filterName);
   // Add a row for each slider
   for (var i = 0; i < this.sliders.length; i++) {
     var slider = this.sliders[i];
-    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + ':<div id="slider' + i + '"></div></div>').appendTo($(".sliders"));
+    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + 
+			':<div id="slider'+index +'_' + i + '" data-attrib="'+slider.name+'"></div></div>').appendTo($("#sliders"+index));
     var onchange = (function(this_, slider) { return function(event, ui) {
-      this_[slider.name] = ui.value;
-      this_.update();
-      //controller.glfxCanvas.update();
+	   	this_[slider.name] = ui.value;
+      controller.effectsController.collectEffects();
     }; })(this, slider);
-    $('#slider' + i).slider({
+    $('#slider'+index+'_' + i).slider({
       slide: onchange,
       change: onchange,
       min: slider.min,
@@ -366,28 +474,51 @@ Filter.prototype.use = function(effectController) {
     });
     this[slider.name] = slider.value;
   }
+	this.drawNubs(canvas, this.nubs);
+  this.update();
+};
 
-  // Add a div for each nub
-  $('#nubs').html('');
+Filter.prototype.drawNubs = function(canvas, nubs) {
+	 $('#nubs').empty();
   for (var i = 0; i < this.nubs.length; i++) {
     var nub = this.nubs[i];
-    console.log(canvas);
     var x = nub.x * canvas.width;
     var y = nub.y * canvas.height;
     $('<div class="nub" id="nub' + i + '"></div>').appendTo('#nubs');
+
     var ondrag = (function(this_, nub) { return function(event, ui) {
-      var offset = $(event.target.parentNode).offset();
+      var offset = $("#canvasPreview").offset();
       this_[nub.name] = { x: ui.offset.left - offset.left, y: ui.offset.top - offset.top };
-      this_.update();
+			controller.effectsController.collectEffects();
     }; })(this, nub);
     $('#nub' + i).draggable({
       drag: ondrag,
-      containment: 'parent',
+      containment: 'canvas',
       scroll: false
     }).css({ left: x, top: y });
     this[nub.name] = { x: x, y: y };
   }
-  //$('#nubs').css({width:canvas.width, height:canvas.height});
 
-  this.update();
-};
+}
+
+CaptureEffectsController.prototype.refreshNubs = function (evt) {
+	// get selected div
+	parentNode = $(evt.target).parent();
+	filterName = $(parentNode).data('type')
+	console.log(filterName)
+	for (var key in this.filters) {
+		group = this.filters[key];
+		filter = _.filter(group, function(obj) { return obj['name'] == filterName});
+		if (filter.length == 1) {
+				filter[0].drawNubs(this.glfxCanvas, filter[0].nubs);
+				break;
+			}
+	}
+	// find effect
+	// check for nubs and show them again
+}
+
+/*
+
+*/
+

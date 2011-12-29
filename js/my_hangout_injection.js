@@ -177,15 +177,12 @@ MyHangoutInjection.prototype.renderModernHangoutNormalUI = function(chatDOM) {
  * Render the Normal Hangout UI controls.
  */
 MyHangoutInjection.prototype.renderHangoutNormalUI = function(ui) {
-  var discoverDOM = document.querySelectorAll('div[style*="opacity: 1"] div[role="button"] div');
-  if (discoverDOM.length > 0) {
-    this.renderLegacyHangoutNormalUI(ui)
+  // TODO: Remove this when this becomes obselete.
+  if (document.querySelector('div[title="Select account to use."]') == null) {
+    this.renderLegacyHangoutNormalUI(ui);
   }
   else {
-    discoverDOM = document.querySelectorAll('div[class$="-bar"] div[role="button"] div');
-    if (discoverDOM.length > 0) {
-      this.renderModernHangoutNormalUI(ui);
-    }
+    this.renderModernHangoutNormalUI(ui);
   }
 };
 
@@ -213,7 +210,19 @@ MyHangoutInjection.prototype.onApiReady = function(ui) {
 MyHangoutInjection.prototype.discoverVideo = function() {
   setTimeout(function() {
     var obj = document.querySelector('object');
-    var ui = this.isHangoutExtra ? document.querySelector('.gcomm-logo') : this.discoverChatDOM(document.querySelectorAll('div[role="button"] div'));
+    var ui = null;
+    if (this.isHangoutExtra) {
+      ui = document.querySelector('.gcomm-logo');
+    }
+    else {
+      // Legacy.
+      // TODO: Remove when this becomes obselete.
+      ui =  document.querySelector('div[style*="opacity: 1"]');
+      if (!ui) {
+        // Modern.
+        ui = this.discoverChatDOM(document.querySelectorAll('div[role="button"] div'));
+      }
+    }
     obj && ui ? this.onApiReady(ui) : this.discoverVideo();
   }.bind(this), 1000);
 };

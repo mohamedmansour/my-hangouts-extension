@@ -17,9 +17,9 @@ HangoutUpdater = function(controller) {
   this.MAX_ASSUMED_SCORE = 50;
   this.searchResults = [];
   this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
-
-  this.HANGOUT_SEARCH_QUERY =  '"is hanging out"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
-  this.HANGOUT_SEARCH_QUERY_NAMED = '"hangout named"'
+  this.stateCounter = 0;
+  this.HANGOUT_SEARCH_QUERY =  '"is"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
+  this.HANGOUT_SEARCH_QUERY_NAMED = '"named"'
 };
 
 /**
@@ -30,18 +30,31 @@ HangoutUpdater.prototype.hasError = function() {
 };
 
 /**
- * @return List of hangouts.
+ * @return a clean, filter List of hangouts for use in UI.
  */
 HangoutUpdater.prototype.getHangouts = function() {
-  // return non-null hangouts.... null indicates hangout is about to be deleted.
-  // i am sure there is a more javascripty way to do this....
   var hangouts = [];
+  var includeHangout = false;
+  var hangout = null;
   for (var i=0; i< this.hangouts.length; i++ ){
-    if (this.hangouts[i]){
-      hangouts.push(this.hangouts[i]);
+    hangout = this.hangouts[i];
+    inlcudeHangout = hangout && 
+                          ( !settings.only_show_circle_hangouts || hangout.hasParticipantInCircles );
+    if (inlcudeHangout){
+      hangouts.push(hangout);
     }
   }
   return hangouts;
+};
+
+/**
+ * Checks the cache for the hangout. 
+ *
+ * @param {string} id the hangout ID
+ * @return {object} the hangout
+ */
+HangoutUpdater.prototype.getHangout = function(id) {
+  return this.cache[id];
 };
 
 /**
@@ -98,13 +111,16 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.data.is_onair = hangout.data.type === 2;
 
   // Fill in circle information for each participant.
+  var circlePositionScore = 0;
   var circleCount = 0;
   var scoreCount = 0;
   var participants = [];
   for (var j = 0; j < updatedHangout.data.participants.length; j++) {
     var participant = updatedHangout.data.participants[j];
     if (participant.status) {
-      if (this.fillCircleInfo(participant)) {
+      var score = this.fillCircleInfo(participant);
+      if (score > 0) {
+        circlePositionScore += score;
         circleCount++;
       }
       scoreCount += this.getParticipantScore(participant.id);
@@ -114,7 +130,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.data.participants = participants;
 
   // Populate the Owner Information
-  if (this.fillCircleInfo(updatedHangout.owner)) {
+  var score = this.fillCircleInfo(updatedHangout.owner);
+  if (score > 0) {
+    circlePositionScore += score;
     circleCount++;
   }
   scoreCount += this.getParticipantScore(updatedHangout.owner.id);
@@ -127,11 +145,24 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.totalParticipants = totalParticipants + 1; // include the owner.
 
   // Process score for each participant so we can make sure their weight are equal.
-  var normalizedScore = scoreCount / (this.MAX_ASSUMED_SCORE * updatedHangout.totalParticipants);
+  var normalizedRelevancyScore = scoreCount / (this.MAX_ASSUMED_SCORE * updatedHangout.totalParticipants);
   var normalizedCircleScore = circleCount / updatedHangout.totalParticipants;
   var normalizedTotalParticipantsScore = updatedHangout.totalParticipants / 10;
-  var rank = normalizedScore + normalizedCircleScore + normalizedTotalParticipantsScore;
-
+  var normalizedCirclePositionScore =  circlePositionScore / updatedHangout.totalParticipants;
+  var rank = normalizedRelevancyScore + normalizedCircleScore + normalizedTotalParticipantsScore + normalizedCirclePositionScore;
+ 
+  updatedHangout.hasParticipantInCircles = (circleCount > 0);
+  
+  if (this.LOGGER_ENABLED) {
+    console.log(hangout.data.id, {
+      normalizedRelevancyScore:normalizedRelevancyScore,
+      normalizedCircleScore: normalizedCircleScore,
+      normalizedTotalParticipantsScore: normalizedTotalParticipantsScore,
+      normalizedCirclePositionScore: normalizedCirclePositionScore,
+      rank: rank
+    });
+  }
+  
   // Custom name to each hangout.
   if (updatedHangout.data.is_onair) {
     updatedHangout.data.name = updatedHangout.data.extra_data[1] + ' - OnAir';
@@ -171,45 +202,75 @@ HangoutUpdater.prototype.getParticipantScore = function(id) {
 
 /**
  * Fill in the circle information for the user.
+ *
+ * @return {number} The circle score, 0 if no score.
  */
 HangoutUpdater.prototype.fillCircleInfo = function(user) {
   var person = this.controller.getPerson(user.id);
+  var self = this;
   if (person) {
     // TODO(mohamed): Merge into one, the UI should handle the circle names by iterating.
-    user.circle_ids = person.circles.map(function(e) {return e.id});
+    user.circle_ids = person.circles.map(function(e) {return e.id;});
     user.circles = person.circles.map(function(e) {return  ' ' + e.name});
-    return true;
   }
-  return false;
+  if (user.circle_ids && user.circle_ids.length > 0)  {
+    var totalCircles = self.controller.getCircles().length;
+    var circle = self.controller.getCircle(user.circle_ids[0]);
+    return 1 - ((1 / totalCircles) * circle.position);
+  }
+  return 0;
 };
 
 /**
  * @param {Object} obj The search object where keys are "query" and "extra"
  * @param {boolean} refresh Reset the data with fresh hangouts.
  */
-HangoutUpdater.prototype.search = function(obj) {
+HangoutUpdater.prototype.search = function(obj, onDone) {
   var self = this;
   
+  if (this.LOGGER_ENABLED) {
+    console.log(obj.query);
+  }
+  
+  // Google+ API Search Options.
+  var extraSearchOptions = {
+    precache: 4,
+    category: GooglePlusAPI.SearchCategory.RECENT,
+    privacy: GooglePlusAPI.SearchPrivacy.EVERYONE,
+    type: GooglePlusAPI.SearchType.HANGOUTS,
+    burst: obj.burst,
+    burst_size: self.BURST_SIZE
+  };
+  
   self.controller.plus.search(function(res) {
+
+    // Capture the error
+    self.error = !res.status;
+    if (self.error) {
+      if (self.LOGGER_ENABLED) {
+        console.log('search return an error.');
+        self.controller.drawBadgeIcon(-1, false);
+      }
+      return;
+    }
+
     self.updatingSearch = true;
-   // console.log('search type : '+ res.type + ' returned '+ res.data.length);
+    
+    // console.log('search type : '+ res.type + ' returned '+ res.data.length);
     if(res.data.length > 0 ) {
       self.searchResults.push(res.data);
     }
     
-    // Capture the error
-    self.error = !res.status;
-    if (self.error) {
-      self.controller.drawBadgeIcon(-1, false);
-      return;
-    }
     self.updatingSearch = false;
-  }, obj.query, {precache: 4, type: 'hangout', burst: true, burst_size:self.BURST_SIZE});
+    if ( onDone ){ 
+      onDone();
+    }
+  }, obj.query, extraSearchOptions);
   
 };
 
 HangoutUpdater.prototype.update = function(refreshDeprecated) {
-  if ( this.updatingSearch || this.cleaningHangouts ) { // don't update the hangouts if the results are updating ... as if.... 
+  if (this.hasError() || this.updatingSearch || this.cleaningHangouts ) { // don't update the hangouts if the results are updating ... as if.... 
     return; 
   }
   
@@ -228,11 +289,10 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
 
   
   // go through all the search results in turn and update the hangouts as needed.
-  while(this.searchResults.length > 0) {
+  while (this.searchResults.length > 0) {
     
     var data = this.searchResults.splice(0,1)[0]; // pop off the top element.
     
-
     // If there are some results, show them.
     for (var i = 0; i < data.length; i++) {
       var hangout = this.preprocessHangoutData(data[i]);
@@ -240,27 +300,23 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
         continue;
       }
 	
-	  //TODO: Consider moving all this logic to the updateHangout function.
+      // TODO: Consider moving all this logic to the updateHangout function.
       var cache = this.cache[hangout.data.id];
       if (cache) {
         // Preserve public status. It weighs more than limited.
         if (cache.is_public) {
-            hangout.is_public = true;
+          hangout.is_public = true;
         }
 
         // Update the hangouts collection.
-		this.updateHangout(hangout);
-
+        this.updateHangout(hangout);
         continue;
       }
 
       this.hangouts.push(hangout);
       
-      // Preserve in the cache the visibility status and the index in the collection.
-      this.cache[hangout.data.id] = {
-        index: this.hangouts.length - 1,
-        is_public: hangout.is_public
-      };
+      // Preserve in the cache.
+      this.cache[hangout.data.id] = hangout;
     }
   }
   
@@ -277,9 +333,8 @@ HangoutUpdater.prototype.updateDependants = function() {
 /**
  * 	cleanHangouts - scan the hangouts array and removde dead or refresh current entries
  */
-
 HangoutUpdater.prototype.cleanHangouts = function() {
-  if ( this.updatingResult ) {
+  if ( this.hasError() || this.updatingResult ) {
     return;
   }
   
@@ -327,9 +382,9 @@ HangoutUpdater.prototype.refreshHangout = function(userID, postID, hangoutID) {
         }
       }
     } else if ( res.data.data.active ) {
-		//TODO: We might want to see if anything has actually changed before doing this:compare participants
+		// TODO: We might want to see if anything has actually changed before doing this:compare participants
 		var hangout = self.preprocessHangoutData(res.data);
-		//console.log('update hangout:',hangout);
+		// console.log('update hangout:',hangout);
 		self.updateHangout(hangout);
 	}
   }, userID, postID);
@@ -341,24 +396,24 @@ HangoutUpdater.prototype.refreshHangout = function(userID, postID, hangoutID) {
  * return true if updated and false otherwise.
  */
 HangoutUpdater.prototype.updateHangout = function(hangout) {
-	for ( var j = 0; j<this.hangouts.length;j++){
+	for ( var j = 0; j < this.hangouts.length; j++){
 	  if ( this.hangouts[j] && this.hangouts[j].data.id ===  hangout.data.id ){
-		this.hangouts[j] = hangout;
-		return true;
+      this.hangouts[j] = hangout;
+      this.cache[hangout.data.id] = hangout;
+      return true;
 	  }
 	}
 	return false;
 }
 
 // TODO: finish this and implement to reduce overhead of update
-
 HangoutUpdater.prototype.compareHangout=function(h0,h1) {
   if ( h0.totalParticipants > h1.totalParticipants ){
     return 1;
   } else if (h0.totalParticipants < h1.totalParticipants){
     return -1;
   } else {
-    return 0;/// compare participants...? 1. are they in the same order? are dead particpants removed.
+    return 0; // compare participants...? 1. are they in the same order? are dead particpants removed.
   }
 }
   
@@ -370,6 +425,7 @@ HangoutUpdater.prototype.doNext = function() {
     this.errorCount++;
     if (this.errorCount % 2) {
       console.log('Reinitializing session since session was destroyed');
+      //this.controller.drawBadgeIcon(-1, false);
       this.controller.plus.init(); // Reinitialize the session.
     }
     else {
@@ -387,27 +443,54 @@ HangoutUpdater.prototype.doNext = function() {
   else {
     this.currentState++;
   }
+  
+  this.stateCounter++;
 };
+
 /**
  * query stages:
  */
- 
  HangoutUpdater.prototype.state0 = function() {
-  var queryStr = this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED;
-  console.log( queryStr );
-  this.search({ query: queryStr}, false);
+  var self = this;
+  if (this.stateCounter == 0){
+    this.search({ query:this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED}, function(){ 
+      self.update();
+      self.search( {query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) }, function(){
+        self.update();
+        self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) }, function(){
+          self.update();
+          self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) }, function(){
+            self.update();
+            self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY_NAMED) }, function() {
+              self.update();
+              self.search( {query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) }, function(){
+                self.update();
+                self.search( { query: self.buildqueryWithExcludeList(self.HANGOUT_SEARCH_QUERY) } );
+              });
+            });
+          });
+        });
+      });
+    });
+  } else {
+    this.search( { query: this.HANGOUT_SEARCH_QUERY + ' | ' + this.HANGOUT_SEARCH_QUERY_NAMED, burst:true } );
+  }
 };
 
 HangoutUpdater.prototype.state1 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY);
-  console.log( queryStr );
-  this.search({ query: queryStr}, false);
+  if (this.LOGGER_ENABLED) {
+    console.log( queryStr );
+  }
+  this.search({ query: queryStr, burst: true}, false);
 };
 
 HangoutUpdater.prototype.state2 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY_NAMED);
-  console.log( queryStr );
-  this.search({ query: queryStr}, false);
+  if (this.LOGGER_ENABLED) {
+    console.log( queryStr );
+  }
+  this.search({ query: queryStr, burst: true}, false);
 };
 
 
@@ -419,6 +502,6 @@ HangoutUpdater.prototype.buildqueryWithExcludeList = function(queryStr) {
     }
   }
   return queryStr;
-}
+};
 
 
