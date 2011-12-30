@@ -114,7 +114,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var circlePositionScore = 0;
   var circleCount = 0;
   var scoreCount = 0;
-  var participants = [];
+  var onlineUserCount = 0;
   for (var j = 0; j < updatedHangout.data.participants.length; j++) {
     var participant = updatedHangout.data.participants[j];
     if (participant.status) {
@@ -124,10 +124,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
         circleCount++;
       }
       scoreCount += this.getParticipantScore(participant.id);
-      participants.push(participant);
+      onlineUserCount++;
     }
   }
-  updatedHangout.data.participants = participants;
 
   // Populate the Owner Information
   var score = this.fillCircleInfo(updatedHangout.owner);
@@ -136,13 +135,9 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
     circleCount++;
   }
   scoreCount += this.getParticipantScore(updatedHangout.owner.id);
-  
-  // Slice everything that we don't need.
-  updatedHangout.data.participants = updatedHangout.data.participants.slice(0, 9);
-  
+
   // Total participants cached.
-  var totalParticipants = updatedHangout.data.participants.length;
-  updatedHangout.totalParticipants = totalParticipants + 1; // include the owner.
+  updatedHangout.totalParticipants = onlineUserCount + 1; // include the owner.
 
   // Process score for each participant so we can make sure their weight are equal.
   var normalizedRelevancyScore = scoreCount / (this.MAX_ASSUMED_SCORE * updatedHangout.totalParticipants);
@@ -172,18 +167,17 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   }
   else {
     updatedHangout.data.name = updatedHangout.owner.name + ' is hanging out';
-    if (totalParticipants == 1) {
+    if (updatedHangout.totalParticipants == 2) {
       updatedHangout.data.name += ' with ' + updatedHangout.data.participants[0].name;
     }
-    if (totalParticipants > 1 ) {
-      updatedHangout.data.name += ' with ' + totalParticipants +  ' people';
+    if (updatedHangout.totalParticipants > 2 ) {
+      updatedHangout.data.name += ' with ' + updatedHangout.totalParticipants +  ' people';
     }
-    updatedHangout.data.name +='.';
-    
+    updatedHangout.data.name += '.';
   }
 
   // Fill in circle data.
-  updatedHangout.isFull = updatedHangout.data.participants.length >= 9;
+  updatedHangout.isFull = onlineUserCount >= 9;
   updatedHangout.rank = rank;
   return updatedHangout;
 };
