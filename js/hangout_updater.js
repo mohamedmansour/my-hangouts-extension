@@ -103,6 +103,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
     return false;
   }
   
+  var currentTimestamp = new Date().getTime();
   var updatedHangout = hangout;
   
   // Type.
@@ -179,6 +180,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   // Fill in circle data.
   updatedHangout.isFull = onlineUserCount >= 9;
   updatedHangout.rank = rank;
+  updatedHangout.timeago = $.timeago(new Date(updatedHangout.time_edited || updatedHangout.time));
   return updatedHangout;
 };
 
