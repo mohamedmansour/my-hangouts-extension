@@ -328,7 +328,7 @@ HangoutUpdater.prototype.updateDependants = function() {
  * 	cleanHangouts - scan the hangouts array and removde dead or refresh current entries
  */
 HangoutUpdater.prototype.cleanHangouts = function() {
-  if ( this.hasError() || this.updatingResult ) {
+  if ( this.updatingResult ) {
     return;
   }
   
@@ -417,14 +417,14 @@ HangoutUpdater.prototype.compareHangout=function(h0,h1) {
 HangoutUpdater.prototype.doNext = function() {
   if (this.hasError()) {
     this.errorCount++;
-    if (this.errorCount % 2) {
-      console.log('DID NOT: Reinitializing session since session was destroyed');
+    if (this.errorCount % 2) {  // TODO: rationalise this logic.
+      console.log('Reinitializing session since session was destroyed');
       //this.controller.drawBadgeIcon(-1, false);
-      //this.controller.plus.init(); // Reinitialize the session.
+      this.controller.plus.init(); // Reinitialize the session.
     }
-    else {
-      return;
-    }
+    this.error = false;  // or we will never advance ( see todo above )
+    return;
+
   }
   else {
     this.errorCount = 0;
