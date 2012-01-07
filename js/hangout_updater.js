@@ -178,7 +178,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   }
 
   // Fill in circle data.
-  updatedHangout.isFull = updatedHangout.data.is_onair ? onlineUserCount >= 7: onlineUserCount >= 9;
+  updatedHangout.isFull = onlineUserCount >= 9;
   updatedHangout.rank = rank;
   updatedHangout.timeago = $.timeago(new Date(updatedHangout.time_edited || updatedHangout.time));
   return updatedHangout;
