@@ -25,6 +25,7 @@ OptionsController.prototype.bindUI = function() {
   circleChooserDOM.attr('disabled', !self.settings.notify_circles);
   circleChooserDOM.chosen().change(function(e) {
     self.settings.circles_to_notify = $(e.target).val() || [];
+    self.popup.resetNotifications();
   });
   
   // Notify circles preference.

@@ -15,7 +15,8 @@ CircleNotifier = function(updater) {
   // Keep tracks of notifications.
   this.notified = {};             // Total, browser session.
   this.notificationSession = {};  // Notification, popup session.
-  
+  this.currentHangoutNotifications = {};
+
   // The current notification being displayed.
   this.notification = null;
   
@@ -59,22 +60,37 @@ CircleNotifier.prototype.addParticipantToNotification = function(hangout, partic
         var circleID = participant.circle_ids[c];
         if (this.circles_to_notify[circleID]) {
           this.notified[hangout.data.id][participant.id] = true;
-          this.notificationSession[hangout.data.id] = this.notificationSession[hangout.data.id] || { detail: hangout, participants: []};
+          this.notificationSession[hangout.data.id] = this.notificationSession[hangout.data.id];
+          if (!this.notificationSession[hangout.data.id]) {
+            this.notificationSession[hangout.data.id] = { detail: hangout, participants: []};
+            this.currentHangoutNotifications[hangout.data.id] = hangout;
+          }
           this.notificationSession[hangout.data.id].participants.push(participant);
           return;
         }
       }
     }
     else {
-      this.notified[hangout.data.id][participant.id] = {};
+      this.currentHangoutNotifications[hangout.data.id] = hangout;
+      this.notified[hangout.data.id][participant.id] =  true;
     }
   }
+};
+
+/**
+ * Reset the notification state to start over!
+ */
+CircleNotifier.prototype.reset = function() {
+  this.notified = {};
+  this.currentHangoutNotifications = {};
 };
 
 /**
  * Figure out if we should notify any participant in this hangout.
  */
 CircleNotifier.prototype.notify = function(hangouts) {
+  this.currentHangoutNotifications = {};
+
   // Only notify if the user permits.
   if (!this.notify_circles) {
     return;
@@ -177,4 +193,15 @@ CircleNotifier.prototype.onSettingsChangeListener = function(key, val) {
   else if (key == 'auto_close_notify') {
     this.auto_close_notify = val;
   }
+};
+
+/**
+ * The current hangouts that were notified.
+ */
+CircleNotifier.prototype.getCurrentHangoutNotifications = function() {
+  var hangouts = [];
+  $.each(this.currentHangoutNotifications, function(key, value) {
+    hangouts.push(value);
+  });
+  return hangouts;
 };

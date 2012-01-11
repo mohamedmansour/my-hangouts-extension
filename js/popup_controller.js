@@ -11,6 +11,7 @@ PopupController = function() {
   this.map = new MapController(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
+  this.notifiedHangouts = [];
 };
 
 /**
@@ -53,6 +54,9 @@ PopupController.prototype.onMenuItemClick = function(e) {
     case 'menu-hangouts':
       this.togglePage('hangouts');
       break;
+    case 'menu-notifications':
+      this.togglePage('notifications');
+      break;
   }
 };
 
@@ -62,14 +66,25 @@ PopupController.prototype.onMenuItemClick = function(e) {
  */
 PopupController.prototype.updateHangouts = function() {
   this.hangouts = this.bkg.controller.getHangoutBackend().getHangouts();
+  this.notifiedHangouts = this.bkg.controller.getHangoutBackend().getNotifiedHangouts();
   if (this.hangouts.length == 0) {
     $('#hangouts-container').html('loading ...');
+    $('#notifications-container').html('loading ...');
     setTimeout(this.updateHangouts.bind(this), 1000);
   }
   else {
     this.processHangouts();
     setTimeout(this.updateHangouts.bind(this), 15000);
   }
+};
+
+/**
+ * Call the Notification backend to reset it.
+ */
+PopupController.prototype.resetNotifications = function() {
+  this.bkg.controller.getHangoutBackend().getNotifier().reset();
+  $('#notifications-container').html('loading ...');
+  this.updateHangouts();
 };
 
 /**
@@ -86,7 +101,7 @@ PopupController.prototype.processHangouts = function() {
       else if (a.rank < b.rank) return 1;
       else return 0;
     });
-    this.renderHangouts(this.hangouts);
+    this.renderHangouts();
     $('a.clickable').click(this.onLinkClicked.bind(this));
   }
   $(".tip").tipTip();
@@ -162,8 +177,15 @@ PopupController.prototype.onHangoutDetailClick = function(e) {
  *
  * @param {Array(Object)} hangouts The hangout item in a JSON format.
  */
-PopupController.prototype.renderHangouts = function(hangouts) {
-  $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: hangouts}));
+PopupController.prototype.renderHangouts = function() {
+  $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: this.hangouts}));
+  
+  if (this.notifiedHangouts.length == 0) {
+    $('#notifications-container').html('Waiting till we receive hangouts that were notified ...');
+  }
+  else {
+    $('#notifications-container').html($('#hangouts-template').tmpl({hangouts: this.notifiedHangouts}));
+  }
   this.relayout();
   console.log('rendering');
 };
@@ -177,7 +199,12 @@ PopupController.prototype.relayout = function() {
   }
   var height = 300;
   if (this.currentPage == 'hangouts') {
-    var height = (this.hangouts.length * 70) + 5;
+    var height = this.hangouts.length == 0 ? 20 : (this.hangouts.length * 70) + 5;
+    $('.popup-page').height(height);
+    $('#popup-container').height(height);
+  }
+  else if (this.currentPage == 'notifications') {
+    var height = this.notifiedHangouts.length == 0 ? 20 : (this.notifiedHangouts.length * 70) + 5;
     $('.popup-page').height(height);
     $('#popup-container').height(height);
   }

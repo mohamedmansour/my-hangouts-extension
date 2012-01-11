@@ -58,6 +58,23 @@ HangoutUpdater.prototype.getHangout = function(id) {
 };
 
 /**
+ * @return {CircleNotifier} the current circle notifier instance.
+ */
+HangoutUpdater.prototype.getNotifier = function() {
+  return this.circleNotifier;
+};
+
+
+/**
+ * Gets the list of hangouts that were notified.
+ *
+ * @return {Array} the hangouts
+ */
+HangoutUpdater.prototype.getNotifiedHangouts = function() {
+  return this.circleNotifier.getCurrentHangoutNotifications();
+};
+
+/**
  * Return an array of g+ ids for every person in all we know about hangouts.
  */
 HangoutUpdater.prototype.getAllParticipants = function(opt_callback) {
