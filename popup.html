@@ -50,6 +50,15 @@
       <h2>Hangout preferences</h2>
       <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
       <p><label for="option-show-circle-hangouts"><input id="option-show-circle-hangouts" type="checkbox" />Only show hangouts that have people in your circles.</label></p>
+      <p><label for="option-show-circle-hangouts">
+        Default tab to view when popup opened: 
+        <select id="option-default-popup-tab" data-placeholder="Choose a tab" tabindex="1">
+          <option value="hangouts">Hangouts</option>
+          <option value="notifications">Notifications</option>
+          <option value="maps">Map</option>
+          <option value="options">Options</option>
+        </select>
+      </p>
       <!--
       <h2>Capture moment preferences</h2>
       <p><label for="option-moment-quick"><input id="option-moment-quick" type="checkbox" />Quick captures, skip the dialog.</label></p>

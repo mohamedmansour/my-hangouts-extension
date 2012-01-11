@@ -66,4 +66,11 @@ OptionsController.prototype.bindUI = function() {
     self.settings.only_show_circle_hangouts = $(e.target).is(':checked');
     self.popup.updateHangouts();
   });
+  
+  //
+  var defaultPopupTabDOM = $('#option-default-popup-tab');
+  defaultPopupTabDOM.val(this.settings.default_popup_tab);
+  defaultPopupTabDOM.change(function(e) {
+    self.settings.default_popup_tab = $(e.target).val() || 'hangouts';
+  });
 };

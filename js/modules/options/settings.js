@@ -69,6 +69,14 @@ settings = {
     settings.notify('only_show_circle_hangouts', val);
     localStorage['only_show_circle_hangouts'] = val;
   },
+  get default_popup_tab() {
+    var key = localStorage['default_popup_tab'];
+    return (typeof key == 'undefined') ? 'hangouts' : key;
+  },
+  set default_popup_tab(val) {
+    settings.notify('default_popup_tab', val);
+    localStorage['default_popup_tab'] = val;
+  },
 };
 
 // Settings event listeners.

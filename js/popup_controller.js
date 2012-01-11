@@ -26,6 +26,12 @@ PopupController.prototype.init = function() {
 
 PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
+  
+  // Toggle default popup view.
+  if (!this.displayAsTab) {
+    this.togglePage(this.bkg.settings.default_popup_tab);
+  }
+  
   $('#' + this.currentPage + '-container').show();
   $('.menu-item').click(this.onMenuItemClick.bind(this));
   $(document).on('click', '.detail', this.onHangoutDetailClick.bind(this));
