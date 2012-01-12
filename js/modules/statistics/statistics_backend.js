@@ -17,7 +17,11 @@ StatisticsEntity.prototype.tableDefinition = function() {
     hangout_id: 'TEXT',
     start_time: 'DATE',
     end_time: 'DATE',
-    participants: 'TEXT' // Comma separated IDs
+    participant_id: 'TEXT',
+    participant_name: 'TEXT',
+    unique: [
+      ['hangout_id', 'participant_id']
+    ]
   };
 };
 
