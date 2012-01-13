@@ -100,40 +100,6 @@ MyHangoutInjection.prototype.renderHangoutExtraUI = function() {
 };
 
 /**
- * Legacy Rendering for the Hangout UI.
- */
-MyHangoutInjection.prototype.renderLegacyHangoutNormalUI = function(chatDOM) {
-  var plusDOM = null;
-  var captureButtonStyle = 'border: 1px solid transparent; cursor: pointer; float: left;' +
-    'margin: 2px 1px 0; text-align: center; width: 85px; border-image: initial';
-  plusDOM = document.createElement('div');
-  plusDOM.setAttribute('class', 'crx-capture-moment-button');
-  plusDOM.setAttribute('style', captureButtonStyle);
-  plusDOM.addEventListener('click', this.onPlusClicked.bind(this), false);
-
-  var plusImageDOM = document.createElement('div');
-  plusImageDOM.setAttribute('class', 'crx-capture-moment-image');
-  plusImageDOM.setAttribute('style', 'height: 60px; width: 85px;' +
-    'background: no-repeat url(' + chrome.extension.getURL('/img/hangout-normal.png') +') 0 -60px;');
-  var plusTextDOM = document.createElement('div');
-  plusTextDOM.setAttribute('class', 'crx-capture-moment-text');
-  plusTextDOM.innerText = 'Capture Moment';
-  plusTextDOM.setAttribute('style', 'color: #51576B;font-size: 12px;' +
-    'font-weight: bold; line-height: 15px; text-align: center;');
-  plusDOM.addEventListener('mouseover', function() {
-    plusImageDOM.style.backgroundPosition = '0 -60px';
-  }, false);
-  plusDOM.addEventListener('mouseout', function() {
-    plusImageDOM.style.backgroundPosition = '0 0';
-  }, false);
-  plusDOM.appendChild(plusImageDOM);
-  plusDOM.appendChild(plusTextDOM);
-  
-  chatDOM.parentNode.parentNode.appendChild(plusDOM);
-  break;
-};
-
-/**
  * Discovers the Chat DOM if it exists in the hangout.
  */
 MyHangoutInjection.prototype.discoverChatDOM = function(domList) {
@@ -150,40 +116,41 @@ MyHangoutInjection.prototype.discoverChatDOM = function(domList) {
  * Modern Rendering for the Hangout UI.
  */
 MyHangoutInjection.prototype.renderModernHangoutNormalUI = function(chatDOM) {
-  var captureButtonStyle = 'display: inline-block; color: #333;';
+  var captureButtonStyle = 'display: inline-block; color: #333;margin: 0 4px;padding: 0 10px;';
   var plusDOM = document.createElement('div');
   plusDOM.setAttribute('class', 'crx-capture-moment-button');
   plusDOM.setAttribute('style', captureButtonStyle);
   plusDOM.addEventListener('click', this.onPlusClicked.bind(this), false);
-
-  var plusTextDOM = document.createElement('div');
-  plusTextDOM.setAttribute('class', 'crx-capture-moment-text');
-  plusTextDOM.innerText = 'Capture Moment';
-  plusTextDOM.setAttribute('style', 'cursor: default;font-size: 11px;font-weight: bold;text-align: center;line-height: 27px;');
   plusDOM.addEventListener('mouseover', function() {
     plusDOM.style.color = '#444';
     plusDOM.style.webkitBoxShadow = '0 1px 1px rgba(0,0,0,.1)';
+    plusDOM.style.border = '1px solid #C6C6C6';
   }, false);
   plusDOM.addEventListener('mouseout', function() {
     plusDOM.style.color = '#333';
     plusDOM.style.webkitBoxShadow = '0 0 0 rgba(0,0,0,.1)';
+    plusDOM.style.border = '1px solid transparent';
   }, false);
+  
+  var plusTextDOM = document.createElement('div');
+  plusTextDOM.setAttribute('class', 'crx-capture-moment-text');
+  plusTextDOM.innerText = 'Capture Moment';
+  plusTextDOM.setAttribute('style', 'cursor: default;font-size: 11px;font-weight: bold;text-align: center;line-height: 27px;');
   plusDOM.appendChild(plusTextDOM);
   
   chatDOM.parentNode.parentNode.appendChild(plusDOM);
+  
+  var dividerDOM = plusDOM.parentNode.childNodes[1].cloneNode(true);
+  if (dividerDOM.childNodes.length == 0) {
+    chatDOM.parentNode.parentNode.appendChild(dividerDOM);
+  }
 };
 
 /**
  * Render the Normal Hangout UI controls.
  */
 MyHangoutInjection.prototype.renderHangoutNormalUI = function(ui) {
-  // TODO: Remove this when this becomes obselete.
-  if (document.querySelector('div[title="Select account to use."]') == null) {
-    this.renderLegacyHangoutNormalUI(ui);
-  }
-  else {
-    this.renderModernHangoutNormalUI(ui);
-  }
+  this.renderModernHangoutNormalUI(ui);
 };
 
 /**
@@ -215,13 +182,7 @@ MyHangoutInjection.prototype.discoverVideo = function() {
       ui = document.querySelector('.gcomm-logo');
     }
     else {
-      // Legacy.
-      // TODO: Remove when this becomes obselete.
-      ui =  document.querySelector('div[style*="opacity: 1"]');
-      if (!ui) {
-        // Modern.
-        ui = this.discoverChatDOM(document.querySelectorAll('div[role="button"] div'));
-      }
+      ui = this.discoverChatDOM(document.querySelectorAll('div[role="button"] div'));
     }
     obj && ui ? this.onApiReady(ui) : this.discoverVideo();
   }.bind(this), 1000);
