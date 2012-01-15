@@ -474,3 +474,11 @@ body, html {
 .map_feature_control > div:first-child {
   border-left: 1px solid #717B87;
 }
+
+.error {
+  margin: 5px;
+  padding: 5px;
+  background-color: red;
+  color: white;
+  text-align: center;
+}

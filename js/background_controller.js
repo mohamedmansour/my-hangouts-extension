@@ -10,7 +10,7 @@ BackgroundController = function() {
   this.BLOCKED_CIRCLE_ID = '15';
   this.UPDATE_INTERVAL = 45000; // Every 45 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
-  this.REFRESH_INTERVAL = 2000; // Look for new results every 5 seconds.
+  this.REFRESH_INTERVAL = 5000; // Look for new results every 5 seconds.
   this.CLEAN_INTERVAL = 15000;
   this.myFollowersMap = {};
   this.myCirclesMap = {};
@@ -19,7 +19,7 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updaterBackend = new HangoutUpdater(this);
-  this.mapBackend = new MapBackend(this);
+  this.mapBackend = new MapBackend(db, this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
 
