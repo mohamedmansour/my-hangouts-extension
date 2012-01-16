@@ -222,6 +222,7 @@ MapController.prototype.addMarkersFromCache = function() {
             // Marker click
             self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker);
           }
+          onComplete();
         });
       }
     }
