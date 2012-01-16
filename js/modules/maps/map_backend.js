@@ -1,17 +1,44 @@
 /**
+ * Database backend for location.
+ *
+ * @author Mohamed Mansour 2012 (http://mohamedmansour.com)
+ * @constructor
+ */
+LocationEntity = function(db) {
+  AbstractEntity.call(this, db, 'locations');
+};
+JSAPIHelper.inherits(LocationEntity, AbstractEntity);
+
+/**
+ * @see AbstractEntity.tableDefinition
+ */
+LocationEntity.prototype.tableDefinition = function() {
+  return {
+    location: 'TEXT',
+    address: 'TEXT',
+    latitude: 'FLOAT',
+    longitude: 'FLOAT',
+    unique: [
+      ['location']
+    ]
+  };
+};
+
+/**
  * Map Location Cache Backend.
  */
-MapBackend = function(controller) {
+MapBackend = function(db, controller) {
   this.LOGGER_ENABLED = false;
 
   this.controller = controller;
 
   // This should be in a database, perhaps?
   this.cache = {
-    location: {},
     people: {}
   };
-  
+
+  this.locationEntity = new LocationEntity(db);
+
   this.blacklist = {};
   this.startUpdates();
 };
@@ -26,8 +53,8 @@ MapBackend.prototype.getPersonFromCache = function(id) {
 /**
  * Checks the cache to see their exists a person in the location.
  */
-MapBackend.prototype.getLocationFromCache = function(id) {
-  return this.cache.location[id];
+MapBackend.prototype.getLocationFromCache = function(location, callback) {
+  this.locationEntity.find(['latitude', 'longitude','address'], {location: location}, callback);
 };
 
 MapBackend.prototype.startUpdates = function() {
@@ -60,18 +87,27 @@ MapBackend.prototype.loadPeople = function() {
  * add address locations for every known hangout participant loaded into the person cache
  */
 MapBackend.prototype.loadLocations = function() {
-  var self = this;
   var allParticipants = this.controller.getHangoutBackend().getAllParticipants();
   for (var i = 0; i < allParticipants.length; i++) {
     var id = allParticipants[i];
-    var personCacheItem = self.cache.people[id];
+    var personCacheItem = this.cache.people[id];
     if (personCacheItem && personCacheItem.address && personCacheItem.address !== '?') {
       var address = personCacheItem.address;
-      if (!self.cache.location[address]) {
-        self.cacheMapLocation(address);
-      }
+      this.decideWhetherToCacheLocation(address);
     }
   }
+};
+
+/**
+ * Check the database if we would require to cache the results.
+ */
+MapBackend.prototype.decideWhetherToCacheLocation = function(address) {
+  var self = this;
+  self.locationEntity.count({location: address}, function(resp) {
+    if (resp.status && resp.data == 0) {
+      self.cacheMapLocation(address);
+    }
+  });
 };
 
 /** 
@@ -112,7 +148,13 @@ MapBackend.prototype.cacheMapLocation = function(address) {
       if (self.LOGGER_ENABLED) {
         console.log('location: ' + address, results);
       }
-      self.cache.location[address] = results[0];
+      var geoaddress = results[0];
+      self.locationEntity.create({
+        location: address,
+        address: geoaddress.formatted_address,
+        latitude: geoaddress.geometry.location.lat(),
+        longitude: geoaddress.geometry.location.lng()
+      });
     }
     else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
       // We don't want to requery so blacklist address.

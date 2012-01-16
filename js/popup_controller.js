@@ -8,7 +8,7 @@ PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.mapBackend = this.bkg.controller.getMapBackend();
   this.options = new OptionsController(this);
-  //this.map = new MapController(this);
+  this.map = new MapController(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
   this.notifiedHangouts = [];
@@ -21,7 +21,7 @@ PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
   this.options.init();
-  //this.map.init();
+  this.map.init();
 };
 
 PopupController.prototype.bindUI = function() {
@@ -52,7 +52,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       break;
     case 'menu-maps':
       this.togglePage('maps');
-      //this.map.onDisplay();
+      this.map.onDisplay();
       break;
     case 'menu-options':
       this.togglePage('options');

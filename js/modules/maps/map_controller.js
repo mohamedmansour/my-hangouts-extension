@@ -6,8 +6,6 @@
  * @author kaktus621@gmail.com (Martin Matysiak)
  */
 
-
-
 /**
  * A controller which handles the interaction with Google Maps.
  *
@@ -30,7 +28,6 @@ MapController = function(popupController) {
   this.featureControl = new MapFeatureControl(this.map);
   this.startUpdates();
 };
-
 
 /**
  * Initialization code.
@@ -165,10 +162,39 @@ MapController.prototype.startUpdates = function() {
 MapController.prototype.addMarkersFromCache = function() {
   var self = this;
   var gpIds = this.bkg.getHangoutBackend().getAllParticipants();
-
-  // Quickly figure out what markers to add.
   var idMap = {};
   var newMarkerCache = {};
+
+  // Callback when everything has been iterated
+  var participantLength = gpIds.length;
+  var onComplete = function() {
+    if (--participantLength == 0) {
+      // Remove the ones that are not in the idMap cache.
+      $.each(self.markersCache, function(markerID) {
+        var marker = self.markersCache[markerID];
+        if (!idMap[markerID]) {
+          marker.setMap(null);
+        }
+      });
+
+      // Replace the cache with the newly formed one.
+      self.markersCache = newMarkerCache;
+    }
+  };
+  
+  // Google Maps requires a lat lng function prototype instead.
+  var convertToGoogleMapsCoordinate = function(obj) {
+    return {
+      lat: function() {
+        return obj.latitude;
+      },
+      lng: function() {
+        return obj.longitude;
+      }
+    }
+  };
+  
+  // Quickly figure out what markers to add.
   gpIds.forEach(function(id, index) {
     idMap[id] = true; // Cache it since we want to know it exists.
 
@@ -177,45 +203,32 @@ MapController.prototype.addMarkersFromCache = function() {
     if (!self.markersCache[id]) {
       var personCacheItem = self.mapBackend.getPersonFromCache(id);
       if (personCacheItem) {
-        var locationCacheItem = self.mapBackend.getLocationFromCache(
-            personCacheItem.address
-            );
+        self.mapBackend.getLocationFromCache(personCacheItem.address, function(resp) {
+          if (resp.status && resp.data.length > 0) {
+            var locationCacheItem = resp.data[0];
+            var marker = new SimpleMarker({
+              map: self.map,
+              position: convertToGoogleMapsCoordinate(locationCacheItem),
+              id: 'person-' + personCacheItem.data.id,
+              className: 'personMarker',
+              icon: personCacheItem.data.photo + '?sz=24',
+              size: new google.maps.Size(24, 24),
+              anchor: new google.maps.Point(12, 12),
+              title: personCacheItem.data.name + ', ' + locationCacheItem.address
+            });
+            self.markersCache[id] = marker;
+            newMarkerCache[id] = marker;
 
-        if (locationCacheItem) {
-          var marker = new SimpleMarker({
-            map: self.map,
-            position: locationCacheItem.geometry.location,
-            id: 'person-' + personCacheItem.data.id,
-            className: 'personMarker',
-            icon: personCacheItem.data.photo + '?sz=24',
-            size: new google.maps.Size(24, 24),
-            anchor: new google.maps.Point(12, 12),
-            title: personCacheItem.data.name +
-                ', ' + locationCacheItem.formatted_address
-          });
-          self.markersCache[id] = marker;
-          newMarkerCache[id] = marker;
-
-          // Marker click
-          self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker);
-        }
+            // Marker click
+            self.addPersonMarkerClickedEvent(personCacheItem.data.id, marker);
+          }
+        });
       }
     }
     else {
       newMarkerCache[id] = self.markersCache[id];
     }
   });
-
-  // Remove the ones that are not in the idMap cache.
-  $.each(self.markersCache, function(markerID) {
-    var marker = self.markersCache[markerID];
-    if (!idMap[markerID]) {
-      marker.setMap(null);
-    }
-  });
-
-  // Replace the cache with the newly formed one.
-  self.markersCache = newMarkerCache;
 };
 
 
