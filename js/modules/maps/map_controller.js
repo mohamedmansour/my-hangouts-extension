@@ -181,19 +181,7 @@ MapController.prototype.addMarkersFromCache = function() {
       self.markersCache = newMarkerCache;
     }
   };
-  
-  // Google Maps requires a lat lng function prototype instead.
-  var convertToGoogleMapsCoordinate = function(obj) {
-    return {
-      lat: function() {
-        return obj.latitude;
-      },
-      lng: function() {
-        return obj.longitude;
-      }
-    }
-  };
-  
+
   // Quickly figure out what markers to add.
   gpIds.forEach(function(id, index) {
     idMap[id] = true; // Cache it since we want to know it exists.
@@ -208,7 +196,7 @@ MapController.prototype.addMarkersFromCache = function() {
             var locationCacheItem = resp.data[0];
             var marker = new SimpleMarker({
               map: self.map,
-              position: convertToGoogleMapsCoordinate(locationCacheItem),
+              position: new google.maps.LatLng(locationCacheItem.latitude, locationCacheItem.longitude),
               id: 'person-' + personCacheItem.data.id,
               className: 'personMarker',
               icon: personCacheItem.data.photo + '?sz=24',
@@ -254,7 +242,7 @@ MapController.prototype.addPersonMarkerClickedEvent = function(userID, marker) {
       infowindow.setPosition(new google.maps.LatLng(
           location.lat(),
           location.lng()
-          ));
+      ));
 
       infowindow.open(this.map);
     }
