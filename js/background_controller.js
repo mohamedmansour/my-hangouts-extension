@@ -6,8 +6,7 @@
  */
 BackgroundController = function() {
   var db = this.initDatabase();
-  
-  this.BLOCKED_CIRCLE_ID = '15';
+
   this.UPDATE_INTERVAL = 45000; // Every 45 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
   this.REFRESH_INTERVAL = 5000; // Look for new results every 5 seconds.
@@ -232,18 +231,6 @@ BackgroundController.prototype.refreshCircles = function() {
     self.plus.refreshCircles(function(status) {
       self.plus.getCircles(function(res) {
         if (res.status) {
-          // Go through the circles, and remove the blocked circle.
-          // TODO: Support showing blocked circles.
-          var bannedCircle = null;
-          res.data.some(function(circle, index) {
-            if (circle.id == self.BLOCKED_CIRCLE_ID) {
-              bannedCircle = index;
-              return true;
-            }
-          });
-          if (bannedCircle) {
-            res.data.splice(bannedCircle, 1);
-          }
           self.myCirclesList = res.data;
           
           // The position for circles are using strange hex format, so

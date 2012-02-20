@@ -20,6 +20,7 @@ HangoutUpdater = function(controller) {
   this.stateCounter = 0;
   this.HANGOUT_SEARCH_QUERY =  '"is"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
   this.HANGOUT_SEARCH_QUERY_NAMED = '"named"'
+  this.BLOCKED_CIRCLE_ID = '15';
 };
 
 /**
@@ -222,13 +223,18 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
   var person = this.controller.getPerson(user.id);
   var self = this;
   if (person) {
-    // TODO(mohamed): Merge into one, the UI should handle the circle names by iterating.
-    user.circle_ids = person.circles.map(function(e) {return e.id;});
-    user.circles = person.circles.map(function(e) {return  ' ' + e.name});
+    user.circles = person.circles;
   }
-  if (user.circle_ids && user.circle_ids.length > 0)  {
+  if (user.circles && user.circles.length > 0)  {
+    // Tag the user if you banned them.
+    user.circles.some(function(circle) {
+      user.blocked = (circle.id == self.BLOCKED_CIRCLE_ID);
+      return user.blocked;
+    });
+  
+    // Calculate circle rank based on the position of the circle normalized.
     var totalCircles = self.controller.getCircles().length;
-    var circle = self.controller.getCircle(user.circle_ids[0]);
+    var circle = self.controller.getCircle(user.circles[0].id);
     return 1 - ((1 / totalCircles) * circle.position);
   }
   return 0;

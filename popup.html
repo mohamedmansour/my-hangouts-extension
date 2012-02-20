@@ -66,6 +66,10 @@
       -->
     </div>
   </div>
+  <div id="tiptip_holder">
+    <div id="tiptip_arrow"><div id="tiptip_arrow_inner"></div></div>
+    <div id="tiptip_content"></div>
+  </div>
   <script type="text/x-jquery-tmpl" id="hangout-detail-template">
     <div>
       <div class="detail-card-header">
@@ -136,10 +140,19 @@
       <div class="hangout-participants">
         <div class="hangout-name">${hangout.data.name}</div>
         <ul>
-        <li{{if hangout.owner.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable"><img src="${hangout.owner.image}?sz=48" title='<h3>${hangout.owner.name}</h3>{{if hangout.owner.circles}}<span>Circles:</span> ${hangout.owner.circles}{{/if}}' class="tip" /></a>{{if hangout.owner.circles}}<span>${hangout.owner.circles.length}</span>{{/if}}</li>
+        <li{{if hangout.owner.circles}} class="in_my_circle {{if hangout.owner.blocked}}blocked_circle{{/if}}"{{/if}}>
+          <a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable">
+            <img src="${hangout.owner.image}?sz=48" title='<h3>${hangout.owner.name}</h3>{{if hangout.owner.circles}}<span>Circles:</span> {{if hangout.owner.blocked}}You blocked this person!{{else}}${hangout.owner.circles}{{/if}}{{/if}}' class="tip" />
+          </a>{{if hangout.owner.circles}}<span>{{if hangout.owner.blocked}}B{{else}}${hangout.owner.circles.length}{{/if}}</span>{{/if}}
+        </li>
         {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
-          <li{{if participant.circles}} class="in_my_circle"{{/if}}><a href="https://plus.google.com/${participant.id}/about" class="clickable"><img src="${participant.image}?sz=32" title='<h3>${participant.name}</h3>{{if participant.circles}}<span>Circles:</span> ${participant.circles}{{/if}}' class="tip" /></a>{{if participant.circles}}<span>${participant.circles.length}</span>{{/if}}</li>
+          <li{{if participant.circles}} class="in_my_circle {{if participant.blocked}}blocked_circle{{/if}}"{{/if}}>
+            <a href="https://plus.google.com/${participant.id}/about" class="clickable">
+              <img src="${participant.image}?sz=32" title='<h3>${participant.name}</h3>{{if participant.circles}}<span>Circles:</span> {{if participant.blocked}}You blocked this person!{{else}}${participant.circles}{{/if}}{{/if}}' class="tip" />
+            </a>
+            {{if participant.circles}}<span>{{if participant.blocked}}B{{else}}${participant.circles.length}{{/if}}</span>{{/if}}
+          </li>
           {{/if}}
         {{/each}}
         </ul>
@@ -147,10 +160,6 @@
     </div>
     {{/each}}
   </script>
-    <div id="tiptip_holder">
-      <div id="tiptip_arrow"><div id="tiptip_arrow_inner"></div></div>
-      <div id="tiptip_content"></div>
-    </div>
   <script>
     var popupController = new PopupController();
     popupController.init();

@@ -249,6 +249,7 @@ body, html {
   font-weight: bold;
   opacity: 0.75;
   cursor: pointer;
+  border-top-right-radius: 5px;
 }
 .in_my_circle img {
   border: 2px solid transparent;
@@ -261,6 +262,10 @@ body, html {
   opacity: 0.8;
   background-color: #fff;
   color: #444;
+}
+
+.blocked_circle span {
+  background-color: #000;
 }
 
 .personMarker {

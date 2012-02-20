@@ -23,22 +23,22 @@ PersonEntity.prototype.findMap = function(callback) {
           continue;
         }
         if (prevID == item.id) {
-          data[prevID].circles.push({
+          data[prevID].circles.push(new CircleData({
             id: item.circle_id,
             name: item.circle_name,
             description: item.circle_description
-          });
+          }));
         }
         else {
           prevID = item.id;
           data[prevID] = item;
           data[prevID].circles = [];
           if (item.circle_id) {
-            data[prevID].circles.push({
+            data[prevID].circles.push(new CircleData({
               id: item.circle_id,
               name: item.circle_name,
               description: item.circle_description
-            });
+            }));
           }
         }
       }
@@ -46,3 +46,21 @@ PersonEntity.prototype.findMap = function(callback) {
     });
   });
 };
+
+/**
+ * Represents a circle model. We need an object so we could override the toString method.
+ */
+CircleData = function(obj) {
+  this.id = obj.id;
+  this.name = obj.name;
+  this.description = obj.description;
+  this.position = obj.position;
+};
+
+/**
+ * Show the name when we print this object.
+ */
+CircleData.prototype.toString = function() {
+  return this.name;
+};
+

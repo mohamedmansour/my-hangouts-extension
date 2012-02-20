@@ -54,10 +54,10 @@ CircleNotifier.prototype.initializeListeners = function() {
  * @param {Object} participant The current participant to check so we could add.
  */
 CircleNotifier.prototype.addParticipantToNotification = function(hangout, participant) {
-  if (participant.circle_ids && participant.status) {
+  if (participant.circles && participant.status) {
     if (!this.notified[hangout.data.id][participant.id]) {
-      for (var c in participant.circle_ids) {
-        var circleID = participant.circle_ids[c];
+      for (var c in participant.circles) {
+        var circleID = participant.circles[c].id;
         if (this.circles_to_notify[circleID]) {
           this.notified[hangout.data.id][participant.id] = true;
           this.notificationSession[hangout.data.id] = this.notificationSession[hangout.data.id];
