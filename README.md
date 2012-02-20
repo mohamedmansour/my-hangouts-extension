@@ -11,11 +11,14 @@ People may ask what are the main differences from the *other* extensions out the
 
  - This extension does not use external servers, it uses the Google+ Search API
  - This extension does not send your hangouts to any external server.
- - This extension does not receive updates from other clients,
+ - This extension does not receive updates from other clients.
  - This extension does not use Google Analytics to track your every move.
+ - This extension does not serve ads to you.
  - This extension is 100% Open Source.
  - This extension is fast, secure, and simple to use.
  - This extension cannot leak any information, your information stays with you.
+
+Basically, this extension just presents another view to see hangouts, that is all!
 
 Contributors
 -----------
