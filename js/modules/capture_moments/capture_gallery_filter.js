@@ -11,11 +11,28 @@ CaptureEffectsController = function(galleryController) {
   this.currentlyRenderedEffectIndex = 0;
   this.perspectiveNubs = [];
   this.filters = {};
-  this.glfxCanvas = fx.canvas();
   this.texture = null;
   this.originalData = {};
   this.filterTemplate = $('#filter-template');
 	this.filterCount = 0;
+  try {
+    this.glfxCanvas = fx.canvas();
+  }
+  catch (e) {
+    this.glfxCanvas = null;
+    console.error('Computer does not support WebGL', e);
+  }
+};
+
+/**
+ * Validates the session if you are allowed to access the effects controller.
+ */
+CaptureEffectsController.prototype.isCanvasLoaded = function() {
+  if (!this.glfxCanvas) {
+    alert('Your computer does not support WebGL. You cannot use this feature.');
+    return false;
+  }
+  return true;
 };
 
 CaptureEffectsController.prototype.init = function() {
@@ -25,6 +42,8 @@ CaptureEffectsController.prototype.init = function() {
 };
 
 CaptureEffectsController.prototype.open = function(id) {
+  if (!this.isCanvasLoaded()) return;
+
   var self = this;
   self.openEditMode();
 
