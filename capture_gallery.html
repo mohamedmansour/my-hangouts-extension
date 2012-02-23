@@ -21,31 +21,33 @@
   <div id="header">
     <h1>My Hangout Moments Gallery<span>by +<a href="https://plus.google.com/116805285176805120365/about">Mohamed Mansour</a></span></h1>
   </div>
-  <ul class="gallery">
-  </ul>
-  <div class="detail">
+  <ul id="gallery"> </ul>
+  <!-- TODO Make this a jquery template -->
+  <div id="edit">
+      <div id="edit-head">
+        <h1>Edit Moment</h1>
+          <div id="dialog-controls">
+            <button class="save">Save Changes</button>
+            <button class="discard">Cancel Changes</button>
+          </div>
+      </div>
+      <div id="edit-body">
+        <div id="fx-container">
+          <h2>Effects</h2>
+          <div class="add-effect-btn">Add Effect</div>
+        </div>
+        <div id="canvas-container">
+          <div id="canvasPreview">
+            <div id="nubs"></div>
+          </div>
+        </div>
+      </div>
   </div>
-</div>
-<!-- TODO Make this a jquery template -->
-<div id="edit">
-    <div id="edit-head">
-    	<h1>Edit Moment</h1>
-        <div id="dialog-controls">
-          <button class="save">Save Changes</button>
-          <button class="discard">Cancel Changes</button>
-        </div>
-    </div>
-    <div id="edit-body">
-      <div id="fx-container">
-        <h2>Effects</h2>
-        <div class="add-effect-btn">Add Effect</div>
-      </div>
-      <div id="canvas-container">
-        <div id="canvasPreview">
-          <div id="nubs"></div>
-        </div>
-      </div>
-    </div>
+  <div id="no-captures">
+    <h2>You currently have no captures.</h2>
+    <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
+    <img src="/img/hangout-screenshot.png" alt="" />
+  </div>
 </div>
 <script type="text/x-jquery-tmpl" id="filter-template">
 	<div class="fx-panel" id='effects${_id}' data-index="${_id}">
@@ -67,11 +69,6 @@
     </div>
   </li>
 </script>
-<div class="no-captures">
-  <h1>You currently have no captures.</h1>
-  <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
-  <img src="/img/hangout-screenshot.png" alt="" />
-</div>
 <script>
 var controller = new CaptureGalleryController();
 controller.init();

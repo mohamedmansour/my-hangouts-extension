@@ -23,9 +23,9 @@ CaptureGalleryController.prototype.init = function() {
  * Bind the UI controlls from the view to their events.
  */
 CaptureGalleryController.prototype.bindUIControls = function(parent) {
-  $('.gallery').on('click', '.delete', this.deleteCapture.bind(this));
-  $('.gallery').on('click', '.download', this.downloadCapture.bind(this));
-  $('.gallery').on('click', '.effects', this.showEffectsWindow.bind(this));
+  $('#gallery').on('click', '.delete', this.deleteCapture.bind(this));
+  $('#gallery').on('click', '.download', this.downloadCapture.bind(this));
+  $('#gallery').on('click', '.effects', this.showEffectsWindow.bind(this));
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {
@@ -43,7 +43,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
       self.bindUIControls();
     }
     else {
-      $('.no-captures').show();
+      $('#no-captures').show();
     }
   });
 };
@@ -52,7 +52,7 @@ CaptureGalleryController.prototype.renderMoment = function(moment) {
   // Do some preprocessing
   moment.time = $.timeago(new Date(moment.time));
   var newMoment = this.momentsTemplate.tmpl(moment);
-  newMoment.appendTo('.gallery');
+  newMoment.appendTo('#gallery');
 };
 
 CaptureGalleryController.prototype.deleteCapture = function(e) {
@@ -68,6 +68,9 @@ CaptureGalleryController.prototype.deleteCapture = function(e) {
   });
 };
 
+/**
+ * Issues an HTML5 Download routine.
+ */
 CaptureGalleryController.prototype.downloadCapture = function(e) {
   var container = $(e.target).parent().parent().parent();
   chrome.extension.sendRequest({
@@ -76,7 +79,7 @@ CaptureGalleryController.prototype.downloadCapture = function(e) {
     arguments: [container.attr('id')]
   }, function(res) {
       window.open(res.data.active);
-  });
+  }.bind(this));
 };
 
 CaptureGalleryController.prototype.showEffectsWindow = function(e) {

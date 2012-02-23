@@ -3,6 +3,19 @@ body {
   font: normal 13px arial,sans-serif;
 }
 
+h2 {
+  font:bold 3em Arial, sans-serif;
+  color:rgba(0,0,0,0.75);
+  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
+  text-align:center;
+  margin-bottom:0;
+}
+
+p  {
+  font:normal 1.6em Arial, sans-serif;
+  text-align:center;
+}
+
 #header { 
   background: rgba(0,0,0,.75); 
   border: solid rgba(0,0,0,.75); 
@@ -39,15 +52,15 @@ pre {
   line-height: 16px; 
 }
 
-ul.gallery {
+#gallery {
   -webkit-user-select: none;
   margin: 0 0 18px -30px;
 }
-ul.gallery li { 
+#gallery li { 
   display: inline-block;
   position: relative;
 }
-ul.gallery div {
+#gallery div {
   background: #fff; 
   display: inline; 
   float: left; 
@@ -63,78 +76,64 @@ ul.gallery div {
   -webkit-transform: rotate(-2deg); 
   -webkit-transition: -webkit-transform .15s linear; 
 }
-ul.gallery img { 
+#gallery img { 
   display: block; 
   width: 190px; 
   margin-bottom: 12px;
 }
-ul.gallery div:after { 
+#gallery div:after { 
   content: attr(title);
 }
 
-ul.gallery li:nth-child(even) div { 
+#gallery li:nth-child(even) div { 
   -webkit-transform: rotate(2deg);
 }
-ul.gallery li:nth-child(3n) div { 
+#gallery li:nth-child(3n) div { 
   -webkit-transform: none; 
   position: relative; 
   top: -5px;
 }
-ul.gallery li:nth-child(5n) div { 
+#gallery li:nth-child(5n) div { 
   -webkit-transform: rotate(5deg);
   position: relative; 
   right: 5px;
 }
-ul.gallery li:nth-child(8n) div { 
+#gallery li:nth-child(8n) div { 
   position: relative; 
   right: 5px; top: 8px;
 }
-ul.gallery li:nth-child(11n) div { 
+#gallery li:nth-child(11n) div { 
   position: relative; 
   left: -5px; top: 3px;
 }
 
-ul.gallery li.messy div { 
+#gallery li.messy div { 
   margin-top: -375px; 
   margin-left: 160px; 
   -webkit-transform: rotate(-5deg);
 }
 
-ul.gallery li div:hover { 
+#gallery li div:hover { 
   -webkit-transform: scale(1.25); 
   -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.5); 
   position: relative; z-index: 5; 
 }
 
-ul.gallery  li div .controls {
+#gallery  li div .controls {
   visibility: hidden;
   font-size: 10px;
   display: block;
   cursor: pointer;
 }
 
-
-ul.gallery  li div:hover .controls {
+#gallery  li div:hover .controls {
   visibility: visible;
 }
 
-.no-captures { 
-  position: relative;
-  top:0;
-  width:800px;
+#no-captures {
   margin:0 auto;
+  width: 800px;
   display: none;
-}
-.no-captures h1 {
-  font:bold 3em Arial, sans-serif;
-  color:rgba(0,0,0,0.75);
-  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
-  text-align:center;
-  margin-bottom:0;
-}
-.no-captures p  {
-  font:normal 1.6em Arial, sans-serif;
-  text-align:center;
 }
 
 .select {
