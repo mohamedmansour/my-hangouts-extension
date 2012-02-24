@@ -9,6 +9,7 @@
 CaptureGalleryController = function() {
   this.momentsTemplate = $('#moments-item-template');
   this.effectsController = new CaptureEffectsController(this);
+  this.captureDownloader = new CaptureGalleryDownloader(this);
 };
 
 /**
@@ -78,7 +79,7 @@ CaptureGalleryController.prototype.downloadCapture = function(e) {
     method: 'findCapture',
     arguments: [container.attr('id')]
   }, function(res) {
-      window.open(res.data.active);
+      this.captureDownloader.prepareDownload(res.data);
   }.bind(this));
 };
 

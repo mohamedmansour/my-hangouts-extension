@@ -12,6 +12,7 @@
   <script src="/js/libs/jquery.ui.slider.js"></script>
   <script src="/js/libs/glfx.js"></script>
 	<script src="/js/libs/underscore-1.1.6.js"></script>
+  <script src="/js/modules/capture_moments/capture_gallery_downloader.js"></script>
   <script src="/js/modules/capture_moments/capture_gallery_filter.js"></script>
   <script src="/js/modules/capture_moments/capture_gallery_controller.js"></script>
   
@@ -47,6 +48,15 @@
     <h2>You currently have no captures.</h2>
     <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
     <img src="/img/hangout-screenshot.png" alt="" />
+  </div>
+  <div id="download-dialog">
+    <div id="download-container">
+      <div id="download-content">
+        <button id="download-close">close</button>
+        <div id="download-thumbnail"><img src="" alt="" width="250"/></div>
+        <h2>Yay it's ready!</h2>
+      </div>
+    </div>
   </div>
 </div>
 <script type="text/x-jquery-tmpl" id="filter-template">
