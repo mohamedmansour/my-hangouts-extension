@@ -10,6 +10,7 @@ HangoutUpdater = function(controller) {
   this.currentState = 0;
   this.maxState = 2;
   this.circleNotifier = new CircleNotifier(this);
+  this.statisticsNotifier = new StatisticsNotifier(this.controller);
   this.errorCount = 0;
   this.error = false;
   this.cache = {};
@@ -40,7 +41,7 @@ HangoutUpdater.prototype.getHangouts = function() {
   for (var i=0; i< this.hangouts.length; i++ ){
     hangout = this.hangouts[i];
     inlcudeHangout = hangout && 
-                          ( !settings.only_show_circle_hangouts || hangout.hasParticipantInCircles );
+        ( !settings.only_show_circle_hangouts || hangout.hasParticipantInCircles );
     if (inlcudeHangout){
       hangouts.push(hangout);
     }
@@ -121,6 +122,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
     return false;
   }
   
+  var myID = this.controller.plus.getInfo().id;
   var currentTimestamp = new Date().getTime();
   var updatedHangout = hangout;
   
@@ -134,9 +136,13 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   var circleCount = 0;
   var scoreCount = 0;
   var onlineUserCount = 0;
+  var isMyHangout = false;
   for (var j = 0; j < updatedHangout.data.participants.length; j++) {
     var participant = updatedHangout.data.participants[j];
     if (participant.status) {
+      if (participant.id === myID) {
+        isMyHangout = true;
+      }
       var score = this.fillCircleInfo(participant);
       if (score > 0) {
         circlePositionScore += score;
@@ -148,6 +154,10 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   }
 
   // Populate the Owner Information
+  if (updatedHangout.owner.id === myID) {
+    isMyHangout = true;
+  }
+  
   var score = this.fillCircleInfo(updatedHangout.owner);
   if (score > 0) {
     circlePositionScore += score;
@@ -199,6 +209,12 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   updatedHangout.isFull = onlineUserCount >= 9;
   updatedHangout.rank = rank;
   updatedHangout.timeago = $.timeago(new Date(updatedHangout.time_edited || updatedHangout.time));
+
+  // Notify Statistics if its my hangout. NOTE: This should be the last thing we do in this func.
+  if (isMyHangout) {
+    this.statisticsNotifier.notify(myID, updatedHangout);
+  }
+
   return updatedHangout;
 };
 

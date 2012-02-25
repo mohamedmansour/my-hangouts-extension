@@ -82,6 +82,7 @@ BackgroundController.prototype.init = function() {
     window.setInterval(this.refreshCircles.bind(this), this.UPDATE_CIRCLES_INTERVAL);
     window.setInterval(this.refreshPublicHangouts.bind(this), this.REFRESH_INTERVAL);
     window.setInterval(this.cleanPublicHangouts.bind(this), this.CLEAN_INTERVAL);
+    this.plus.refreshInfo();
     this.queryPublicHangouts();
     this.refreshCircles();
   }.bind(this));
@@ -200,6 +201,13 @@ BackgroundController.prototype.getHangoutBackend = function() {
  */
 BackgroundController.prototype.getMapBackend = function() {
   return this.mapBackend;
+};
+
+/**
+ * Responsible for getting the Hangout Statistics.
+ */
+BackgroundController.prototype.getStatisticsBackend = function() {
+  return this.statisticsBackend;
 };
 
 /**
