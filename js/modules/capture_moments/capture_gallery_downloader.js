@@ -15,6 +15,7 @@ CaptureGalleryDownloader = function(controller) {
   this.MIME_TYPE = 'image/png';
   this.downloadClose.click(this.closeDownloadDialog.bind(this));
   this.downloadDialog.click(this.onDialogClick.bind(this));
+  this.dialogKeyPressedCallback = this.onDialogKeyPressed.bind(this);
 };
 
 /**
@@ -89,6 +90,7 @@ CaptureGalleryDownloader.prototype.dataURIToBlob = function(dataURI, mimetype) {
  * Opens a download dialog.
  */
 CaptureGalleryDownloader.prototype.openDownloadDialog = function(e) {
+  window.addEventListener('keyup', this.dialogKeyPressedCallback, false);
   this.downloadDialog.show();
   setTimeout(function() {
     this.downloadDialog.css('opacity', 1);
@@ -99,10 +101,20 @@ CaptureGalleryDownloader.prototype.openDownloadDialog = function(e) {
  * When a download has been closed.
  */
 CaptureGalleryDownloader.prototype.closeDownloadDialog = function(e) {
+  window.removeEventListener('keyup', this.dialogKeyPressedCallback, false);
   this.downloadDialog.css('opacity', 0);
   setTimeout(function() {
     this.downloadDialog.hide();
   }.bind(this), 300);
+};
+
+/**
+ * On Dialog Key Button hit.
+ */
+CaptureGalleryDownloader.prototype.onDialogKeyPressed = function (e) {
+  if (e.keyCode  == 27) { // ESCAPE.
+    this.closeDownloadDialog();
+  }
 };
 
 /**
