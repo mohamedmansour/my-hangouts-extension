@@ -27,6 +27,12 @@ CaptureViewerController.prototype.show = function(id, collection) {
   this.currentID = id;
   this.collection = collection;
   this.previewImage();
+  if (this.currentID == 0) {
+    this.previousButton.attr('disabled', true);
+  }
+  if (this.currentID == this.collection.length - 1) {
+    this.nextButton.attr('disabled', true);
+  }
 };
 
 /**
@@ -58,6 +64,12 @@ CaptureViewerController.prototype.previewImage = function() {
   this.controller.findCapture(this.collection[this.currentID], function(data) {
     this.currentImageData = data;
     this.imageViewer.attr('src', this.currentImageData.active);
+    var viewDimensions = this.adjustResolution({
+      width: this.currentImageData.active_width,
+      height: this.currentImageData.active_height
+    });
+    this.imageViewer.attr('width', viewDimensions.width);
+    this.imageViewer.attr('height', viewDimensions.height);
   }.bind(this));
 };
 
@@ -67,9 +79,12 @@ CaptureViewerController.prototype.previewImage = function() {
 CaptureViewerController.prototype.onPreviousPreview = function() {
   if (this.currentID > 0) {
     this.currentID -= 1;
+    this.previousButton.attr('disabled', false);
+    this.nextButton.attr('disabled', false);
   }
   else {
     this.currentID = 0;
+    this.previousButton.attr('disabled', true);
   }
   this.previewImage();
 };
@@ -80,9 +95,12 @@ CaptureViewerController.prototype.onPreviousPreview = function() {
 CaptureViewerController.prototype.onNextPreview = function() {
   if (this.currentID < (this.collection.length - 1)) {
     this.currentID += 1;
+    this.previousButton.attr('disabled', false);
+    this.nextButton.attr('disabled', false);
   }
   else { 
     this.currentID = this.collection.length - 1;
+    this.nextButton.attr('disabled', true);
   }
   this.previewImage();
 };
@@ -93,3 +111,35 @@ CaptureViewerController.prototype.onNextPreview = function() {
 CaptureViewerController.prototype.onSaveImage = function(e) {
     this.controller.captureDownloader.prepareDownload(this.currentImageData);
 };
+
+/**
+ * Does a FIT algorithm for letting the image fit to the container.
+ *
+ * @param {object} resolution The resolution for the original image.
+ */
+CaptureViewerController.prototype.adjustResolution = function(resolution) {
+  var width = resolution.width;
+  var height = resolution.height;
+  var max_resolution = {
+    width: ($(window).width() - 20),
+    height: ($(window).height() - 90)
+  }
+  // Check if the current width is larger than the max
+  if (width > max_resolution.width) {
+    var ratio = max_resolution.width / width;
+    height = height * ratio;
+    width = width * ratio;
+  }
+
+  // Check if current height is larger than max
+  if (height > max_resolution.height) {
+    var ratio = max_resolution.height / height;
+    height = max_resolution.height;
+    width = width * ratio;
+  }
+
+  return {
+    width: width,
+    height: height
+  };
+}

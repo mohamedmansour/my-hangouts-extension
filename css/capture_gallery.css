@@ -1,6 +1,7 @@
 body { 
   background: #fff url(/img/wood-bg.jpg);
   font: normal 13px arial,sans-serif;
+  margin: 5px;
 }
 
 h2 {
@@ -16,6 +17,18 @@ p  {
   text-align:center;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ccc;
+}
+
+button[disabled] {
+  color: #ccc;
+}
+
 #header { 
   background: rgba(0,0,0,.75); 
   border: solid rgba(0,0,0,.75); 
@@ -29,8 +42,10 @@ p  {
   font-size: 30px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, .75);
   color: #999;
-  margin: 0px 32px;
-  padding: 10px 48px;
+  padding-left: 40px;
+  margin: 0 32px;
+  height: 60px;
+  line-height: 60px;
   background: url(/img/icon32.png) center left no-repeat;
 }
 
@@ -54,7 +69,8 @@ pre {
 
 #gallery {
   -webkit-user-select: none;
-  margin: 0 0 18px -30px;
+  padding: 20px;
+  margin: 0;
   position: relative;
   left: 0px;
   overflow-x: hidden;
@@ -150,13 +166,18 @@ pre {
   text-align: center;
 }
 
-#preview-dialog  img {
-  background-color: #fff;
-}
 
 #preview-image {
   display: block;
-  margin: 0 auto;
+  margin: 10px auto;
+  background-color: #fff;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
+}
+
+#preview-controls {
+  position: absolute;
+  left: 650px;
+  margin-top: -55px;
 }
 
 /* -- download dialog -- */
