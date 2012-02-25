@@ -27,6 +27,7 @@ CaptureGalleryController.prototype.bindUIControls = function(parent) {
   $('#gallery').on('click', '.delete', this.deleteCapture.bind(this));
   $('#gallery').on('click', '.download', this.downloadCapture.bind(this));
   $('#gallery').on('click', '.effects', this.showEffectsWindow.bind(this));
+  $('.tip').tipTip({defaultPosition: 'left'});
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {

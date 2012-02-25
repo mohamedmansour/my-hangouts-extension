@@ -13,7 +13,8 @@ CaptureGalleryDownloader = function(controller) {
   this.downloadContent = $('#download-content');
   this.downloadClose = $('#download-close');
   this.MIME_TYPE = 'image/png';
-  this.downloadClose.click(this.onDownloadClosed.bind(this));
+  this.downloadClose.click(this.closeDownloadDialog.bind(this));
+  this.downloadDialog.click(this.onDialogClick.bind(this));
 };
 
 /**
@@ -22,7 +23,7 @@ CaptureGalleryDownloader = function(controller) {
  * @param {object} data The captured data.
  */
 CaptureGalleryDownloader.prototype.prepareDownload = function(data) {
-  this.downloadDialog.show();
+  this.openDownloadDialog();
   this.thumbnailImage.attr('src', data.thumbnail); 
   var prevLink = $('a', this.downloadDialog);
   if (prevLink) {
@@ -56,7 +57,7 @@ CaptureGalleryDownloader.prototype.onDownloadClicked = function(e) {
   // Small delay for the revokeObjectURL to work properly.
   setTimeout(function() {
     this.URL.revokeObjectURL(a.href);
-    this.onDownloadClosed();
+    this.closeDownloadDialog();
   }.bind(this), 1500);
 };
 
@@ -85,8 +86,30 @@ CaptureGalleryDownloader.prototype.dataURIToBlob = function(dataURI, mimetype) {
 };
 
 /**
+ * Opens a download dialog.
+ */
+CaptureGalleryDownloader.prototype.openDownloadDialog = function(e) {
+  this.downloadDialog.show();
+  setTimeout(function() {
+    this.downloadDialog.css('opacity', 1);
+  }.bind(this));
+};
+
+/**
  * When a download has been closed.
  */
-CaptureGalleryDownloader.prototype.onDownloadClosed = function(e) {
-  this.downloadDialog.hide();
+CaptureGalleryDownloader.prototype.closeDownloadDialog = function(e) {
+  this.downloadDialog.css('opacity', 0);
+  setTimeout(function() {
+    this.downloadDialog.hide();
+  }.bind(this), 300);
+};
+
+/**
+ * Closes the dialog when clicked outside.
+ */
+CaptureGalleryDownloader.prototype.onDialogClick = function(e) {
+  if (e.target.id === 'download-dialog') {
+    this.closeDownloadDialog();
+  }
 };

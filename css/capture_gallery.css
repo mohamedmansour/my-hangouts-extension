@@ -115,7 +115,7 @@ pre {
 
 #gallery li div:hover { 
   -webkit-transform: scale(1.25); 
-  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.5); 
+  box-shadow: 0 3px 6px rgba(0,0,0,.5); 
   position: relative;
   z-index: 5; 
 }
@@ -139,14 +139,16 @@ pre {
 
 #download-dialog {
   display: none;
+  opacity: 0;
   margin: 0;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0,0,0,0.7);
   z-index: 100; 
+  -webkit-transition: opacity 0.5s linear;
 }
 
 #download-dialog  h2 {
@@ -182,10 +184,6 @@ pre {
   padding: 10px;
 }
 
-#download-close {
-  float: right;
-}
-
 #download-thumbnail {
   float: left;
 }
@@ -194,6 +192,7 @@ pre {
   display: block;
   margin: 0 auto;
   width: 250px;
+  max-height: 180px;
 }
 
 #download-container a {
@@ -298,7 +297,7 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 	display: block;
 	margin:5px 0;
 	padding: 10px;
-	-webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
 	background: #EBEBEB -webkit-linear-gradient(#FEFEFE, #F8F8F8 40%, #E9E9E9);
 	cursor:pointer;
 }
@@ -339,7 +338,6 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 	position:absolute;
 }
 
-
 ::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,0.10),inset 0 -1px 0 rgba(0,0,0,0.07);
@@ -350,6 +348,8 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 }
 
 ::-webkit-scrollbar {
+  background-color: #eee;
+  
   cursor: pointer;
   width: 10px;
   height: 16px;
