@@ -44,6 +44,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
         self.renderMoment(moment);
       });
       console.log('Done', (new Date().getTime() - start) / 1000);
+      $('#preloader').hide();
       self.bindUIControls();
     }
     else {
