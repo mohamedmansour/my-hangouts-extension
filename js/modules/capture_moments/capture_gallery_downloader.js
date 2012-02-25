@@ -9,7 +9,7 @@ CaptureGalleryDownloader = function(controller) {
   this.URL = window.webkitURL || window.URL;
   this.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder;
   this.downloadDialog = $('#download-dialog');
-  this.thumbnailImage = $('#download-thumbnail img');
+  this.thumbnailImageContainer = $('#download-thumbnail');
   this.downloadContent = $('#download-content');
   this.downloadClose = $('#download-close');
   this.MIME_TYPE = 'image/png';
@@ -25,7 +25,12 @@ CaptureGalleryDownloader = function(controller) {
  */
 CaptureGalleryDownloader.prototype.prepareDownload = function(data) {
   this.openDownloadDialog();
-  this.thumbnailImage.attr('src', data.thumbnail); 
+  
+  // Cleanup the images.
+  this.thumbnailImageContainer.children().remove();
+  var thumbnailImage = new Image();
+  thumbnailImage.src = data.thumbnail;
+  this.thumbnailImageContainer.append(thumbnailImage); 
   var prevLink = $('a', this.downloadDialog);
   if (prevLink) {
     this.URL.revokeObjectURL(prevLink.href);

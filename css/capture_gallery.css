@@ -55,6 +55,9 @@ pre {
 #gallery {
   -webkit-user-select: none;
   margin: 0 0 18px -30px;
+  position: relative;
+  left: 0px;
+  overflow-x: hidden;
 }
 #gallery li { 
   display: inline-block;
@@ -80,6 +83,7 @@ pre {
   display: block; 
   width: 190px; 
   margin-bottom: 12px;
+  cursor: pointer;
 }
 #gallery div:after { 
   content: attr(title);
@@ -131,11 +135,31 @@ pre {
   visibility: visible;
 }
 
+/* no captures dialog */
 #no-captures {
   margin:0 auto;
   width: 800px;
   display: none;
 }
+
+/* preview dialog */
+#preview-dialog  {
+  display: none;
+  position: relative;
+  left: 0;
+  text-align: center;
+}
+
+#preview-dialog  img {
+  background-color: #fff;
+}
+
+#preview-image {
+  display: block;
+  margin: 0 auto;
+}
+
+/* -- download dialog -- */
 
 #download-dialog {
   display: none;

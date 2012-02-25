@@ -14,6 +14,7 @@
   <script src="/js/libs/jquery.ui.slider.js"></script>
   <script src="/js/libs/glfx.js"></script>
 	<script src="/js/libs/underscore-1.1.6.js"></script>
+  <script src="/js/modules/capture_moments/capture_viewer_controller.js"></script>
   <script src="/js/modules/capture_moments/capture_gallery_downloader.js"></script>
   <script src="/js/modules/capture_moments/capture_gallery_filter.js"></script>
   <script src="/js/modules/capture_moments/capture_gallery_controller.js"></script>
@@ -53,8 +54,20 @@
   <div id="download-dialog">
     <div id="download-container">
       <div id="download-content">
-        <div id="download-thumbnail"><img src="" alt="" /></div>
+        <div id="download-thumbnail"></div>
         <h2>Yay it's ready!</h2>
+      </div>
+    </div>
+  </div>
+  <div id="preview-dialog">
+    <div id="preview-container">
+      <div id="preview-content">
+        <h2>Preview</h2>
+        <button id="preview-prev">Previous</button>
+        <button id="preview-next">Next</button>
+        <button id="preview-save">Save</button>
+        <button id="preview-gallery">Back to gallery</button>
+        <img id="preview-image" />
       </div>
     </div>
   </div>
@@ -73,7 +86,7 @@
 <script type="text/x-jquery-tmpl" id="moments-item-template">
   <li id="${_id}">
     <div>
-      <img src="${thumbnail}" alt="${time}" />
+      <img class="preview tip" src="${thumbnail}" alt="${time}" title="Preview capture!"/>
       <span>${time}</span>
       <span class="controls">
         <span class="tip delete" title="Delete capture"></span>
