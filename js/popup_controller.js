@@ -21,7 +21,6 @@ PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
   this.options.init();
-  this.map.init();
 };
 
 PopupController.prototype.bindUI = function() {

@@ -17,6 +17,21 @@ MapController = function(popupController) {
   this.popup = popupController;
   this.bkg = this.popup.bkg.controller;
   this.mapBackend = this.bkg.getMapBackend();
+  this.markersCache = {};
+  this.mapsAPI = new MapAPI(this.mapsLoaded.bind(this));
+  if (!this.mapsAPI.load(true)) {
+    $('#map-error').show();
+    $('#map-canvas').hide();
+  }
+  else {
+    this.errorExists = true;
+  }
+};
+
+/**
+ * Initialization code.
+ */
+MapController.prototype.mapsLoaded = function() {
   var latlong = new google.maps.LatLng(0, 0);
   this.map = new google.maps.Map($('#map-canvas')[0], {
     zoom: 1,
@@ -24,21 +39,14 @@ MapController = function(popupController) {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
   this.imageSize = new google.maps.Size(20, 20);
-  this.markersCache = {};
   this.featureControl = new MapFeatureControl(this.map);
-  this.startUpdates();
-};
-
-/**
- * Initialization code.
- */
-MapController.prototype.init = function() {
   this.featureControl.push(
       new DayNightOverlay(),
       'daynightoverlay',
       'Day/Night'
   );
   this.bindUI();
+  this.startUpdates();
 };
 
 
@@ -108,6 +116,9 @@ MapController.prototype._fitMarkers = function() {
  * to the user.
  */
 MapController.prototype.onDisplay = function() {
+  if (!this.errorExists) {
+    return;
+  }
   // Delay the adjustments as some animation may still be running
   setTimeout(function() {
     this._fitMarkers();

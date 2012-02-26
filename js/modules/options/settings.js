@@ -29,6 +29,14 @@ settings = {
       localStorage['circles_to_notify'] = val.join(', ');
     }
   },
+  get enable_maps() {
+    var key = localStorage['enable_maps'];
+    return (typeof key == 'undefined') ? false : key === 'true';
+  },
+  set enable_maps(val) {
+    settings.notify('enable_maps', val);
+    localStorage['enable_maps'] = val;
+  },
   get notify_circles() {
     var key = localStorage['notify_circles'];
     return (typeof key == 'undefined') ? false : key === 'true';
