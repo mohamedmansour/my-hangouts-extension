@@ -71,14 +71,20 @@ CaptureViewerController.prototype.previewImage = function() {
   this.previewLoader.show();
   this.controller.findCapture(this.collection[this.currentID], function(data) {
     this.currentImageData = data;
-    this.imageViewer.attr('src', this.currentImageData.active);
+    
+    // Create a new Image add it to DOM.
+    this.imageViewer.children().remove();
+    var image = new Image();
+    image.src = this.currentImageData.active;
     var viewDimensions = this.adjustResolution({
       width: this.currentImageData.active_width,
       height: this.currentImageData.active_height
     });
-    this.imageViewer.attr('width', viewDimensions.width);
-    this.imageViewer.attr('height', viewDimensions.height);
+    image.width = viewDimensions.width;
+    image.height = viewDimensions.height;
+    this.imageViewer.append(image);
 
+    // Render the previewer in the middle of the image.
     this.previewLoader.hide();
     this.previewLoader.css('top', viewDimensions.height / 2);
     this.previewLoader.css('left', ($(window).width() - 100) / 2);
