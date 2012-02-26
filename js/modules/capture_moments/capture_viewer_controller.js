@@ -20,6 +20,7 @@ CaptureViewerController = function(controller) {
   this.nextButton.click(this.onNextPreview.bind(this));
   this.galleryButton.click(this.closeDialog.bind(this));
   this.saveButton.click(this.onSaveImage.bind(this));
+  this.imageViewer.click(this.onNextPreview.bind(this));
 };
 
 CaptureViewerController.prototype.show = function(id, collection) {
