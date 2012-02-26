@@ -171,6 +171,9 @@ pre {
   text-align: center;
 }
 
+#preview-content {
+  position: relative;
+}
 
 #preview-image {
   display: block;
@@ -186,6 +189,16 @@ pre {
   margin-top: -55px;
 }
 
+#preview-loader {
+  display: none;
+  position: absolute;
+  width: 100px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
+}
 /* -- download dialog -- */
 
 #download-dialog {

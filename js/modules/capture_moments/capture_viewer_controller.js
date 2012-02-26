@@ -13,6 +13,7 @@ CaptureViewerController = function(controller) {
   this.imageViewer = $('#preview-image');
   this.galleryButton = $('#preview-gallery');
   this.saveButton = $('#preview-save');
+  this.previewLoader = $('#preview-loader');
   this.currentID = 0;
   this.currentImageData = null;
   this.collection = null;
@@ -67,6 +68,7 @@ CaptureViewerController.prototype.closeDialog = function(e) {
  * Show the image on the previewer..
  */
 CaptureViewerController.prototype.previewImage = function() {
+  this.previewLoader.show();
   this.controller.findCapture(this.collection[this.currentID], function(data) {
     this.currentImageData = data;
     this.imageViewer.attr('src', this.currentImageData.active);
@@ -76,6 +78,10 @@ CaptureViewerController.prototype.previewImage = function() {
     });
     this.imageViewer.attr('width', viewDimensions.width);
     this.imageViewer.attr('height', viewDimensions.height);
+
+    this.previewLoader.hide();
+    this.previewLoader.css('top', viewDimensions.height / 2);
+    this.previewLoader.css('left', ($(window).width() - 100) / 2);
   }.bind(this));
 };
 
