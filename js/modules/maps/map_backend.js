@@ -53,11 +53,15 @@ MapBackend = function(db, controller) {
   };
 
   this.locationEntity = new LocationEntity(db);
-
   this.blacklist = {};
-  this.startUpdates();
+
+  this.mapsAPI = new MapAPI(this.mapsLoaded.bind(this));
+  this.mapsAPI.load();
 };
 
+MapBackend.prototype.mapsLoaded = function() {
+  this.startUpdates();
+};
 
 /**
  * Checks the cache

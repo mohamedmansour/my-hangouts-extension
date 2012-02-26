@@ -21,7 +21,6 @@ BackgroundController = function() {
   this.mapBackend = new MapBackend(db, this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
-
 };
 
 /**

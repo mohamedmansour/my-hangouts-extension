@@ -480,10 +480,13 @@ body, html {
   border-left: 1px solid #717B87;
 }
 
-.error {
-  margin: 5px;
-  padding: 5px;
-  background-color: red;
-  color: white;
+#map-error {
+  width: 100%;
+  color: red;
   text-align: center;
+  display: none;
+  font-size: 20px;
+  font-weight: bold;
+  padding-top: 25px;
+  float:left;
 }
