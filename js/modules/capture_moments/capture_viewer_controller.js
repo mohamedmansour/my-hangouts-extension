@@ -16,6 +16,9 @@ CaptureViewerController = function(controller) {
   this.currentID = 0;
   this.currentImageData = null;
   this.collection = null;
+  
+  this.keyPressedCallback = this.onKeyPressed.bind(this);
+  
   this.previousButton.click(this.onPreviousPreview.bind(this));
   this.nextButton.click(this.onNextPreview.bind(this));
   this.galleryButton.click(this.closeDialog.bind(this));
@@ -40,6 +43,7 @@ CaptureViewerController.prototype.show = function(id, collection) {
  * Opens a download dialog.
  */
 CaptureViewerController.prototype.openDialog = function(e) {
+  window.addEventListener('keyup', this.keyPressedCallback, false);
   this.gallery.animate({
     left: -this.gallery.width()
   }, 500, function() {  
@@ -52,6 +56,7 @@ CaptureViewerController.prototype.openDialog = function(e) {
  * Close the viewer screen.
  */
 CaptureViewerController.prototype.closeDialog = function(e) {
+  window.removeEventListener('keyup', this.keyPressedCallback, false);
   this.previewDialog.hide();
   this.gallery.show().animate({
     left: 0
@@ -143,4 +148,19 @@ CaptureViewerController.prototype.adjustResolution = function(resolution) {
     width: width,
     height: height
   };
-}
+};
+
+/**
+ * Key Pressed Events to handle gallery navigations.
+ */
+CaptureViewerController.prototype.onKeyPressed = function (e) {
+  if (e.keyCode == 27) { // ESCAPE.
+    this.closeDialog();
+  }
+  else if (e.keyCode == 37) { // LEFT
+    this.onPreviousPreview();
+  }
+  else if (e.keyCode == 39) { // RIGHT
+    this.onNextPreview();
+  }
+};
