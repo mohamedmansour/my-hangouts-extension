@@ -94,10 +94,10 @@ MapBackend.prototype.startUpdates = function() {
   var self = this;
   this.peopleInterval = setInterval(function() {
     self.loadPeople();
-  }, 2000);
+  }, 50000);
   this.locationInterval = setInterval(function() {
     self.loadLocations();
-  }, 2500);
+  }, 60000);
 };
 
 
