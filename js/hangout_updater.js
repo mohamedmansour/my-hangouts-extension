@@ -268,7 +268,7 @@ HangoutUpdater.prototype.search = function(obj, onDone) {
     if (self.error) {
       if (self.LOGGER_ENABLED) {
         console.log('search return an error.');
-        self.controller.drawBadgeIcon(-1, false);
+        self.controller.getBrowserAction().drawBadgeIcon(-1, false);
       }
       return;
     }
@@ -346,7 +346,7 @@ HangoutUpdater.prototype.update = function(refreshDeprecated) {
 HangoutUpdater.prototype.updateDependants = function() {
   var hangouts = this.getHangouts();
   this.circleNotifier.notify(hangouts);
-  this.controller.drawBadgeIcon(hangouts.length, true);
+  this.controller.getBrowserAction().drawBadgeIcon(hangouts.length, true);
 }
 
 /**
@@ -444,7 +444,7 @@ HangoutUpdater.prototype.doNext = function() {
     this.errorCount++;
     if (this.errorCount % 2) {  // TODO: rationalise this logic.
       console.log('Reinitializing session since session was destroyed');
-      //this.controller.drawBadgeIcon(-1, false);
+      //this.controller.getBrowserAction().drawBadgeIcon(-1, false);
       this.controller.plus.init(); // Reinitialize the session.
     }
     this.error = false;  // or we will never advance ( see todo above )

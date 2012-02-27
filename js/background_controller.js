@@ -5,7 +5,7 @@
  * @constructor
  */
 BackgroundController = function() {
-  var db = this.initDatabase();
+  this.browserActionController = new BrowserActionController();
 
   this.UPDATE_INTERVAL = 45000; // Every 45 seconds.
   this.UPDATE_CIRCLES_INTERVAL = 1000 * 60 * 60 + 15000; // Every hour and 15 seconds;
@@ -18,6 +18,8 @@ BackgroundController = function() {
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updaterBackend = new HangoutUpdater(this);
+
+  var db = this.initDatabase();
   this.mapBackend = new MapBackend(db, this);
   this.captureBackend = new CaptureBackend(db);
   this.statisticsBackend = new StatisticsBackend(db);
@@ -76,6 +78,7 @@ BackgroundController.prototype.onUpdate = function(previous, current) {
  * Initialize the main Background Controller
  */
 BackgroundController.prototype.init = function() {
+  chrome.extension.onRequest.addListener(this.onMessageListener.bind(this));
   this.plus.init(function(status) {
     window.setInterval(this.queryPublicHangouts.bind(this), this.UPDATE_INTERVAL);
     window.setInterval(this.refreshCircles.bind(this), this.UPDATE_CIRCLES_INTERVAL);
@@ -84,10 +87,6 @@ BackgroundController.prototype.init = function() {
     this.queryPublicHangouts();
     this.refreshCircles();
   }.bind(this));
-
-  chrome.extension.onRequest.addListener(this.onMessageListener.bind(this));
-  chrome.browserAction.setBadgeText({ text: '' });
-  this.drawBadgeIcon(-1);
 };
 
 /**
@@ -117,74 +116,10 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
 };
 
 /**
- * Draws a textual icon on the browser action next to the extension toolbar.
- *
- * @param {number} count The number to draw.
- * @param {boolean} newItem Differentiates between new items available.
+ * @returns a the browser action controller.
  */
-BackgroundController.prototype.drawBadgeIcon = function(count, newItem) {
-  var ctx = document.createElement('canvas').getContext('2d');
-
-  // If count is zero or smaller, show the badge as inactive,
-  // regardless of newItem's value
-  newItem = newItem & (count > 0);
-  
-  if (newItem) {
-    ctx.fillStyle = 'rgba(48, 121, 237, 1)';
-    ctx.strokeStyle = 'rgba(43, 108, 212, 0.5)';
-    
-    // Sadly, the fix below makes the active badge look not like the original
-    // one - therefore we have to have two different fill and stroke calls (with 
-    // different coordinates)
-    ctx.fillRoundRect(0, 0, 19, 19, 2);
-    ctx.strokeRoundRect(0, 0, 19, 19, 2);
-  }
-  else {
-    ctx.fillStyle = 'rgba(237, 237, 237, 1)';
-    ctx.strokeStyle = 'rgba(150, 150, 150, 0.4)';
-
-    // We are offsetting the rectangle by half a unit in order to achieve a 
-    // crisp border on the inactive badge (see characteristics of lineWidth: 
-    // http://goo.gl/DFnaA)
-    ctx.fillRoundRect(0.5, 0.5, 18, 18, 2);
-    ctx.strokeRoundRect(0.5, 0.5, 18, 18, 2);
-  }
-
-  ctx.font = 'bold 11px arial, sans-serif';
-  ctx.fillStyle = newItem ? '#fff' : '#999';
-
-  var browserActionText = count + ' hangouts are going on right now!';
-  if (count > 99){
-    ctx.fillText('99+', 1, 14);
-  }
-  else if (count > 9){
-    ctx.fillText(count + '', 3, 14);
-  }
-  else if (count >= 0) {
-    ctx.fillText(count + '', 6, 14);
-    if ( count == 0 ) {
-      browserActionText = 'There are no hangouts going on!';
-    }
-  }
-  else {
-    ctx.fillText('?', 6, 14);
-    browserActionText = 'Your session to Google+ was not found, please log in or reopen Chrome.';
-  }
-
-  // Draw the circle if it is filtered by circles.
-  if (newItem && settings.only_show_circle_hangouts) {
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(0, 0, 5, 0, Math.PI * 2, true); 
-    ctx.closePath();
-    ctx.stroke();
-    
-    browserActionText += ' - Filtered by Circles';
-  }
-
-  chrome.browserAction.setTitle({title: browserActionText});
-  chrome.browserAction.setIcon({imageData: ctx.getImageData(0,0,19,19)});
+BackgroundController.prototype.getBrowserAction = function() {
+  return this.browserActionController;
 };
 
 /**
