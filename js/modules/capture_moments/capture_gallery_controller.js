@@ -30,7 +30,7 @@ CaptureGalleryController.prototype.bindUIControls = function(parent) {
   $('#gallery').on('click', '.download', this.downloadCapture.bind(this));
   $('#gallery').on('click', '.effects', this.showEffectsWindow.bind(this));
   $('#gallery').on('click', '.preview', this.showPreviewWindow.bind(this));
-  $('.tip').tipTip({defaultPosition: 'left'});
+  $('.tip').tipTip({defaultPosition: 'top'});
 };
 
 CaptureGalleryController.prototype.renderGallery = function() {
@@ -46,6 +46,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
       });
       console.log('Done', (new Date().getTime() - start) / 1000);
       $('#preloader-container').hide();
+      $('#gallery').fadeIn(1000);
       self.bindUIControls();
     }
     else {
@@ -62,7 +63,7 @@ CaptureGalleryController.prototype.renderMoment = function(moment) {
 };
 
 CaptureGalleryController.prototype.deleteCapture = function(e) {
-  var container = $(e.target).parent().parent().parent();
+  var container = $(e.target).parent().parent().parent().parent();
   chrome.extension.sendRequest({
     service: 'Capture',
     method: 'deleteCapture',
@@ -78,7 +79,7 @@ CaptureGalleryController.prototype.deleteCapture = function(e) {
  * Issues an HTML5 Download routine.
  */
 CaptureGalleryController.prototype.downloadCapture = function(e) {
-  var container = $(e.target).parent().parent().parent();
+  var container = $(e.target).parent().parent().parent().parent();
   this.findCapture(container.attr('id'), function(data) {
     this.captureDownloader.prepareDownload(data);
   }.bind(this));
@@ -107,7 +108,7 @@ CaptureGalleryController.prototype.showPreviewWindow = function(e) {
   var container = $(e.target).parent().parent();
   var currentID = container.attr('id');
   var currentIndex = -1;
-  var captureIDs = $('#gallery li').map(function(idx, obj) {
+  var captureIDs = $('#gallery > li').map(function(idx, obj) {
     var id = obj.id;
     if (id === currentID) {
       currentIndex = idx;

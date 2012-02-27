@@ -91,14 +91,13 @@
 </script>
 <script type="text/x-jquery-tmpl" id="moments-item-template">
   <li id="${_id}">
-    <div>
-      <img class="preview tip" src="${thumbnail}" alt="${time}" title="Preview capture!"/>
+    <div class="capture-card">
+      <img class="preview" src="${thumbnail}" alt="${time}"/>
       <span>${time}</span>
-      <span class="controls">
-        <span class="tip delete" title="Delete capture"></span>
-        <span class="tip download" title="Download capture"></span>
-        <span class="tip effects" title="Edit capture"></span>
-      </span>
+      <ul class='ribbon'>
+        <li><span class="delete tip" title="Delete capture">&nbsp;</span></li>
+        <li><span class="download tip" title="Download capture">&nbsp;</span></li>
+      </ul>
     </div>
   </li>
 </script>
