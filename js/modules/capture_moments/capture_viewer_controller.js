@@ -13,7 +13,7 @@ CaptureViewerController = function(controller) {
   this.imageViewer = $('#preview-image');
   this.galleryButton = $('#preview-gallery');
   this.saveButton = $('#preview-save');
-  this.previewLoader = $('#preview-loader');
+  this.previewLoaderText = $('#preloader-text');
   this.currentID = 0;
   this.currentImageData = null;
   this.collection = null;
@@ -25,6 +25,10 @@ CaptureViewerController = function(controller) {
   this.galleryButton.click(this.closeDialog.bind(this));
   this.saveButton.click(this.onSaveImage.bind(this));
   this.imageViewer.click(this.onNextPreview.bind(this));
+  
+  
+  this.previewLoaderText.css('top', $(window).height() / 2);
+  this.previewLoaderText.css('left', $(window).width() / 2);
 };
 
 CaptureViewerController.prototype.show = function(id, collection) {
@@ -68,7 +72,7 @@ CaptureViewerController.prototype.closeDialog = function(e) {
  * Show the image on the previewer..
  */
 CaptureViewerController.prototype.previewImage = function() {
-  this.previewLoader.show();
+  this.controller.toggleProgress();
   this.controller.findCapture(this.collection[this.currentID], function(data) {
     this.currentImageData = data;
     
@@ -85,9 +89,9 @@ CaptureViewerController.prototype.previewImage = function() {
     this.imageViewer.append(image);
 
     // Render the previewer in the middle of the image.
-    this.previewLoader.hide();
-    this.previewLoader.css('top', viewDimensions.height / 2);
-    this.previewLoader.css('left', ($(window).width() - 100) / 2);
+    this.controller.toggleProgress();
+    this.previewLoaderText.css('top', viewDimensions.height / 2);
+    this.previewLoaderText.css('left', ($(window).width() - 100) / 2);
   }.bind(this));
 };
 

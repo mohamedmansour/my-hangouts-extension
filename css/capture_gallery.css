@@ -2,14 +2,7 @@ body {
   background: #fff url(/img/wood-bg.jpg);
   font: normal 13px arial,sans-serif;
   margin: 5px;
-}
-
-h2 {
-  font:bold 3em Arial, sans-serif;
-  color:rgba(0,0,0,0.75);
-  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
-  text-align:center;
-  margin-bottom:0;
+  height: 100%;
 }
 
 h3 {
@@ -171,34 +164,54 @@ pre {
   text-align: center;
 }
 
+#preview-container {
+  display: inline-block;
+}
+
 #preview-content {
   position: relative;
 }
 
-#preview-image {
+#preview-image  {
+  cursor: pointer;
+}
+
+#preview-image img {
   display: block;
   margin: 10px auto;
   background-color: #fff;
-	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
-  cursor: pointer;
+	box-shadow: 0px 0px 15px rgba(51, 51, 51, 0.7);
 }
 
 #preview-controls {
   position: absolute;
   left: 650px;
-  margin-top: -55px;
+  margin-top: -45px;
 }
 
-#preview-loader {
-  display: none;
+#preloader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  cursor: progress;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+}
+
+#preloader-text {
   position: absolute;
-  width: 100px;
+  margin: 0 auto;
+  width: 200px;
+  font-size: 24px;
+  text-align: center;
   background-color: rgba(0, 0, 0, 0.9);
   color: #fff;
-  padding: 20px;
+  padding: 10px;
   border-radius: 10px;
 	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
 }
+
 /* -- download dialog -- */
 
 #download-dialog {

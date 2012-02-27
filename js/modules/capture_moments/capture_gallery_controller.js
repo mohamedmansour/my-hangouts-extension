@@ -8,6 +8,7 @@
  */
 CaptureGalleryController = function() {
   this.momentsTemplate = $('#moments-item-template');
+  this.previewLoader = $('#preloader-container');
   this.effectsController = new CaptureEffectsController(this);
   this.captureDownloader = new CaptureGalleryDownloader(this)
   this.captureViewer = new CaptureViewerController(this);
@@ -44,7 +45,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
         self.renderMoment(moment);
       });
       console.log('Done', (new Date().getTime() - start) / 1000);
-      $('#preloader').hide();
+      $('#preloader-container').hide();
       self.bindUIControls();
     }
     else {
@@ -114,6 +115,10 @@ CaptureGalleryController.prototype.showPreviewWindow = function(e) {
     return id;
   });
   this.captureViewer.show(currentIndex, captureIDs);
+};
+
+CaptureGalleryController.prototype.toggleProgress = function() {
+  this.previewLoader.toggle();
 };
 
 CaptureGalleryController.prototype.showEffectsWindow = function(e) {
