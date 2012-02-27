@@ -109,7 +109,7 @@ PopupController.prototype.processHangouts = function() {
     this.renderHangouts();
     $('a.clickable').click(this.onLinkClicked.bind(this));
   }
-  $(".tip").tipTip();
+  $('.tip').tipTip();
 };
 
 /**
