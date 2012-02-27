@@ -81,7 +81,7 @@ CaptureBackend.prototype.deleteCapture = function(id, callback) {
  * Find the capture by id.
  */
 CaptureBackend.prototype.findCapture = function(id, callback) {
-  this.captureEntity.find(['_id', 'hangout', 'time', 'description', 'type',
+  this.captureEntity.find(['_id', 'hangout', 'time', 'description', 'type', 'thumbnail',
     'active', 'active_width', 'active_height','thumbnail_width', 'thumbnail_height'], {_id: id}, function(obj) {
     var status = obj.status && obj.data.length > 0;
     var result = status ? obj.data[0] : obj.data;

@@ -1,14 +1,38 @@
 body { 
   background: #fff url(/img/wood-bg.jpg);
   font: normal 13px arial,sans-serif;
+  margin: 5px;
+  height: 100%;
+}
+
+h3 {
+  text-align:center;
+  color:rgba(0,0,0,0.75);
+}
+
+p  {
+  font:normal 1.6em Arial, sans-serif;
+  text-align:center;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ccc;
+}
+
+button[disabled] {
+  color: #ccc;
 }
 
 #header { 
   background: rgba(0,0,0,.75); 
   border: solid rgba(0,0,0,.75); 
   border-width: 1px 1px 0; 
-  -webkit-border-radius: 3px; 
-  -webkit-box-shadow: 0 1px 1px rgba(255,255,255,.5);
+  border-radius: 3px; 
+  box-shadow: 0 1px 1px rgba(255,255,255,.5);
   white-space: nowrap;
 }
 #header h1 {
@@ -16,8 +40,10 @@ body {
   font-size: 30px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, .75);
   color: #999;
-  margin: 0px 32px;
-  padding: 10px 48px;
+  padding-left: 40px;
+  margin: 0 32px;
+  height: 60px;
+  line-height: 60px;
   background: url(/img/icon32.png) center left no-repeat;
 }
 
@@ -30,24 +56,28 @@ body {
 }
 
 pre { 
-  background: #f5f5f5; 
-  margin: 0 0 18px; 
-  padding: 13px 18px 14px; 
-  -webkit-border-radius: 3px; 
-  text-shadow: 0 1px 1px #fff; 
-  font-size: 11px; 
-  line-height: 16px; 
+  background: #f5f5f5;
+  margin: 0 0 18px;
+  padding: 13px 18px 14px;
+  border-radius: 3px;
+  text-shadow: 0 1px 1px #fff;
+  font-size: 11px;
+  line-height: 16px;
 }
 
-ul.gallery {
+#gallery {
   -webkit-user-select: none;
-  margin: 0 0 18px -30px;
+  padding: 20px;
+  margin: 0;
+  position: relative;
+  left: 0px;
+  overflow-x: hidden;
 }
-ul.gallery li { 
+#gallery li { 
   display: inline-block;
   position: relative;
 }
-ul.gallery div {
+#gallery div {
   background: #fff; 
   display: inline; 
   float: left; 
@@ -59,92 +89,219 @@ ul.gallery div {
   text-decoration: none; 
   color: #333; 
   font-size: 18px; 
-  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.25); 
+  box-shadow: 0 3px 6px rgba(0,0,0,.25); 
   -webkit-transform: rotate(-2deg); 
   -webkit-transition: -webkit-transform .15s linear; 
 }
-ul.gallery img { 
+#gallery img { 
   display: block; 
   width: 190px; 
   margin-bottom: 12px;
+  cursor: pointer;
 }
-ul.gallery div:after { 
+#gallery div:after { 
   content: attr(title);
 }
 
-ul.gallery li:nth-child(even) div { 
+#gallery li:nth-child(even) div { 
   -webkit-transform: rotate(2deg);
 }
-ul.gallery li:nth-child(3n) div { 
+#gallery li:nth-child(3n) div { 
   -webkit-transform: none; 
   position: relative; 
   top: -5px;
 }
-ul.gallery li:nth-child(5n) div { 
+#gallery li:nth-child(5n) div { 
   -webkit-transform: rotate(5deg);
   position: relative; 
   right: 5px;
 }
-ul.gallery li:nth-child(8n) div { 
+#gallery li:nth-child(8n) div { 
   position: relative; 
   right: 5px; top: 8px;
 }
-ul.gallery li:nth-child(11n) div { 
+#gallery li:nth-child(11n) div { 
   position: relative; 
   left: -5px; top: 3px;
 }
 
-ul.gallery li.messy div { 
+#gallery li.messy div { 
   margin-top: -375px; 
   margin-left: 160px; 
   -webkit-transform: rotate(-5deg);
 }
 
-ul.gallery li div:hover { 
+#gallery li div:hover { 
   -webkit-transform: scale(1.25); 
-  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.5); 
-  position: relative; z-index: 5; 
+  box-shadow: 0 3px 6px rgba(0,0,0,.5); 
+  position: relative;
+  z-index: 5; 
 }
 
-ul.gallery  li div .controls {
+#gallery  li div .controls {
   visibility: hidden;
   font-size: 10px;
   display: block;
   cursor: pointer;
 }
 
-
-ul.gallery  li div:hover .controls {
+#gallery  li div:hover .controls {
   visibility: visible;
 }
 
-.no-captures { 
-  position: relative;
-  top:0;
-  width:800px;
+/* no captures dialog */
+#no-captures {
   margin:0 auto;
+  width: 800px;
   display: none;
 }
-.no-captures h1 {
-  font:bold 3em Arial, sans-serif;
-  color:rgba(0,0,0,0.75);
-  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
-  text-align:center;
-  margin-bottom:0;
+
+/* preview dialog */
+#preview-dialog  {
+  display: none;
+  position: relative;
+  left: 0;
+  text-align: center;
 }
-.no-captures p  {
-  font:normal 1.6em Arial, sans-serif;
-  text-align:center;
+
+#preview-container {
+  display: inline-block;
+}
+
+#preview-content {
+  position: relative;
+}
+
+#preview-image  {
+  cursor: pointer;
+}
+
+#preview-image img {
+  display: block;
+  margin: 10px auto;
+  background-color: #fff;
+	box-shadow: 0px 0px 15px rgba(51, 51, 51, 0.7);
+}
+
+#preview-controls {
+  position: absolute;
+  left: 650px;
+  margin-top: -45px;
+}
+
+#preloader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  cursor: progress;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+}
+
+#preloader-text {
+  position: absolute;
+  margin: 0 auto;
+  width: 200px;
+  font-size: 24px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
+}
+
+/* -- download dialog -- */
+
+#download-dialog {
+  display: none;
+  opacity: 0;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 100; 
+  -webkit-transition: opacity 0.5s linear;
+}
+
+#download-dialog  h2 {
+  font-size: 30px;
+  margin-top: 30px;
+}
+
+#download-container {
+	color: white;
+	text-align: center;
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	width: 100%;
+	height: 1px;
+	overflow: visible;
+	visibility: visible;
+	display: block
+}
+
+#download-content {
+	box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+	font-family: Verdana, Geneva, Arial, sans-serif;
+	background-color: white;
+	margin-left: -250px;
+	position: absolute;
+	top: -90px;
+	left: 50%;
+	width: 500px;
+	height: 180px;
+  opacity: 0.9;
+  padding: 10px;
+}
+
+#download-thumbnail {
+  float: left;
+}
+
+#download-thumbnail img {
+  display: block;
+  margin: 0 auto;
+  width: 250px;
+  max-height: 180px;
+}
+
+#download-container a {
+  display: inline-block;
+  background-color: green;
+  width: 150px;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+	box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.7);
+}
+
+#download-container a:hover {
+  background-color: #333;
 }
 
 .select {
-	-webkit-transition: -webkit-transform 0.50s ease-in; -webkit-transform:scale(6); position:relative; z-index:20;
+	-webkit-transition: -webkit-transform 0.50s ease-in;
+  -webkit-transform:scale(6);
+  position:relative;
+  z-index:20;
 }
 /* -- edit dialog -- */
 #edit {
 	height:100%;
 	width:100%;
-	position:absolute; top:0; left:0; z-index:10; 
+	position:absolute;
+  top:0;
+  left:0;
+  z-index:10; 
 	display:none; 
 	overflow:hidden;
 }
@@ -170,9 +327,18 @@ ul.gallery  li div:hover .controls {
 	color:rgba(0,0,0,0.8);
 	text-shadow:1px 1px 1px rgba(0,0,0,0.5);
 }
-#edit-body { position:absolute; top:65px; width:100%; }
+#edit-body { 
+  position:absolute;
+  top:65px;
+  width:100%;
+}
 
-#canvas-container { position:absolute; top:0; right:0; background:#00CCCC; }
+#canvas-container { 
+  position:absolute;
+  top:0;
+  right:0;
+  background:#00CCCC;
+}
 
 #fx-container {
 	width:240px;
@@ -208,7 +374,7 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 	display: block;
 	margin:5px 0;
 	padding: 10px;
-	-webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
 	background: #EBEBEB -webkit-linear-gradient(#FEFEFE, #F8F8F8 40%, #E9E9E9);
 	cursor:pointer;
 }
@@ -249,7 +415,6 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 	position:absolute;
 }
 
-
 ::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,0.10),inset 0 -1px 0 rgba(0,0,0,0.07);
@@ -260,6 +425,8 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 }
 
 ::-webkit-scrollbar {
+  background-color: #eee;
+  
   cursor: pointer;
   width: 10px;
   height: 16px;
