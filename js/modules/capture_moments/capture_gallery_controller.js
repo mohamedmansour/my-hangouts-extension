@@ -123,6 +123,6 @@ CaptureGalleryController.prototype.toggleProgress = function() {
 };
 
 CaptureGalleryController.prototype.showEffectsWindow = function(e) {
-  var container = $(e.target).parent().parent().parent();
+  var container = $(e.target).parent().parent().parent().parent();
   this.effectsController.open(container.attr('id'));
 };
