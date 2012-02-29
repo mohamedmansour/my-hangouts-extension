@@ -55,6 +55,8 @@ MapBackend = function(db, controller) {
   this.locationEntity = new LocationEntity(db);
   this.blacklist = {};
 
+  this.max_request_denied = 3;
+
   this.mapsAPI = new MapAPI(this.mapsLoaded.bind(this));
   this.mapsAPI.load();
 };
@@ -86,7 +88,6 @@ MapBackend.prototype.getLocationFromCache = function(location, callback) {
   );
 };
 
-
 /**
  * Starts timers which will do some stuff periodically.
  */
@@ -100,6 +101,24 @@ MapBackend.prototype.startUpdates = function() {
   }, 60000);
 };
 
+/**
+ * Stop the timers so no updates will happen.
+ */
+MapBackend.prototype.stopUpdates = function() {
+  clearInterval(this.peopleInterval);
+  clearInterval(this.locationInterval);
+};
+
+/**
+ * Stop the updates to reload the API. If the reload was successfull
+ * then we need to restart the updates.
+ */
+MapBackend.prototype.reloadAPI = function() {
+  this.stopUpdates();
+  this.mapsAPI.unload();
+  this.mapsAPI.load();
+  this.startUpdates();
+};
 
 /**
  * Add address strings for new people into the person cache.
@@ -195,8 +214,8 @@ MapBackend.prototype.cacheMapLocation = function(address) {
   var coder = new google.maps.Geocoder();
   var normalized = this.normalize(address);
 
-  // Skip if we already blacklisted.
-  if (this.blacklist[normalized]) {
+  // Skip if we already blacklisted or denied access.
+  if (this.max_request_denied == 0 || this.blacklist[normalized]) {
     return;
   }
 
@@ -218,6 +237,14 @@ MapBackend.prototype.cacheMapLocation = function(address) {
     else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
       // We don't want to requery so blacklist address.
       self.blacklist[normalized] = true;
+    }
+    else if (status == google.maps.GeocoderStatus.REQUEST_DENIED) {
+      if (--this.max_request_denied == 0) {
+        self.stopUpdates();
+      }
+      else {
+        self.reloadAPI();
+      }
     }
     else {
       console.error('location: ' + normalized + ' (' + address + ')', status);
