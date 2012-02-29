@@ -53,10 +53,10 @@ MyHangoutInjection.prototype.onPlusClicked = function(e) {
         hangout: document.location.href,
         time: new Date(),
         description: 'nil',
-        active: activeVideo.toDataURL(),
+        active: activeVideo.toDataURL('image/webp'),
         active_height: activeVideo.height,
         active_width: activeVideo.width,
-        thumbnail: thumbnailVideo.toDataURL(),
+        thumbnail: thumbnailVideo.toDataURL('image/webp'),
         thumbnail_height: thumbnailVideo.height,
         thumbnail_width: thumbnailVideo.width,
         type: self.isHangoutExtra ? 1 : 0
