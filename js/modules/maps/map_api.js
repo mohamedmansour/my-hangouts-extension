@@ -1,5 +1,5 @@
 var isPopup = false;
-var DISABLE_MAPS = true;
+var DISABLE_MAPS = false;
 
 MapAPI = function(callback) {
   window.addEventListener('mapsAPILoadedEvent', callback);
@@ -57,7 +57,7 @@ window.mapsLoadedCallback = function() {
   var mapsAPILoadedEvent = document.createEvent('Event');
   mapsAPILoadedEvent.initEvent('mapsAPILoadedEvent', true, true);
   if (isPopup) {
-    loadScript('popup', '/js/libs/map_features.js', function() {
+    loadScript('popup', '/js/modules/maps/map_features.js', function() {
       loadScript('popup', '/js/libs/simplemarker.min.js', function() {
         loadScript('popup', '/js/libs/daynightoverlay.min.js', function() {
           window.dispatchEvent(mapsAPILoadedEvent);
