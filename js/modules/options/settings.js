@@ -85,6 +85,14 @@ settings = {
     settings.notify('default_popup_tab', val);
     localStorage['default_popup_tab'] = val;
   },
+  get download_mimetype() {
+    var key = localStorage['download_mimetype'];
+    return (typeof key == 'undefined') ? 'jpeg' : key;
+  },
+  set download_mimetype(val) {
+    settings.notify('download_mimetype', val);
+    localStorage['download_mimetype'] = val;
+  },
 };
 
 // Settings event listeners.

@@ -6,8 +6,8 @@
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  * @author Rayan Bouajram 2011 (http://rayanbouajram.com)
  */
-CaptureEffectsController = function(galleryController) {
-  this.galleryController = galleryController;
+CaptureEffectsController = function(controller) {
+  this.controller = controller;
   this.currentlyRenderedEffectIndex = 0;
   this.perspectiveNubs = [];
   this.filters = {};
@@ -88,7 +88,7 @@ CaptureEffectsController.prototype.dispose = function() {
 CaptureEffectsController.prototype.onSaveClicked = function() {
   var self = this;
   var originalData = {};
-  originalData.active = this.glfxCanvas.toDataURL('image/webp');
+  originalData.active = this.glfxCanvas.toDataURL(this.controller.getMimeType());
   originalData.active_width = this.glfxCanvas.width;
   originalData.active_height = this.glfxCanvas.height;
   originalData.time = new Date();
@@ -97,13 +97,13 @@ CaptureEffectsController.prototype.onSaveClicked = function() {
   // glfx.js doesn't seem to work nicely with drawImage so I had to write to an image
   // and then use that image with drawImage
   var tempImage = new Image()
-  tempImage.src = this.glfxCanvas.toDataURL('image/webp');
+  tempImage.src = this.glfxCanvas.toDataURL(this.controller.getMimeType());
   tempImage.onload = function () {
     var tempCanvas = document.createElement('canvas');
     var ctx = tempCanvas.getContext('2d');
 		//thumnail dimensions 250x150   
     ctx.drawImage(this, 0, 0, 250, 150);
-    self.processImage(originalData, ctx.canvas.toDataURL('image/webp'));
+    self.processImage(originalData, ctx.canvas.toDataURL(this.controller.getMimeType()));
   };
 	this.filterCount = 0;
 	$('.fx-panel').remove();
@@ -126,7 +126,7 @@ CaptureEffectsController.prototype.processImage = function(originalData, thumbna
     
     // Append that moment to the gallery.
     originalData._id = res.id;
-    self.galleryController.renderMoment(originalData);
+    self.controller.renderMoment(originalData);
   });
 };
 
@@ -388,7 +388,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
   var ctx = textCanvas.getContext("2d");
   
   appliedEffectsImage = new Image();
-  appliedEffectsImage.src = effectCanvas.toDataURL('image/webp');
+  appliedEffectsImage.src = effectCanvas.toDataURL(this.controller.getMimeType());
   appliedEffectsImage.onload = function () {
     ctx.drawImage(this, 0, 0);
     
@@ -403,7 +403,7 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
     
   
     var compositeImage = new Image();
-    compositeImage.src = textCanvas.toDataURL('image/webp');
+    compositeImage.src = textCanvas.toDataURL(this.controller.getMimeType());
     compositeImage.onload = function () {
       console.log (effectCanvas);
       tex = effectCanvas.texture(this);

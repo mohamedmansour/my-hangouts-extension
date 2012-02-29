@@ -12,6 +12,8 @@ CaptureGalleryController = function() {
   this.effectsController = new CaptureEffectsController(this);
   this.captureDownloader = new CaptureGalleryDownloader(this)
   this.captureViewer = new CaptureViewerController(this);
+  this.bkg = chrome.extension.getBackgroundPage();
+  this.mimeType = this.bkg.settings.download_mimetype;
 };
 
 /**
@@ -20,6 +22,13 @@ CaptureGalleryController = function() {
 CaptureGalleryController.prototype.init = function() {
   this.renderGallery();
   this.effectsController.init();
+};
+
+/**
+ * Get the MimeType.
+ */
+CaptureGalleryController.prototype.getMimeType = function(removePath) {
+  return removePath ? this.mimeType : 'image/' + this.mimeType;
 };
 
 /**

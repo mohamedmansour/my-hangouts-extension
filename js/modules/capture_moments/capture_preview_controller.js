@@ -2,13 +2,14 @@
  * Capture Moment controller to display the preview
  * for the hangout.
  *
- * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
+ * @author Mohamed Mansour 2012 (http://mohamedmansour.com)
  * @constructor
  */
 CapturePreviewController = function() {
   this.originalData = {};
   this.previewDimension = { width: 900, height: 600 };
   this.thumbnailDimension = { width: 250, height: 150 };
+  this.mimeType = 'image/jpeg'; // tmp till we get the settings in the init routine.
 };
 
 /**
@@ -16,7 +17,13 @@ CapturePreviewController = function() {
  */
 CapturePreviewController.prototype.init = function() {
   this.bindUIControls();
-  this.renderPreview();
+  chrome.extension.sendRequest({
+    service: 'GetSettings',
+    data: ['download_mimetype']
+  }, function(setting_results) {
+    this.mimeType = 'image/' + setting_results[0];
+    this.renderPreview();
+  }.bind(this));
 };
 
 /**
@@ -78,7 +85,7 @@ CapturePreviewController.prototype.resizeImageFromCanvasToContext = function(fro
   toContext.canvas.height = finalDestination.height;
   toContext.drawImage(fromCanvas, 0, 0, fromCanvas.width, fromCanvas.height, 0, 0, finalDestination.width, finalDestination.height);
   if (callback) {
-    callback(toContext.canvas.toDataURL('image/webp'), finalDestination.width, finalDestination.height);
+    callback(toContext.canvas.toDataURL(this.mimeType), finalDestination.width, finalDestination.height);
   }
 };
 
@@ -106,7 +113,7 @@ CapturePreviewController.prototype.renderPreview = function() {
     var onImageLoaded = function() {
       if (++i == 2) {
         this.originalData = res;
-        this.originalData.active = tempCanvas.toDataURL('image/webp');
+        this.originalData.active = tempCanvas.toDataURL(this.mimeType);
         this.originalData.active_width = tempCanvas.width;
         this.originalData.active_height = tempCanvas.height;
         this.resizeImageFromCanvasToContext(tempCanvas, mainContext,
@@ -210,9 +217,7 @@ CapturePreviewController.prototype.onSaveClicked = function() {
       arguments: [this.originalData]
     }, function(res) {
       $('#crx_myhangouts_controls').hide();
-      $('#crx_myhangouts_status').fadeIn('slow', function() {
-        // Animation complete
-      });
+      $('#crx_myhangouts_status').fadeIn('slow');
     }.bind(this));
   }.bind(this));
 };

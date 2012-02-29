@@ -12,7 +12,6 @@ CaptureGalleryDownloader = function(controller) {
   this.thumbnailImageContainer = $('#download-thumbnail');
   this.downloadContent = $('#download-content');
   this.downloadClose = $('#download-close');
-  this.MIME_TYPE = 'image/webp';
   this.downloadClose.click(this.closeDownloadDialog.bind(this));
   this.downloadDialog.click(this.onDialogClick.bind(this));
   this.dialogKeyPressedCallback = this.onDialogKeyPressed.bind(this);
@@ -38,10 +37,10 @@ CaptureGalleryDownloader.prototype.prepareDownload = function(data) {
   }
 
   var a = document.createElement('a');
-  a.download = 'MyHangouts-MomentCapture-' + data.time + '.webp';
-  a.href = this.URL.createObjectURL(this.dataURIToBlob(data.active, this.MIME_TYPE));
+  a.download = 'MyHangouts-MomentCapture-' + data.time + '.' + this.controller.getMimeType(true);
+  a.href = this.URL.createObjectURL(this.dataURIToBlob(data.active, this.controller.getMimeType()));
   a.textContent = 'Click here to download!';
-  a.dataset.downloadurl = [this.MIME_TYPE, a.download, a.href].join(':');
+  a.dataset.downloadurl = [this.controller.getMimeType(), a.download, a.href].join(':');
   this.downloadContent.append(a);
 
   a.onclick = this.onDownloadClicked.bind(this);

@@ -103,8 +103,13 @@ BackgroundController.prototype.onMessageListener = function(request, sender, sen
     case 'RemoveOverlay':
       chrome.tabs.sendRequest(sender.tab.id, {method: 'RemoveOverlayUI'});
       break;
-    case 'GetSetting':
-      sendResponse(settings[request.data]);
+    case 'GetSettings':
+      var requestedSettings = request.data;
+      var answeredSettings = [];
+      requestedSettings.forEach(function(item, idx) {
+        answeredSettings[idx] = settings[item];
+      });
+      sendResponse(answeredSettings);
       break;
     case 'OpenURL':
       chrome.tabs.create({url: chrome.extension.getURL(request.data)});

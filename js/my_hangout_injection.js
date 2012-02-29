@@ -42,9 +42,12 @@ MyHangoutInjection.prototype.onPlusClicked = function(e) {
   // Get the setting from the background page so we can decide if the user wants to show the dialog or not.
   var self = this;
   chrome.extension.sendRequest({
-    service: 'GetSetting',
-    data: 'moment_skip_dialog'
-  }, function(moment_skip_dialog) {
+    service: 'GetSettings',
+    data: ['moment_skip_dialog', 'download_mimetype']
+  }, function(setting_results) {
+    var moment_skip_dialog = setting_results[0];
+    var download_mimetype = setting_results[1];
+
     // Store the image in temporary cache, so the iframe could recieve it.
     chrome.extension.sendRequest({
       service: 'Capture', 
@@ -53,10 +56,10 @@ MyHangoutInjection.prototype.onPlusClicked = function(e) {
         hangout: document.location.href,
         time: new Date(),
         description: 'nil',
-        active: activeVideo.toDataURL('image/webp'),
+        active: activeVideo.toDataURL('image/' + download_mimetype),
         active_height: activeVideo.height,
         active_width: activeVideo.width,
-        thumbnail: thumbnailVideo.toDataURL('image/webp'),
+        thumbnail: thumbnailVideo.toDataURL('image/' +  download_mimetype),
         thumbnail_height: thumbnailVideo.height,
         thumbnail_width: thumbnailVideo.width,
         type: self.isHangoutExtra ? 1 : 0
