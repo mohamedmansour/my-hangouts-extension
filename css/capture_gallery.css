@@ -1,3 +1,4 @@
+
 body { 
   background: #fff url(/img/wood-bg.jpg);
   font: normal 13px arial,sans-serif;
@@ -72,16 +73,15 @@ pre {
 #gallery {
   padding: 20px;
   margin: 0;
-  position: relative;
-  left: 0px;
   overflow-x: hidden;
   display: none;
+  position: relative;
 }
 #gallery li { 
   display: inline-block;
-  position: relative;
 }
 #gallery .capture-card {
+  position: relative;
   background: #fff; 
   display: inline; 
   float: left; 
@@ -110,34 +110,25 @@ pre {
 #gallery li:nth-child(even) .capture-card { 
   -webkit-transform: rotate(2deg);
 }
+
 #gallery li:nth-child(3n) .capture-card { 
   -webkit-transform: none; 
-  position: relative; 
-  top: -5px;
-}
-#gallery li:nth-child(5n) .capture-card { 
-  -webkit-transform: rotate(5deg);
-  position: relative; 
-  right: 5px;
-}
-#gallery li:nth-child(8n) .capture-card { 
-  position: relative; 
-  right: 5px; top: 8px;
-}
-#gallery li:nth-child(11n) .capture-card { 
-  position: relative; 
-  left: -5px; top: 3px;
 }
 
-#gallery li.messy .capture-card { 
-  margin-top: -375px; 
-  margin-left: 160px; 
+#gallery li:nth-child(5n) .capture-card { 
+  -webkit-transform: rotate(5deg);
+}
+
+#gallery li:nth-child(8n) .capture-card { 
   -webkit-transform: rotate(-5deg);
+}
+
+#gallery li:nth-child(11n) .capture-card { 
+  -webkit-transform: rotate(2deg);
 }
 
 #gallery li .capture-card:hover { 
   box-shadow: 0 3px 16px rgba(0,0,0,.7); 
-  position: relative;
   z-index: 5; 
 }
 
@@ -287,11 +278,22 @@ pre {
 	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
 }
 
+#preview-prev, #preview-next, #preview-save {
+  background-repeat: no-repeat;
+  padding: 5px 25px 5px 5px;
+  background-position:  right center;
+}
+
 #preview-prev {
+  background-image: url(/img/previous.png);
+  padding: 5px 5px 5px 25px;
+  background-position:  left center;
 }
 #preview-next {
+  background-image: url(/img/next.png);
 }
 #preview-save {
+  background-image: url(/img/download.png);
 }
 
 /* -- download dialog -- */
