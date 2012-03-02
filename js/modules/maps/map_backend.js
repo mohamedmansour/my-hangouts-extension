@@ -43,7 +43,7 @@ LocationEntity.prototype.tableDefinition = function() {
  *    controller.
  */
 MapBackend = function(db, controller) {
-  this.LOGGER_ENABLED = true;
+  this.LOGGER_ENABLED = false;
 
   this.controller = controller;
 
