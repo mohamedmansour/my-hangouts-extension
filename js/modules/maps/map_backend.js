@@ -188,18 +188,24 @@ MapBackend.prototype.decideWhetherToCacheLocation = function(address) {
 MapBackend.prototype.cachePeople = function(gpIds) {
   var self = this;
   // TODO: Make a preloader here since it takes time.
-  this.controller.plus.lookupUsers(function(users) {
-    var i = 0;
-    for (i = 0; i < gpIds.length; i++) {
-      var id = gpIds[i];
-      var user = users[id];
-      self.cache.people[id] = {
-        address: user.data.location ? user.data.location : '?',
-        data: user.data
-      };
-      if (self.LOGGER_ENABLED) {
-        console.log('cached: ' + id + ' at ' + self.cache.people[id].address);
+  this.controller.plus.lookupUsers(function(resp) {
+    if (resp.status) {
+      var users = resp.data;
+      var i = 0;
+      for (i = 0; i < gpIds.length; i++) {
+        var id = gpIds[i];
+        var user = users[id];
+        self.cache.people[id] = {
+          address: user.data.location ? user.data.location : '?',
+          data: user.data
+        };
+        if (self.LOGGER_ENABLED) {
+          console.log('cached: ' + id + ' at ' + self.cache.people[id].address);
+        }
       }
+    }
+    else {
+      console.error('Cache People Error: ' + resp.data);
     }
   }, gpIds);
 };
