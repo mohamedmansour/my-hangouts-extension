@@ -22,6 +22,7 @@ CaptureGalleryController = function() {
 CaptureGalleryController.prototype.init = function() {
   this.renderGallery();
   this.effectsController.init();
+  $(window).resize(this.onWindowResize.bind(this));
 };
 
 /**
@@ -127,11 +128,24 @@ CaptureGalleryController.prototype.showPreviewWindow = function(e) {
   this.captureViewer.show(currentIndex, captureIDs);
 };
 
+/**
+ * Toggle the visibility status of the overall progress view.
+ */
 CaptureGalleryController.prototype.toggleProgress = function() {
   this.previewLoader.toggle();
 };
 
+/**
+ * Activate the effects window.
+ */
 CaptureGalleryController.prototype.showEffectsWindow = function(e) {
   var container = $(e.target).parent().parent().parent().parent();
   this.effectsController.open(container.attr('id'));
+};
+
+/**
+ * Listens on browser resize so we could relayout certain components.
+ */
+CaptureGalleryController.prototype.onWindowResize = function(e) {
+  this.effectsController.onWindowResize(e);
 };

@@ -140,7 +140,7 @@ CaptureEffectsController.prototype.getEffectCanvas = function() {
   else return this.glfxCanvas;
 };
 
-CaptureEffectsController.prototype.onWindowResize = function() {
+CaptureEffectsController.prototype.onWindowResize = function(e) {
   //set boundaries
   var windowHeight = $(window).height() - $('#edit-head').height();
   var windowWidth = $(window).width() - $('#fx-container').width();
@@ -180,7 +180,6 @@ CaptureEffectsController.prototype.bindUI = function() {
   $('.save').click(this.onSaveClicked.bind(this));
   $('.close').click(this.onEffectClose.bind(this));
   $('.add-effect-btn').click(this.onAddEffectClicked.bind(this));
-  $(window).resize(this.onWindowResize.bind(this));
 };
 
 
