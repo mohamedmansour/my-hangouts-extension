@@ -187,6 +187,16 @@ body, html {
 .hangout-participants li {
   display: inline-block;
 }
+.hangout_owner img {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+}
+.hangout_participant img {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+}
 .hangout-button {
   float: left;
   margin-top: 10px;
