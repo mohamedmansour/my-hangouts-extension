@@ -53,12 +53,11 @@ CaptureViewerController.prototype.show = function(id, collection) {
  */
 CaptureViewerController.prototype.openDialog = function(e) {
   window.addEventListener('keyup', this.keyPressedCallback, false);
-  this.gallery.animate({
-    left: -this.gallery.width()
-  }, 500, function() {  
-    $(this).hide();
+  var self = this;
+  this.gallery.animate({ left: -this.gallery.width() }, 500, function() {  
+    self.gallery.hide()
+    self.previewDialog.fadeIn(250);
   });
-  this.previewDialog.show();
 };
 
 /**
@@ -66,10 +65,10 @@ CaptureViewerController.prototype.openDialog = function(e) {
  */
 CaptureViewerController.prototype.closeDialog = function(e) {
   window.removeEventListener('keyup', this.keyPressedCallback, false);
-  this.previewDialog.hide();
-  this.gallery.show().animate({
-    left: 0
-  }, 500);
+  var self = this;
+  this.previewDialog.fadeOut(250, function() {
+    self.gallery.show().animate({left: 0}, 500);
+  });
 };
 
 /**
@@ -102,13 +101,13 @@ CaptureViewerController.prototype.previewImage = function() {
     image.height = this.currentViewDimensions.height;
     this.imageViewer.append(image);
 
-    // Stop the progress.
-    this.controller.toggleProgress();
-
     // Render the new preview dialog and loader in the middle of the screen.
     var dialogMidHeight = (height - this.currentViewDimensions.height) / 2;
     this.previewDialog.css('top', dialogMidHeight);
     this.previewControls.css('top', -dialogMidHeight);
+
+    // Stop the progress.
+    this.controller.toggleProgress();
   }.bind(this));
 };
 

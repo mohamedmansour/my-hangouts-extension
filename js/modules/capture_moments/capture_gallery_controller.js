@@ -55,14 +55,13 @@ CaptureGalleryController.prototype.renderGallery = function() {
         self.renderMoment(moment);
       });
       console.log('Done', (new Date().getTime() - start) / 1000);
-      $('#preloader-container').hide();
       $('#gallery').fadeIn(1000);
       self.bindUIControls();
     }
     else {
       $('#no-captures').show();
-      self.toggleProgress();
     }
+    self.toggleProgress();
   });
 };
 
