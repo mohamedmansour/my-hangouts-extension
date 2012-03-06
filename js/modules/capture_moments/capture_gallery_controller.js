@@ -61,6 +61,7 @@ CaptureGalleryController.prototype.renderGallery = function() {
     }
     else {
       $('#no-captures').show();
+      self.toggleProgress();
     }
   });
 };
