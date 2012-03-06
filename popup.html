@@ -145,7 +145,7 @@
         </li>
         {{each(i, participant) hangout.data.participants}}
           {{if participant.status}}
-          <li class="hangout_participant {{if participant.circles}} in_my_circle {{if participant.blocked}}blocked_circle{{/if}}"{{/if}}>
+          <li class="hangout_participant {{if participant.circles}} in_my_circle {{if participant.blocked}}blocked_circle{{/if}}{{/if}}">
             <a href="https://plus.google.com/${participant.id}/about" class="clickable">
               <img src="${participant.image}?sz=32" title='<h3>${participant.name}</h3>{{if participant.circles}}<span>Circles:</span> {{if participant.blocked}}You blocked this person!{{else}}${participant.circles}{{/if}}{{/if}}' class="tip" />
             </a>
