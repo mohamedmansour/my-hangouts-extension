@@ -138,7 +138,7 @@
       <div class="hangout-participants">
         <div class="hangout-name">${hangout.data.name}</div>
         <ul>
-        <li class="hangout_owner {{if hangout.owner.circles}} in_my_circle {{if hangout.owner.blocked}}blocked_circle{{/if}}"{{/if}}>
+        <li class="hangout_owner {{if hangout.owner.circles}} in_my_circle {{if hangout.owner.blocked}}blocked_circle{{/if}}{{/if}}">
           <a href="https://plus.google.com/${hangout.owner.id}/about" class="clickable">
             <img src="${hangout.owner.image}?sz=48" title='<h3>${hangout.owner.name}</h3>{{if hangout.owner.circles}}<span>Circles:</span> {{if hangout.owner.blocked}}You blocked this person!{{else}}${hangout.owner.circles}{{/if}}{{/if}}' class="tip" />
           </a>{{if hangout.owner.circles}}<span>{{if hangout.owner.blocked}}B{{else}}${hangout.owner.circles.length}{{/if}}</span>{{/if}}
