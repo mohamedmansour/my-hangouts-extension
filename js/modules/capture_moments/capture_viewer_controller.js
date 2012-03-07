@@ -18,7 +18,7 @@ CaptureViewerController = function(controller) {
   this.currentID = 0;
   this.currentImageData = null;
   this.collection = null;
-
+  this.currentScrollPosition = 0;
   this.keyPressedCallback = this.onKeyPressed.bind(this);
   
   this.previousButton.click(this.onPreviousPreview.bind(this));
@@ -36,6 +36,7 @@ CaptureViewerController.PRELOADER_HEIGHT = 75;
 CaptureViewerController.PRELOADER_WIDTH = 200;
 
 CaptureViewerController.prototype.show = function(id, collection) {
+  this.currentScrollPosition = window.scrollY;
   this.openDialog();
   this.currentID = id;
   this.collection = collection;
@@ -66,6 +67,7 @@ CaptureViewerController.prototype.openDialog = function(e) {
 CaptureViewerController.prototype.closeDialog = function(e) {
   window.removeEventListener('keyup', this.keyPressedCallback, false);
   var self = this;
+  window.scrollTo(this.currentScrollPosition);
   this.previewDialog.fadeOut(250, function() {
     self.gallery.show().animate({left: 0}, 500);
   });
