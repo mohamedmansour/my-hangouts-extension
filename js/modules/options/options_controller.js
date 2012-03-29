@@ -4,9 +4,9 @@
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  */
 OptionsController = function(popupController) {
-  this.popup = popupController;
-  this.settings = this.popup.bkg.settings;
-  this.bkg = this.popup.bkg.controller;
+  var bkg = chrome.extension.getBackgroundPage();
+  this.settings = bkg.settings;
+  this.controller = bkg.controller;
 };
 
 OptionsController.prototype.init = function() {
@@ -18,14 +18,13 @@ OptionsController.prototype.bindUI = function() {
   
   // Setup circle notification preference.
   var circleChooserDOM = $('#option-circles');
-  this.bkg.getCircles().forEach(function(circle, index) {
+  this.controller.getCircles().forEach(function(circle, index) {
     circleChooserDOM.append($('<option value="' + circle.id + '">' + circle.name + '</option>'));
   });
   circleChooserDOM.val(this.settings.circles_to_notify);
   circleChooserDOM.attr('disabled', !self.settings.notify_circles);
   circleChooserDOM.chosen().change(function(e) {
     self.settings.circles_to_notify = $(e.target).val() || [];
-    self.popup.resetNotifications();
   });
   
   // Notify circles preference.
@@ -64,7 +63,6 @@ OptionsController.prototype.bindUI = function() {
   onlyShowCircleHangouts.prop('checked', this.settings.only_show_circle_hangouts);
   onlyShowCircleHangouts.change(function(e) {
     self.settings.only_show_circle_hangouts = $(e.target).is(':checked');
-    self.popup.updateHangouts();
   });
   
   //

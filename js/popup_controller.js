@@ -7,7 +7,6 @@
 PopupController = function() {
   this.bkg = chrome.extension.getBackgroundPage();
   this.mapBackend = this.bkg.controller.getMapBackend();
-  this.options = new OptionsController(this);
   this.map = new MapController(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
@@ -20,7 +19,6 @@ PopupController = function() {
 PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
-  this.options.init();
 };
 
 PopupController.prototype.bindUI = function() {
@@ -53,14 +51,14 @@ PopupController.prototype.onMenuItemClick = function(e) {
       this.togglePage('maps');
       this.map.onDisplay();
       break;
-    case 'menu-options':
-      this.togglePage('options');
-      break;
     case 'menu-hangouts':
       this.togglePage('hangouts');
       break;
     case 'menu-notifications':
       this.togglePage('notifications');
+      break;
+    case 'menu-options':
+      chrome.tabs.create({url: chrome.extension.getURL('options.html')});
       break;
   }
 };
@@ -218,15 +216,10 @@ PopupController.prototype.relayout = function() {
     $('.popup-page').height(height);
     $('#popup-container').height(height);
   }
-  else if (this.currentPage == 'options') {
-    var height = 300;
-    $('.popup-page').height(height);
-    $('#popup-container').height(height);
-  }
 };
 
 /**
- * Toggle the page from options and hangouts.
+ * Toggle the page from hangouts.
  */
 PopupController.prototype.togglePage = function(newpage) {
   $('#' + this.currentPage + '-container').fadeOut().slideUp();

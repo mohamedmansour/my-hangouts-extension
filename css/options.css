@@ -1,0 +1,185 @@
+/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file holds CSS that should be shared, in theory, by all user-visible
+ * chrome:// pages. This contrasts chrome_shared.css, which it is meant to
+ * replace, but has CSS specific to options and options-like pages. */
+
+/* Prevent CSS from overriding the hidden property. */
+[hidden] {
+  display: none !important;
+}
+
+html.loading * {
+  -webkit-transition-delay: 0 !important;
+  -webkit-transition-duration: 0 !important;
+}
+
+body {
+  cursor: default;
+  margin: 0;
+}
+
+p {
+  line-height: 1.8em;
+}
+
+h1,
+h2,
+h3 {
+  -webkit-user-select: none;
+  font-weight: normal;
+  /* Makes the vertical size of the text the same for all fonts. */
+  line-height: 1;
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
+h2 {
+  font-size: 1.3em;
+  margin-bottom: 0.4em;
+}
+
+h3 {
+  color: black;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: rgb(17, 85, 204);
+  text-decoration: underline;
+}
+
+a:active {
+  color: rgb(5, 37, 119);
+}
+
+/* Elements that need to be LTR even in an RTL context, but should align
+ * right. (Namely, URLs, search engine names, etc.)
+ */
+html[dir='rtl'] .weakrtl {
+  direction: ltr;
+  text-align: right;
+}
+
+/* Input fields in search engine table need to be weak-rtl. Since those input
+ * fields are generated for all cr.ListItem elements (and we only want weakrtl
+ * on some), the class needs to be on the enclosing div.
+ */
+html[dir='rtl'] div.weakrtl input {
+  direction: ltr;
+  text-align: right;
+}
+
+html[dir='rtl'] .favicon-cell.weakrtl {
+  -webkit-padding-end: 22px;
+  -webkit-padding-start: 0;
+}
+
+/* weakrtl for selection drop downs needs to account for the fact that
+ * Webkit does not honor the text-align attribute for the select element.
+ * (See Webkit bug #40216)
+ */
+html[dir='rtl'] select.weakrtl {
+  direction: rtl;
+}
+
+html[dir='rtl'] select.weakrtl option {
+  direction: ltr;
+}
+
+/* WebKit does not honor alignment for text specified via placeholder attribute.
+ * This CSS is a workaround. Please remove once WebKit bug is fixed.
+ * https://bugs.webkit.org/show_bug.cgi?id=63367
+ */
+html[dir='rtl'] input.weakrtl::-webkit-input-placeholder,
+html[dir='rtl'] .weakrtl input::-webkit-input-placeholder {
+  direction: rtl;
+}
+
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 75%; 
+  overflow: hidden;
+}
+
+html.changing-content body {
+  -webkit-transition: -webkit-transform 100ms;
+}
+
+h1 {
+  -webkit-margin-after: 1em;
+  /* This value must match the top padding of the uber page header. */
+  -webkit-margin-before: 21px;
+  color: rgb(92, 97, 102);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  -webkit-border-start: 6px solid transparent;
+  -webkit-padding-start: 18px;
+  -webkit-user-select: none;
+  color: #999;
+  cursor: pointer;
+  line-height: 17px;
+  margin: 5px 0;
+}
+
+li:hover {
+  color: #777;
+}
+
+li.selected {
+  -webkit-border-start-color: rgb(78, 87, 100);
+  color: rgb(70, 78, 90);
+  cursor: default;
+  pointer-events: none;
+}
+
+#helpNavItem {
+  margin-top: 27px;
+}
+
+#navigation.changing-content {
+-webkit-transition: -webkit-transform 100ms, width 100ms;
+}
+
+#navigation {
+  height: 100%;
+  left: 0;
+  margin-top: -20px;
+  position: absolute;
+  right: 15px;
+  width: 155px;
+  z-index: 3;
+}
+
+#navigation {
+  -webkit-margin-start: 20px;
+}
+
+.container {
+  -webkit-margin-start: 175px;
+  -webkit-transition: margin 100ms, opacity 100ms;
+  color:  #303942;
+  min-width: 576px;
+  opacity: 1;
+  z-index: 1;
+  min-height: 100%;
+  position: relative;
+  max-width: 888px;
+  min-width: 600px;
+}
+
+.container h1 {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}

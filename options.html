@@ -1,0 +1,41 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <link rel="stylesheet" href="/css/widgets.css" />
+    <link rel="stylesheet" href="/css/options.css" />
+    <link rel="stylesheet" href="/css/chosen.css" />
+    <script src="/js/libs/jquery-1.7.1.min.js"></script>
+  <script src="/js/libs/chosen.jquery.min.js"></script>
+    <script src="/js/modules/options/options_controller.js"></script>
+  </head>
+  <body>
+    <div id="navigation">
+      <h1>My Hangouts</h1>
+      <ul>
+        <li class="selected">Hangouts</li>
+        <li>Capture Moments</li>
+        <li>Maps</li>
+      </ul>
+    </div>
+    <div class="container">
+      <h1>Hangouts</h1>
+      <h2>Notification preferences</h2>
+      <p><label for="option-circles-notify"><input id="option-circles-notify" type="checkbox" /> Notify me when a user in my circles below entered a hangout.</label></p>
+      <select id="option-circles" data-placeholder="Choose your Circles..." multiple style="width: 580px;"></select>
+      <p><label for="option-auto-close-notify"><input id="option-auto-close-notify" type="checkbox" /> Automatically close notification after 10 seconds.</label></p>
+      <h2>Hangout preferences</h2>
+      <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
+      <p><label for="option-show-circle-hangouts"><input id="option-show-circle-hangouts" type="checkbox" />Only show hangouts that have people in your circles.</label></p>
+    </div>
+    <div class="container">
+      <h1>Capture Moments</h1>
+    </div>
+    <div class="container">
+      <h1>Maps</h1>
+    </div>
+    <script>
+      var controller = new OptionsController();
+      controller.init();
+    </script>
+  </body>
+</html>
