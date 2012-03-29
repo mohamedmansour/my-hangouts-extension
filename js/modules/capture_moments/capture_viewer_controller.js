@@ -67,9 +67,10 @@ CaptureViewerController.prototype.openDialog = function(e) {
 CaptureViewerController.prototype.closeDialog = function(e) {
   window.removeEventListener('keyup', this.keyPressedCallback, false);
   var self = this;
-  window.scrollTo(this.currentScrollPosition);
   this.previewDialog.fadeOut(250, function() {
-    self.gallery.show().animate({left: 0}, 500);
+    self.gallery.show().animate({left: 0}, 500, function() {
+      window.scrollTo(0, self.currentScrollPosition);
+    });
   });
 };
 
