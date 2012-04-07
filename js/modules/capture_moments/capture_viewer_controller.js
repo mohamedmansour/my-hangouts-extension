@@ -55,9 +55,9 @@ CaptureViewerController.prototype.show = function(id, collection) {
 CaptureViewerController.prototype.openDialog = function(e) {
   window.addEventListener('keyup', this.keyPressedCallback, false);
   var self = this;
-  this.gallery.animate({ left: -this.gallery.width() }, 500, function() {  
-    self.gallery.hide()
+  this.gallery.animate({ left: -this.gallery.width(), opacity: 0 }, 500, function() { 
     self.previewDialog.fadeIn(250);
+    self.gallery.hide();
   });
 };
 
@@ -68,9 +68,9 @@ CaptureViewerController.prototype.closeDialog = function(e) {
   window.removeEventListener('keyup', this.keyPressedCallback, false);
   var self = this;
   this.previewDialog.fadeOut(250, function() {
-    self.gallery.show().animate({left: 0}, 500, function() {
-      window.scrollTo(0, self.currentScrollPosition);
-    });
+    self.gallery.show();
+    window.scrollTo(0, self.currentScrollPosition);
+    self.gallery.animate({left: 0, opacity: 1}, 500);
   });
 };
 
@@ -81,6 +81,8 @@ CaptureViewerController.prototype.previewImage = function() {
   var height = $(window).height() - CaptureViewerController.HEADER_HEIGHT;
   var width = $(window).width() - CaptureViewerController.PREVIEW_MARGIN;
 
+  var self = this;
+
   // Loader
   this.previewLoaderText.css('top', height / 2);
   this.previewLoaderText.css('left', width / 2);
@@ -90,28 +92,34 @@ CaptureViewerController.prototype.previewImage = function() {
 
   // Query DB to find the capture.
   this.controller.findCapture(this.collection[this.currentID], function(data) {
-    this.currentImageData = data;
+    self.currentImageData = data;
     
     // Create a new Image add it to DOM.
-    this.imageViewer.children().remove();
-    var image = new Image();
-    image.src = this.currentImageData.active;
-    this.currentViewDimensions = this.adjustResolution({
-      width: this.currentImageData.active_width,
-      height: this.currentImageData.active_height
+    self.imageViewer.children().fadeOut(function() {
+      $(this).remove();
     });
-    image.width = this.currentViewDimensions.width;
-    image.height = this.currentViewDimensions.height;
-    this.imageViewer.append(image);
+    var image = new Image();
+    image.src = self.currentImageData.active;
+    self.currentViewDimensions = self.adjustResolution({
+      width: self.currentImageData.active_width,
+      height: self.currentImageData.active_height
+    });
+    image.width = self.currentViewDimensions.width;
+    image.height = self.currentViewDimensions.height;
+    image.style.left = ($(window).width() - image.width) / 2 + 'px';
+    image.style.display = 'none';
+    self.imageViewer.append(image);
 
     // Render the new preview dialog and loader in the middle of the screen.
-    var dialogMidHeight = (height - this.currentViewDimensions.height) / 2;
-    this.previewDialog.css('top', dialogMidHeight);
-    this.previewControls.css('top', -dialogMidHeight);
+    var dialogMidHeight = (height - self.currentViewDimensions.height) / 2;
+    self.previewDialog.css('top', dialogMidHeight);
+    self.previewControls.css('top', -dialogMidHeight);
 
     // Stop the progress.
-    this.controller.toggleProgress();
-  }.bind(this));
+    $(image).fadeIn(function() {
+      self.controller.toggleProgress();
+    });
+  });
 };
 
 /**
@@ -162,7 +170,7 @@ CaptureViewerController.prototype.adjustResolution = function(resolution) {
   var width = resolution.width;
   var height = resolution.height;
   var max_resolution = {
-    width: ($(window).width() - 20),
+    width: ($(window).width() - CaptureViewerController.PREVIEW_MARGIN),
     height: ($(window).height() - CaptureViewerController.HEADER_HEIGHT)
   }
   // Check if the current width is larger than the max
