@@ -5,7 +5,6 @@
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  */
 HangoutUpdater = function(controller) {
-  this.LOGGER_ENABLED = false;
   this.controller = controller;
   this.currentState = 0;
   this.maxState = 2;
@@ -14,12 +13,22 @@ HangoutUpdater = function(controller) {
   this.error = false;
   this.cache = {};
   this.hangouts = [];
-  this.MAX_ASSUMED_SCORE = 50;
   this.searchResults = [];
-  this.BURST_SIZE = Math.floor(this.controller.UPDATE_INTERVAL/this.controller.plus.BURST_INTERVAL); // Return rt result over the entire re-query interval
   this.stateCounter = 0;
-  this.HANGOUT_SEARCH_QUERY =  '"is"' // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
-  this.HANGOUT_SEARCH_QUERY_NAMED = '"named"'
+
+  this.LOGGER_ENABLED = false;
+  this.MAX_ASSUMED_SCORE = 50;
+  this.PRECACHE_SIZE = 4;
+
+  // Return rt result over the entire re-query interval
+  var nextWaitInterval = 2000;
+  var precacheInterval = this.PRECACHE_SIZE * this.controller.plus.PRECACHE_INTERVAL;
+  var nextSearchInterval = (this.controller.UPDATE_INTERVAL - precacheInterval) - nextWaitInterval;
+  this.BURST_SIZE = Math.floor(nextSearchInterval / this.controller.plus.BURST_INTERVAL);
+
+  // TODO: look into these to reduce bandwidth...  -"hung out" -"had a hangout"'
+  this.HANGOUT_SEARCH_QUERY =  '"is"';
+  this.HANGOUT_SEARCH_QUERY_NAMED = '"named"';
   this.BLOCKED_CIRCLE_ID = '15';
 };
 
@@ -253,7 +262,7 @@ HangoutUpdater.prototype.search = function(obj, onDone) {
   
   // Google+ API Search Options.
   var extraSearchOptions = {
-    precache: 4,
+    precache: self.PRECACHE_SIZE,
     category: GooglePlusAPI.SearchCategory.RECENT,
     privacy: GooglePlusAPI.SearchPrivacy.EVERYONE,
     type: GooglePlusAPI.SearchType.HANGOUTS,
@@ -442,7 +451,7 @@ HangoutUpdater.prototype.compareHangout=function(h0,h1) {
 HangoutUpdater.prototype.doNext = function() {
   if (this.hasError()) {
     this.errorCount++;
-    if (this.errorCount % 2) {  // TODO: rationalise this logic.
+    if (this.errorCount % 3) {  // TODO: rationalise this logic.
       console.log('Reinitializing session since session was destroyed');
       //this.controller.getBrowserAction().drawBadgeIcon(-1, false);
       this.controller.plus.init(); // Reinitialize the session.
