@@ -179,7 +179,7 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
   
   // Custom name to each hangout.
   if (updatedHangout.data.is_onair) {
-    updatedHangout.data.name = updatedHangout.data.extra_data[1] + ' - OnAir';
+    updatedHangout.data.name = updatedHangout.data.extra_data + ' - OnAir';
   }
   else if (updatedHangout.data.is_extra) {
     updatedHangout.data.name = updatedHangout.data.id + '.';

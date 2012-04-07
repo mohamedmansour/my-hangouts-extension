@@ -28,6 +28,7 @@ GooglePlusAPI = function(opt) {
   this.ACTIVITIES_API          = 'https://plus.google.com/${pagetoken}/_/stream/getactivities/';
   this.MUTE_ACTIVITY_API       = 'https://plus.google.com/${pagetoken}/_/stream/muteactivity/';
   this.POST_API                = 'https://plus.google.com/${pagetoken}/_/sharebox/post/?spam=20&rt=j';
+  this.LINK_DETAILS_API        = 'https://plus.google.com/${pagetoken}/_/sharebox/linkpreview/';
   this.PAGES_API               = 'https://plus.google.com/${pagetoken}/_/pages/get/';
 
   // Not Yet Implemented API
@@ -56,6 +57,7 @@ GooglePlusAPI = function(opt) {
 };
 
 //------------------------ Private Functions --------------------------
+
 /**
  * Parse JSON string in a clean way by removing a bunch of commas and brackets. These should only
  * be used in Google post requests.
@@ -63,11 +65,16 @@ GooglePlusAPI = function(opt) {
  * @param {string} input The irregular JSON string to parse.
  */
 GooglePlusAPI.prototype._parseJSON = function(input) {
+  // We could use eval, but what if Google is untrustworthy?
+  //return eval('(' + input + ')');
+
   var jsonString = input.replace(/\[,/g, '[null,');
   jsonString = jsonString.replace(/,\]/g, ',null]');
   jsonString = jsonString.replace(/,,/g, ',null,');
   jsonString = jsonString.replace(/,,/g, ',null,');
+  jsonString = jsonString.replace(/{(\d+):/g, '{"$1":');
   return JSON.parse(jsonString);
+
 };
 
 /**
@@ -90,6 +97,7 @@ GooglePlusAPI.prototype._parseURL = function(urlTemplate) {
  * @param {function(Object.<string, Object>)} callback
  * @param {string} urlTemplate The URL template to request.
  * @param {string} postData If specified, it will do a POST with the data.
+ * @return {XMLHttpRequest} The created XMLHttpRequest object.
  */
 GooglePlusAPI.prototype._requestService = function(callback, urlTemplate, postData) {
   var self = this;
@@ -125,6 +133,8 @@ GooglePlusAPI.prototype._requestService = function(callback, urlTemplate, postDa
     async: true,
     complete: success
   });
+
+  return xhr;
 };
 
 /**
@@ -185,7 +195,7 @@ GooglePlusAPI.prototype._parsePost = function(element) {
       item.data.active = isActive;
       item.data.id = hangoutID;
       item.data.participants = [];
-      item.data.extra_data = hangoutData[13];
+      item.data.extra_data = hangoutData[15];
       
       var cachedOnlineUsers = {};
       var onlineParticipants = hangoutData[3];
@@ -1288,34 +1298,38 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
  *                            String:content - The content of the new post.
  *                            String:share_id - An existing post to share.
  *                            Media[]:media - An array of media elements.
+ *                            RawMedia[]:rawMedia - An array of raw media items in wire format.
+ *                                                  This is the output format of fetchLinkMedia.
+ *                                                  Overrides the media parameter when present.
  */
 GooglePlusAPI.prototype.newPost = function(callback, postObj) {
   if (!this._verifySession('newPost', arguments)) {
     return;
   }
-  
+
   var content = postObj.content || null;
   var sharedPostId = postObj.share_id || null;
-  var media = postObj = postObj.media || null;
+  var media = postObj.media || null;
 
   var self = this;
   if (!content && !sharedPostId) {
     self._fireCallback(callback, false);
   }
-  
+
   var sMedia = [];
-  if(media) {
-    for(var i in media) {
+  var rawMedia = postObj.rawMedia;
+  if (media && !rawMedia) {
+    for (var i in media) {
       sMedia.push(JSON.stringify(this._createMediaItem(media[i])));
     }
   }
-  
+
   var data = JSAPIHelper.nullArray(37);
-  
+
   data[0] = content || '';
   data[1] = 'oz:' + this.getInfo().id + '.' + new Date().getTime().toString(16) + '.0';
   data[2] = sharedPostId;
-  data[6] = JSON.stringify(sMedia);
+  data[6] = JSON.stringify(postObj.rawMedia || sMedia);
   data[8] = JSON.parse(this.getInfo().acl);
   data[9] = true;
   data[10] = [];
@@ -1328,13 +1342,41 @@ GooglePlusAPI.prototype.newPost = function(callback, postObj) {
   data[28] = false;
   data[29] = false;
   data[36] = [];
-  
-  var params = 'spar=' + encodeURIComponent(JSON.stringify(data)) + '&at=' + encodeURIComponent(this._getSession());
-  
+
+  var params = 'spar=' + encodeURIComponent(JSON.stringify(data)) +
+      '&at=' + encodeURIComponent(this._getSession());
+
   this._requestService(function(response) {
     self._fireCallback(callback, (!response.error));
   }, this.POST_API, params);
 };
+
+/**
+ * Fetch MediaDetail objects describing a URL.
+ *
+ * @param {String} url The url.
+ * @return An array containing Media Items, in the same format used by the newPost request.
+ */
+GooglePlusAPI.prototype.fetchLinkMedia = function(callback, url) {
+  if (!this._verifySession('fetchLinkMedia', arguments)) {
+    return;
+  }
+  var self = this;
+  var params = "?c=" + encodeURIComponent(url) + "&t=1&slpf=0&ml=1";
+  var data = 'susp=false&at=' + this._getSession();
+  this._requestService(function(response) {
+    if (response.error) {
+      self._fireCallback(callback, response);
+    } else {
+      // Response contains either a image/video single element at index 3, or an array of elements
+      // describing a link at index 2. In any case, both of those indices are arrays of length >= 0.
+      var items = response[2].concat(response[3]);
+      var result = {'items': items};
+      self._fireCallback(callback, result);
+    }
+  }, this.LINK_DETAILS_API + params, data);
+};
+
 
 /**
  * @return {Object.<string, string>} The information from the user.
