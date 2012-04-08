@@ -16,7 +16,6 @@ HangoutUpdater = function(controller) {
   this.searchResults = [];
   this.stateCounter = 0;
 
-  this.LOGGER_ENABLED = false;
   this.MAX_ASSUMED_SCORE = 50;
   this.PRECACHE_SIZE = 4;
 
@@ -176,8 +175,8 @@ HangoutUpdater.prototype.preprocessHangoutData = function(hangout) {
  
   updatedHangout.hasParticipantInCircles = (circleCount > 0);
   
-  if (this.LOGGER_ENABLED) {
-    console.log(hangout.data.id, {
+  if (DEBUG) {
+    console.log('PROCESSED_HANGOUT', hangout.data.id, {
       normalizedRelevancyScore:normalizedRelevancyScore,
       normalizedCircleScore: normalizedCircleScore,
       normalizedTotalParticipantsScore: normalizedTotalParticipantsScore,
@@ -256,7 +255,7 @@ HangoutUpdater.prototype.fillCircleInfo = function(user) {
 HangoutUpdater.prototype.search = function(obj, onDone) {
   var self = this;
   
-  if (this.LOGGER_ENABLED) {
+  if (DEBUG) {
     console.log(obj.query);
   }
   
@@ -275,7 +274,7 @@ HangoutUpdater.prototype.search = function(obj, onDone) {
     // Capture the error
     self.error = !res.status;
     if (self.error) {
-      if (self.LOGGER_ENABLED) {
+      if (DEBUG) {
         console.log('search return an error.');
         self.controller.getBrowserAction().drawBadgeIcon(-1, false);
       }
@@ -401,8 +400,8 @@ HangoutUpdater.prototype.refreshHangout = function(userID, postID, hangoutID) {
       var deleteIndex = -1;
       for ( var i = 0; i < self.hangouts.length; i++){
         if ( self.hangouts[i] && hangoutID === self.hangouts[i].data.id ) {
-          if (self.LOGGER_ENABLED) {
-           // console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
+          if (DEBUG) {
+            // console.log('remove hangout id: '+ hangoutID + ':', self.hangouts[i]);
           }
           self.hangouts[i] = null;
           delete self.cache[hangoutID];
@@ -452,7 +451,9 @@ HangoutUpdater.prototype.doNext = function() {
   if (this.hasError()) {
     this.errorCount++;
     if (this.errorCount % 3) {  // TODO: rationalise this logic.
-      console.log('Reinitializing session since session was destroyed');
+      if (DEBUG) {
+        console.log('Reinitializing session since session was destroyed');
+      }
       //this.controller.getBrowserAction().drawBadgeIcon(-1, false);
       this.controller.plus.init(); // Reinitialize the session.
     }
@@ -507,7 +508,7 @@ HangoutUpdater.prototype.doNext = function() {
 
 HangoutUpdater.prototype.state1 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY);
-  if (this.LOGGER_ENABLED) {
+  if (DEBUG) {
     console.log( queryStr );
   }
   this.search({ query: queryStr, burst: true}, false);
@@ -515,7 +516,7 @@ HangoutUpdater.prototype.state1 = function() {
 
 HangoutUpdater.prototype.state2 = function() {
   var queryStr = this.buildqueryWithExcludeList(this.HANGOUT_SEARCH_QUERY_NAMED);
-  if (this.LOGGER_ENABLED) {
+  if (DEBUG) {
     console.log( queryStr );
   }
   this.search({ query: queryStr, burst: true}, false);

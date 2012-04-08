@@ -1,4 +1,9 @@
 /**
+ * Global Debug options
+ */
+DEBUG = true;
+
+/**
  * Manages a single instance of the entire application.
  *
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)

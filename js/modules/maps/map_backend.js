@@ -43,8 +43,6 @@ LocationEntity.prototype.tableDefinition = function() {
  *    controller.
  */
 MapBackend = function(db, controller) {
-  this.LOGGER_ENABLED = false;
-
   this.controller = controller;
 
   // This should be in a database, perhaps?
@@ -199,8 +197,8 @@ MapBackend.prototype.cachePeople = function(gpIds) {
           address: user.data.location ? user.data.location : '?',
           data: user.data
         };
-        if (self.LOGGER_ENABLED) {
-          console.log('cached: ' + id + ' at ' + self.cache.people[id].address);
+        if (DEBUG) {
+          console.log('MAP_CACHE_PEOPLE', id + ' at ' + self.cache.people[id].address);
         }
       }
     }
@@ -229,7 +227,7 @@ MapBackend.prototype.cacheMapLocation = function(address) {
   // a smaller probability of getting an actual result.
   coder.geocode({ address: address }, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
-      if (self.LOGGER_ENABLED) {
+      if (DEBUG) {
         console.log('location: ' + normalized + ' (' + address + ')', results);
       }
       var geoaddress = results[0];

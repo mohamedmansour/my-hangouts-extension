@@ -12,7 +12,12 @@ PopupController = function() {
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
   this.notifiedHangouts = [];
+
+  this.updateInterval = null;
+  this.lastIntervalDelay = PopupController.UPDATE_NORMAL_DELAY;
 };
+PopupController.UPDATE_NORMAL_DELAY = 15000;
+PopupController.UPDATE_BURST_DELAY = 1000;
 
 /**
  * Initialize the Popup Controller.
@@ -75,12 +80,45 @@ PopupController.prototype.updateHangouts = function() {
   if (this.hangouts.length == 0) {
     $('#hangouts-container').html('loading ...');
     $('#notifications-container').html('loading ...');
-    setTimeout(this.updateHangouts.bind(this), 1000);
+    this.adjustUpdateDelay(PopupController.UPDATE_BURST_DELAY);
   }
   else {
     this.processHangouts();
-    setTimeout(this.updateHangouts.bind(this), 15000);
+    this.adjustUpdateDelay(PopupController.UPDATE_NORMAL_DELAY);
   }
+};
+
+/**
+ * Force update to be normal delay.
+ *
+ * @param {number} delay The delay to adjust.
+ */
+PopupController.prototype.adjustUpdateDelay = function(delay) {
+  // Do not start delay when debug mode.
+  if (!this.bkg.DEBUG && this.lastIntervalDelay != delay) {
+    this.startUpdates(delay);
+    this.lastIntervalDelay = delay;
+  }
+};
+
+/**
+ * Stop the updates.
+ */
+PopupController.prototype.stopUpdates = function() {
+  clearInterval(this.updateInterval);
+};
+
+/**
+ * Start the updates
+ *
+ * @param {number} opt_interval Optional delay.
+ */
+PopupController.prototype.startUpdates = function(opt_interval) {
+  if (this.updateInterval) {
+    this.stopUpdates();
+  }
+  var interval = (opt_interval && !isNaN(opt_interval)) || PopupController.UPDATE_NORMAL_DELAY;
+  this.updateInterval = setInterval(this.updateHangouts.bind(this), interval);
 };
 
 /**
