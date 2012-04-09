@@ -3,11 +3,12 @@ body, html {
   font: normal 13px arial,sans-serif;
   margin: 0;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 #hangout-bar {
-  background-color: #2D2D2D;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+  background-color: #eee;
+  border-bottom:1px solid #ccc;
+  box-shadow:0px 0px 8px #999;
   margin: 0;
   padding: 0;
   position: fixed;
@@ -15,7 +16,7 @@ body, html {
   left: 0px;
   z-index: 9999;
   width: 100%;
-  height: 30px;
+  height: 88px;
   line-height: 30px;
   -webkit-user-select: none;
 }
@@ -23,6 +24,9 @@ body, html {
 #hangout-bar-left {
   float: left;
   margin-left: 10px;
+  margin-top:10px;
+  font-size:1.2em;
+  font-weight:bold;
 }
 #hangout-bar-right {
   float: right;
@@ -30,13 +34,23 @@ body, html {
 }
 #hangout-bar span {
   font-family: 'Droid Sans', sans-serif;
-  color: #eee;
+  color: #000;
   display: inline-block;
   padding: 0 5px;
 }
+#hangout-bar-head { height:56px; }
+#hangout-filter { border-top:1px solid #ccc; height: 30px; clear: both; padding:2px 10px; font-size:0.9em;}
+#hangout-filter span { margin:0 8px 0 0; padding:0; float: left; color:#555;}
+#hangout-filter ul { list-style:none; margin:0; padding:0; float: left;}
+#hangout-filter ul li { float:left; margin:0 2px; padding:0; }
+#hangout-filter ul li a { color:#444; padding:2px 8px; border-radius:4px; text-decoration:none; font-weight:bold; border:2px solid rgba(0,0,0,0); }
+#hangout-filter ul li a:hover { background:#ddd; }
+#hangout-filter ul li.selection a { background:#fff; color:#444; border:2px solid #ccc }
 #popup-container {
+  position:relative;
   width: 600px;
-  margin-top: 30px;
+  height:200px;
+  margin-top: 88px;
   top: 0;
   left: 0;
 }
@@ -51,7 +65,7 @@ body, html {
   cursor: pointer;
 }
 .menu-item:hover {
-  background-color: #4a4a4a;
+  background-color: #dadada;
 }
 .menu-item.selected {
   border-color: #dd4b39;
@@ -69,6 +83,7 @@ body, html {
   position: absolute;
   display:none;
   overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .popup-page h2 {
@@ -78,11 +93,13 @@ body, html {
 
 #hangouts-container {
   left: 0;
+  height:510px !important;
 }
 
 #maps-container > h2 {
   padding-left: 10px;
   margin:12px 0;
+  overflow: hidden;
 }
 
 #options-container {
@@ -95,15 +112,17 @@ body, html {
 }
 
 .hangout-item {
-  background-color: #eee;
+  background-color:#fff;
   border-radius: 5px;
   height: 65px;
-  margin: 5px;
+  padding: 0px;
   clear: both;
   position: relative;
+  border-bottom:1px solid #ebebeb;
 }
 .hangout-item:hover {
-  background-color: #ccc;
+  background-color: #f2f2f2;
+  z-index:1;
 }
 .hangout-overlay {
   position: absolute;
@@ -112,10 +131,8 @@ body, html {
   height: 65px;
   text-align: right;
   padding-right: 0px;
-  background-color: #ddd;
-  border-radius: 15px;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
+  background:#fff;
+  border-left:1px solid #ebebeb;
   font-size: 0.75em;
   -webkit-transition: width 0.3s linear;
   cursor: pointer;
@@ -124,11 +141,13 @@ body, html {
 }
 .hangout-overlay:hover {
   width: 400px;
-  box-shadow: -5px 0px 10px rgba(0,0,0,0.2);
+  background:#ddd;
 }
 .full .hangout-overlay {
   background-color: #ca333a;
 }
+.hangout-item:hover .hangout-overlay { background:#f1f1f1 }
+.hangout-item.full:hover .hangout-overlay { background-color: #ca333a; } /* must fix */
 .hangout-extra {
   width: 450px;
   height: 65px;
@@ -145,6 +164,8 @@ body, html {
   height: 65px;
   font-weight: bold;
   color: #777;
+  position:relative;
+  top:8px;
 }
 .full .hangout-show  {
   color: #eee;
@@ -191,6 +212,7 @@ body, html {
   width: 48px;
   height: 48px;
   display: inline-block;
+  outline:1px solid #ddd;
 }
 .hangout_participant img {
   width: 32px;
@@ -204,8 +226,10 @@ body, html {
 }
 .hangout-name {
   position: absolute;
-  left: 160px;
-  color: #aaa;
+  left: 150px;
+  color: #999;
+  font-size:0.9em;
+  font-weight:normal;
 }
 
 .hangout-item:hover .hangout-name {
@@ -250,16 +274,18 @@ body, html {
   width: 10px;
   height: 10px;
   display: block;
-  bottom: 4px;
-  left: 2px;
+  bottom: 3px;
+  left: 0px;
   background-color: #ca333a;
+  font-family: Verdana, Arial, sans-serif;
   font-size: 8px;
   color: #eee;
   text-align: center;
   font-weight: bold;
-  opacity: 0.75;
+  opacity: 1;
   cursor: pointer;
-  border-top-right-radius: 5px;
+  box-shadow:0 0 4px rgba(0,0,0,0.2);
+  border:1px solid #a00;
 }
 .in_my_circle img {
   border: 2px solid transparent;
@@ -269,7 +295,7 @@ body, html {
   border: 2px solid transparent;
 }
 .in_my_circle:hover span {
-  opacity: 0.8;
+  opacity: 1;
   background-color: #fff;
   color: #444;
 }
@@ -339,27 +365,40 @@ body, html {
 
 #hangout-detail-container ul  li {
   float: left;
-  width: 285px;
+  width: 276px;
   list-style-type: none;
-  height: 64px;
-  margin-bottom: 5px;
+  height: 68px;
   overflow: hidden;
+  margin:0 8px 8px 0;
+}
+
+#hangout-detail-container ul li:hover {
+  background:#f1f1f1;
 }
 
 .detail-card-header {
   height: 50px;
-  line-height: 50px;
-  margin: 0 5px;
-  font-size: 1.2em;
+  line-height: 3.5em;
+  margin: 0 2px 10px;
+  padding: 0 10px;
+  font-size:1.2em;
+  border-bottom:1px solid #ccc;
+  color:#666;
 }
+.detail-card-header .clickable { position:absolute; right:0; top:12px; }
 
 .participant-card-image {
-  float: left;
+  float:left;
+  outline:3px solid #ccc;
+  margin:0 10px 10px 0;
+  width:64px; height:64px;
+  overflow:hidden;
 }
 
 .participant-card-detail {
-  margin-left: 70px;
-  font-size: 0.9em;
+  float:left;
+  font-size: 0.85em;
+  width:200px;
 }
 
 .map_feature_control {
@@ -405,12 +444,12 @@ body, html {
 
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,0.10),inset 0 -1px 0 rgba(0,0,0,0.07);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 ::-webkit-scrollbar {
