@@ -18,13 +18,10 @@
   <script src="/js/popup_controller.js"></script>
 </head>
 <body>
-
-
-
   <div id="hangout-bar">
     <div id="hangout-bar-head">
       <div id="hangout-bar-left">
-        <img src="/img/hangout-extras-white.png"/>
+        <img src="/img/hangout-extras.png"/>
         <span class="menu-item tip" id="menu-extensionpage" title="Visit My Hangouts Website">+My Hangouts</span>
         <span id="version"></span>
       </div>
@@ -36,6 +33,7 @@
         <span class="menu-item tip" id="menu-notifications" title="Current hangouts that were notified <br /> from the circles you setup in options.">Notifications</span>
       </div>
     </div>
+    <!--
     <div id="hangout-filter">
       <span>Show: </span>
       <ul>
@@ -45,10 +43,8 @@
         <li><a href="#circled">People You've Circled</a></li>
       </ul>
     </div>
+    -->
   </div>
-
-
-
   <div id="popup-container">
     <div id="hangouts-container" class="popup-page"></div>
     <div id="notifications-container" class="popup-page"></div>
@@ -58,8 +54,6 @@
       <div id="map-error">Google has disabled this feature for the extension without giving any reasons. Check back soon.</div>
       <div id="map-canvas"></div>
 		</div>
-
-
     <div id="options-container" class="popup-page">
       <h2>Notification preferences</h2>
       <p><label for="option-circles-notify"><input id="option-circles-notify" type="checkbox" /> Notify me when a user in my circles below entered a hangout.</label></p>
@@ -83,14 +77,10 @@
       -->
     </div>
   </div>
-
-
-
   <div id="tiptip_holder">
     <div id="tiptip_arrow"><div id="tiptip_arrow_inner"></div></div>
     <div id="tiptip_content"></div>
   </div>
-  
   <script type="text/x-jquery-tmpl" id="hangout-detail-template">
     <div>
       <div class="detail-card-header">
@@ -121,7 +111,6 @@
       </ul>
     </div>
   </script>
-  
   <script type="text/x-jquery-tmpl" id="hangouts-popup-template">
     <div>
       <div class="hangout-popup">
@@ -142,7 +131,6 @@
       </div>
     </div>
   </script>
-
   <script type="text/x-jquery-tmpl" id="hangouts-template">
     {{each(i, hangout) hangouts}}
     <div class="hangout-item{{if hangout.isFull}} full{{/if}}" id="${hangout.data.id}">
@@ -183,7 +171,6 @@
     </div>
     {{/each}}
   </script>
-  
   <script>
     var popupController = new PopupController();
     popupController.init();
