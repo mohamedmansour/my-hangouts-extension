@@ -11,7 +11,7 @@
 	font:normal 0.8em Arial, Helvetica, sans-serif;
 	color: #fff;
 	text-shadow: 0 0 2px #000;
-	background-color: rgba(0,0,0,0.9);
+	background-color: rgba(25,25,25,0.92);
 	padding: 8px;
 	border-radius: 4px;
 	max-width: 200px;
@@ -45,7 +45,7 @@
 .tip_bottom #tiptip_arrow ,
 .tip_right #tiptip_arrow,
 .tip_left #tiptip_arrow {
-	border-left-color: rgba(255,255,255,0.35);
+	border-left-color: rgba(255,255,255,0);
 }
 
 .tip_top #tiptip_arrow_inner {
