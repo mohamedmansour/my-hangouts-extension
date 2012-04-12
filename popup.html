@@ -21,16 +21,22 @@
   <div id="hangout-bar">
     <div id="hangout-bar-head">
       <div id="hangout-bar-left">
-        <img src="/img/hangout-extras.png"/>
-        <span class="menu-item tip" id="menu-extensionpage" title="Visit My Hangouts Website">+My Hangouts</span>
-        <span id="version"></span>
+        <!-- <img src="/img/hangout-extras.png"/> -->
+        <span class="tip" id="menu-extensionpage" title="Visit My Hangouts Website">+My Hangouts</span>
+        <!-- <span id="version"></span> -->
       </div>
       <div id="hangout-bar-right">
-        <span class="menu-item tip selected" id="menu-hangouts" title="All the current hangouts.">Hangouts</span>
+      <!--
+        <span class="menu-item tip selected" id="menu-hangouts" title="See all the current hangouts.">Hangouts</span>
         <span class="menu-item tip" id="menu-maps" title="Map view based on a person's location.">Map</span>
         <span class="menu-item tip" id="menu-gallery" title="Gallery where you will <br /> find your captured moments.">Gallery</span>
         <span class="menu-item tip" id="menu-options" title="Customize My Hangouts <br /> The settings screen!">&nbsp;</span>
         <span class="menu-item tip" id="menu-notifications" title="Current hangouts that were notified <br /> from the circles you setup in options.">Notifications</span>
+      -->
+        <span class="menu-item tip selected" id="menu-hangouts" title="See all the current hangouts."></span>
+        <span class="menu-item tip" id="menu-maps" title="Map view based on a person's location."></span>
+        <span class="menu-item tip" id="menu-gallery" title="Gallery where you will <br /> find your captured moments."></span>
+        <span class="menu-item tip" id="menu-options" title="Customize My Hangouts <br /> The settings screen!"></span>
       </div>
     </div>
     <!--
@@ -53,7 +59,7 @@
       <h2>Hangouts Around the World <span id="popup-subtitle">Click each image to see which hangout they are in!</span><span id="popup-open" title="Open map in new window."></span><span id="date"></span></h2>
       <div id="map-error">Google has disabled this feature for the extension without giving any reasons. Check back soon.</div>
       <div id="map-canvas"></div>
-		</div>
+    </div>
     <div id="options-container" class="popup-page">
       <h2>Notification preferences</h2>
       <p><label for="option-circles-notify"><input id="option-circles-notify" type="checkbox" /> Notify me when a user in my circles below entered a hangout.</label></p>
