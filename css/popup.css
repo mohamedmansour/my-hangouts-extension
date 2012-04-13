@@ -24,14 +24,14 @@ body, html {
 
 #hangout-bar-left {
   float: left;
-  margin-top:6px;
+  margin-top:8px;
   font-size:1.6em;
   font-weight:bold;
 }
 #hangout-bar-right {
   float: right;
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 #hangout-bar span {
   font-family: Arial, sans-serif;
@@ -78,8 +78,8 @@ body, html {
 .menu-item {
   display: inline;
   background-image: url(/img/menuicons.png);
-  height:21px;
-  width:21px;
+  width:32px;
+  height:36px;
   cursor: pointer;
   opacity:0.5;
   background-repeat: no-repeat;
@@ -89,13 +89,13 @@ body, html {
 }
 .menu-item.selected {
   opacity:1;
-  background-position-y:-28px;
+  background-position-y:-35px;
 }
 
-#menu-hangouts    { background-position-x: 0px; }
-#menu-maps        { background-position-x: -25px; }
-#menu-gallery     { background-position-x: -50px; }
-#menu-options     { background-position-x: -75px; }
+#menu-hangouts    { background-position-x: 0px;  }
+#menu-maps        { background-position-x: -32px; }
+#menu-gallery     { background-position-x: -64px; }
+#menu-options     { background-position-x: -96px; }
 
 .popup-page {
   width: 100%;
