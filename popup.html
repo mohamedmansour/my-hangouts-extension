@@ -15,6 +15,8 @@
   <script src="/js/modules/maps/map_api.js"></script>
   <script src="/js/modules/maps/map_controller.js"></script>
   <script src="/js/modules/options/options_controller.js"></script>
+  <script src="/js/modules/capture_moments/capture_viewer_controller.js"></script>
+  <script src="/js/modules/gallery/gallery_controller.js"></script>
   <script src="/js/popup_controller.js"></script>
 </head>
 <body>
@@ -26,13 +28,6 @@
         <!-- <span id="version"></span> -->
       </div>
       <div id="hangout-bar-right">
-      <!--
-        <span class="menu-item tip selected" id="menu-hangouts" title="See all the current hangouts.">Hangouts</span>
-        <span class="menu-item tip" id="menu-maps" title="Map view based on a person's location.">Map</span>
-        <span class="menu-item tip" id="menu-gallery" title="Gallery where you will <br /> find your captured moments.">Gallery</span>
-        <span class="menu-item tip" id="menu-options" title="Customize My Hangouts <br /> The settings screen!">&nbsp;</span>
-        <span class="menu-item tip" id="menu-notifications" title="Current hangouts that were notified <br /> from the circles you setup in options.">Notifications</span>
-      -->
         <span class="menu-item tip selected" id="menu-hangouts" title="See all the current hangouts."></span>
         <span class="menu-item tip" id="menu-maps" title="Map view based on a person's location."></span>
         <span class="menu-item tip" id="menu-gallery" title="Gallery where you will <br /> find your captured moments."></span>
@@ -55,6 +50,36 @@
     <div id="hangouts-container" class="popup-page"></div>
     <div id="notifications-container" class="popup-page"></div>
     <div id="hangout-detail-container" class="popup-page"></div>
+
+    <div id="gallery-container" class="popup-page">
+      <h2>Captured Gallery Preview</h2>
+
+      <a href="javascript:chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});" title="Open gallery in new window.">Launch Gallery</a>
+
+      {preview-images}
+
+      <ul id="gallery"> </ul>
+
+      <script type="text/x-jquery-tmpl" id="moments-item-template">
+        <li id="${_id}">
+          <div class="capture-card">
+            <img class="preview" src="${thumbnail}" alt="${time}"/>
+            <span>${time}</span>
+            <ul class='ribbon'>
+              <li><span class="delete tip" title="Delete capture">&nbsp;</span></li>
+              <li><span class="download tip" title="Download capture">&nbsp;</span></li>
+            </ul>
+          </div>
+        </li>
+      </script>
+
+      <div id="no-captures">
+        <h2>You currently have no captures.</h2>
+        <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
+        <img src="/img/hangout-screenshot.png" alt="" />
+      </div>
+
+    </div>
     <div id="maps-container" class="popup-page">
       <h2>Hangouts Around the World <span id="popup-subtitle">Click each image to see which hangout they are in!</span><span id="popup-open" title="Open map in new window."></span><span id="date"></span></h2>
       <div id="map-error">Google has disabled this feature for the extension without giving any reasons. Check back soon.</div>

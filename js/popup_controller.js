@@ -9,6 +9,7 @@ PopupController = function() {
   this.mapBackend = this.bkg.controller.getMapBackend();
   this.options = new OptionsController(this);
   this.map = new MapController(this);
+  this.gallery = new GalleryController(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
   this.notifiedHangouts = [];
@@ -52,7 +53,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       chrome.tabs.create({url: 'https://plus.google.com/116935358560979346551/about'});
       break;
     case 'menu-gallery':
-      chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});
+      this.togglePage('gallery');
       break;
     case 'menu-maps':
       this.togglePage('maps');

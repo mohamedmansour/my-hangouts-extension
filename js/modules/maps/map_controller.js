@@ -58,6 +58,7 @@ MapController.prototype.bindUI = function() {
     $('#hangout-bar').remove();
     $('#options-container').remove();
     $('#hangouts-container').remove();
+    $('#gallery-container').remove();
     $('#popup-open').remove();
     $('#maps-container')
         .show()
