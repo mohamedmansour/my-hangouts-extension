@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
   <title>My Hangouts World</title>
@@ -15,8 +15,7 @@
   <script src="/js/modules/maps/map_api.js"></script>
   <script src="/js/modules/maps/map_controller.js"></script>
   <script src="/js/modules/options/options_controller.js"></script>
-  <script src="/js/modules/capture_moments/capture_viewer_controller.js"></script>
-  <script src="/js/modules/gallery/gallery_controller.js"></script>
+  <script src="/js/modules/capture_moments/capture_gallery_popup.js"></script>
   <script src="/js/popup_controller.js"></script>
 </head>
 <body>
@@ -52,33 +51,11 @@
     <div id="hangout-detail-container" class="popup-page"></div>
 
     <div id="gallery-container" class="popup-page">
-      <h2>Captured Gallery Preview</h2>
+      <h2>Captured Moments Gallery</h2>
 
-      <a href="javascript:chrome.tabs.create({url: chrome.extension.getURL('capture_gallery.html')});" title="Open gallery in new window.">Launch Gallery</a>
+      <a id="galleryButton" title="Open gallery in new window.">Launch Gallery</a>
 
-      {preview-images}
-
-      <ul id="gallery"> </ul>
-
-      <script type="text/x-jquery-tmpl" id="moments-item-template">
-        <li id="${_id}">
-          <div class="capture-card">
-            <img class="preview" src="${thumbnail}" alt="${time}"/>
-            <span>${time}</span>
-            <ul class='ribbon'>
-              <li><span class="delete tip" title="Delete capture">&nbsp;</span></li>
-              <li><span class="download tip" title="Download capture">&nbsp;</span></li>
-            </ul>
-          </div>
-        </li>
-      </script>
-
-      <div id="no-captures">
-        <h2>You currently have no captures.</h2>
-        <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
-        <img src="/img/hangout-screenshot.png" alt="" />
-      </div>
-
+      <div id="gallery"> </div>
     </div>
     <div id="maps-container" class="popup-page">
       <h2>Hangouts Around the World <span id="popup-subtitle">Click each image to see which hangout they are in!</span><span id="popup-open" title="Open map in new window."></span><span id="date"></span></h2>
@@ -94,7 +71,7 @@
       <p><label for="option-hangout-window"><input id="option-hangout-window" type="checkbox" />Opens the hangout as a new window instead of in a new tab.</label></p>
       <p><label for="option-show-circle-hangouts"><input id="option-show-circle-hangouts" type="checkbox" />Only show hangouts that have people in your circles.</label></p>
       <p><label for="option-show-circle-hangouts">
-        Default tab to view when popup first opens: 
+        Default tab to view when popup first opens:
         <select id="option-default-popup-tab" data-placeholder="Choose a tab" tabindex="1">
           <option value="hangouts">Hangouts</option>
           <option value="notifications">Notifications</option>
@@ -112,6 +89,24 @@
     <div id="tiptip_arrow"><div id="tiptip_arrow_inner"></div></div>
     <div id="tiptip_content"></div>
   </div>
+
+  <script type="text/x-jquery-tmpl" id="moments-item-template">
+    <div id="${_id}" class="capture-card">
+      <img class="preview" src="${thumbnail}" alt="${time}"/>
+      <span>${time}</span>
+      <ul class='ribbon'>
+        <li><span class="delete tip" title="Delete capture">&nbsp;</span></li>
+        <li><span class="download tip" title="Download capture">&nbsp;</span></li>
+      </ul>
+    </div>
+  </script>
+  <script type="text/x-jquery-tmpl" id="moments-none-template">
+    <div id="no-captures">
+      <h2>You currently have no captures.</h2>
+      <p>Capturing your hangout moments is as easy <br />as clicking on the Capture Hangout button in any hangout!</p>
+      <img src="/img/hangout-screenshot.png" alt="" />
+    </div>
+  </script>
   <script type="text/x-jquery-tmpl" id="hangout-detail-template">
     <div>
       <div class="detail-card-header">

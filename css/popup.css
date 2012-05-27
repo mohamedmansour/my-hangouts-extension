@@ -1,4 +1,4 @@
-
+Moments Gallery
 body, html {
   font: normal 13px arial,sans-serif;
   margin: 0;
@@ -27,6 +27,7 @@ body, html {
   margin-top:8px;
   font-size:1.6em;
   font-weight:bold;
+  cursor: pointer;
 }
 #hangout-bar-right {
   float: right;
@@ -203,7 +204,7 @@ body, html {
   border-radius: 2px;
 }
 .hangout-participants img:hover {
-  box-shadow: 0 0 15px white; 
+  box-shadow: 0 0 15px white;
   background-color: white;
 }
 .hangout-participants ul {
@@ -294,7 +295,7 @@ body, html {
 }
 .in_my_circle img {
   border: 2px solid transparent;
-  box-shadow: 0 0 15px f8cc38; 
+  box-shadow: 0 0 15px f8cc38;
 }
 .in_my_circle img:hover {
   border: 2px solid transparent;
@@ -357,7 +358,7 @@ body, html {
   height: 20px;
   cursor: pointer;
 }
-  
+
 #popup-open:hover {
   background-position: 0px 0px;
 }

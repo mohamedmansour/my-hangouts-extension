@@ -9,7 +9,7 @@ PopupController = function() {
   this.mapBackend = this.bkg.controller.getMapBackend();
   this.options = new OptionsController(this);
   this.map = new MapController(this);
-  this.gallery = new GalleryController(this);
+  this.gallery = new CaptureGalleryPopup(this);
   this.currentPage = 'hangouts'; // options
   this.hangouts = [];
   this.notifiedHangouts = [];
@@ -27,16 +27,17 @@ PopupController.prototype.init = function() {
   window.addEventListener('load', this.updateHangouts.bind(this), false);
   this.bindUI();
   this.options.init();
+  this.gallery.init();
 };
 
 PopupController.prototype.bindUI = function() {
   $('#version').text('version ' + this.bkg.settings.version);
-  
+
   // Toggle default popup view.
   if (!this.displayAsTab) {
     this.togglePage(this.bkg.settings.default_popup_tab);
   }
-  
+
   $('#' + this.currentPage + '-container').show();
   $('.menu-item').click(this.onMenuItemClick.bind(this));
   $(document).on('click', '.detail', this.onHangoutDetailClick.bind(this));
@@ -54,6 +55,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       break;
     case 'menu-gallery':
       this.togglePage('gallery');
+      this.gallery.onDisplay();
       break;
     case 'menu-maps':
       this.togglePage('maps');
@@ -223,7 +225,7 @@ PopupController.prototype.onHangoutDetailClick = function(e) {
  */
 PopupController.prototype.renderHangouts = function() {
   $('#hangouts-container').html($('#hangouts-template').tmpl({hangouts: this.hangouts}));
-  
+
   if (this.notifiedHangouts.length == 0) {
     $('#notifications-container').html('Waiting till we receive hangouts that were notified ...');
   }

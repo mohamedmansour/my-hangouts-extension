@@ -40,10 +40,17 @@ CaptureBackend = function(db) {
 /**
  * Find all captures in the database.
  */
-CaptureBackend.prototype.findAll = function(callback) {
+CaptureBackend.prototype.find = function(args, callback) {
   this.captureEntity.find([
     '_id', 'hangout', 'time', 'description', 'type',
-    'thumbnail', 'thumbnail_width', 'thumbnail_height'], {}, callback);
+    'thumbnail', 'thumbnail_width', 'thumbnail_height'], args, callback);
+};
+
+/**
+ * Find all captures in the database.
+ */
+CaptureBackend.prototype.findAll = function(callback) {
+  this.find({}, callback);
 };
 
 /**
