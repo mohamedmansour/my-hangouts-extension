@@ -51,6 +51,7 @@ body, html {
 #hangout-filter ul li.selection a { background:rgba(255,255,255,0.25); color:#fff; border:2px solid rgba(0,0,0,0); opacity:1; }
 
 #popup-container {
+  overflow: hidden;
   position:relative;
   width: 600px;
   top: 0;
@@ -81,8 +82,8 @@ body, html {
 #menu-options     { background-position-x: -96px; }
 .popup-page {
   width: 100%;
-  position: absolute;
-  display:none;
+  height: 100%;
+  display: none;
   overflow-x: hidden;
 }
 
@@ -93,7 +94,6 @@ body, html {
 
 #hangouts-container {
   left: 0;
-  height:550px !important;
 }
 
 #maps-container > h2 {

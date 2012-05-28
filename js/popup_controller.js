@@ -244,26 +244,16 @@ PopupController.prototype.relayout = function() {
     return;
   }
   var height = 300;
+  var minHeight = 300;
   if (this.currentPage == 'hangouts') {
-    var height = this.hangouts.length == 0 ? 20 : (this.hangouts.length * 70) + 5;
-    $('.popup-page').height(height);
-    $('#popup-container').height(height);
-  }
-  else if (this.currentPage == 'notifications') {
-    var height = this.notifiedHangouts.length == 0 ? 20 : (this.notifiedHangouts.length * 70) + 5;
-    $('.popup-page').height(height);
-    $('#popup-container').height(height);
+    height = this.hangouts.length == 0 ? 20 : (this.hangouts.length * 70) + 5;
+    minHeight = (this.hangouts.length > 8 ? 8 : this.hangouts.length) * 70 - 50;
   }
   else if (this.currentPage == 'maps') {
-    var height = 301;
-    $('.popup-page').height(height);
-    $('#popup-container').height(height);
+    height = 301;
+    minHeight = 301;
   }
-  else if (this.currentPage == 'options') {
-    var height = 300;
-    $('.popup-page').height(height);
-    $('#popup-container').height(height);
-  }
+  $('#popup-container').height(minHeight);
 };
 
 /**

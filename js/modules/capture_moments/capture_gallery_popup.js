@@ -54,7 +54,7 @@ CaptureGalleryPopup.prototype.onDisplay = function() {
 };
 
 CaptureGalleryPopup.prototype.onLaunchGallery = function(e) {
-  chrome.tabs.create({url: 'gallery.html'});
+  chrome.tabs.create({url: 'capture_gallery.html'});
 };
 
 CaptureGalleryPopup.prototype.renderMoment = function(moment) {
