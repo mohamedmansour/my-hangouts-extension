@@ -5,6 +5,7 @@
  * @author James Williams 2011 (http://jameswilliams.be)
  * @author Mohamed Mansour 2011 (http://mohamedmansour.com)
  * @author Rayan Bouajram 2011 (http://rayanbouajram.com)
+ * @constructor
  */
 CaptureEffectsController = function(controller) {
   this.controller = controller;
@@ -78,7 +79,7 @@ CaptureEffectsController.prototype.openEditMode = function() {
 CaptureEffectsController.prototype.dispose = function() {
 	$(this.glfxCanvas).remove();
 	$('#edit').fadeOut(200);
-	$('li').delay(400).fadeIn(200).removeClass('select');	
+	$('li').delay(400).fadeIn(200).removeClass('select');
 	$(document).off("click", "li");
 	// remove panels
 	this.filterCount = 0;
@@ -101,7 +102,7 @@ CaptureEffectsController.prototype.onSaveClicked = function() {
   tempImage.onload = function () {
     var tempCanvas = document.createElement('canvas');
     var ctx = tempCanvas.getContext('2d');
-		//thumnail dimensions 250x150   
+		//thumnail dimensions 250x150
     ctx.drawImage(this, 0, 0, 250, 150);
     self.processImage(originalData, ctx.canvas.toDataURL(this.controller.getMimeType()));
   };
@@ -115,7 +116,7 @@ CaptureEffectsController.prototype.processImage = function(originalData, thumbna
   originalData.thumbnail = thumbnail;
   originalData.thumbnail_width = self.originalData.thumbnail_width;
   originalData.thumbnail_height = self.originalData.thumbnail_height;
-  
+
   chrome.extension.sendRequest({
     service: 'Capture',
     method: 'processCapture',
@@ -123,7 +124,7 @@ CaptureEffectsController.prototype.processImage = function(originalData, thumbna
   }, function(res) {
     console.log('Saved ' + res.id);
     self.dispose();
-    
+
     // Append that moment to the gallery.
     originalData._id = res.id;
     self.controller.renderMoment(originalData);
@@ -144,11 +145,11 @@ CaptureEffectsController.prototype.onWindowResize = function(e) {
   //set boundaries
   var windowHeight = $(window).height() - $('#edit-head').height();
   var windowWidth = $(window).width() - $('#fx-container').width();
-  
+
   //resize to boundaries
   $('#canvas-container').css('height', windowHeight);
   $('#canvas-container').css('width', windowWidth);
-  
+
   //do some math
   if ($('canvas').height() != windowHeight) {
 	$('canvas').height(windowHeight).width('auto');
@@ -156,7 +157,7 @@ CaptureEffectsController.prototype.onWindowResize = function(e) {
   if ($('canvas').width() > windowWidth) {
       $('canvas').height('auto').width(windowWidth);
   }
-  
+
   //adjust height of fx-container
   $('#fx-container').css('height', windowHeight);
 };
@@ -385,12 +386,12 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
   textCanvas.height = effectCanvas.height;
   textCanvas.width = effectCanvas.width;
   var ctx = textCanvas.getContext("2d");
-  
+
   appliedEffectsImage = new Image();
   appliedEffectsImage.src = effectCanvas.toDataURL(this.controller.getMimeType());
   appliedEffectsImage.onload = function () {
     ctx.drawImage(this, 0, 0);
-    
+
     ctx.fillStyle = args.fillColor;
     ctx.font = args.font;
     ctx.textBaseline = "top";
@@ -399,8 +400,8 @@ CaptureEffectsController.prototype.addTextToCanvas = function(args) {
     if (args.y == undefined)
       args.y = 0;
     ctx.fillText(args.text, args.x, args.y);
-    
-  
+
+
     var compositeImage = new Image();
     compositeImage.src = textCanvas.toDataURL(this.controller.getMimeType());
     compositeImage.onload = function () {
@@ -467,7 +468,7 @@ Filter.prototype.addSlider = function(name, label, min, max, value, step) {
 };
 
 Filter.prototype.use = function(effectController, filterName, selectedIndex) {
-  var canvas = effectController.glfxCanvas;		
+  var canvas = effectController.glfxCanvas;
 	// Index of the panel that was selected
 	var index = selectedIndex;
   // Clear the sliders
@@ -476,7 +477,7 @@ Filter.prototype.use = function(effectController, filterName, selectedIndex) {
   // Add a row for each slider
   for (var i = 0; i < this.sliders.length; i++) {
     var slider = this.sliders[i];
-    $('<div>' + slider.label.replace(/ /g, '&nbsp;') + 
+    $('<div>' + slider.label.replace(/ /g, '&nbsp;') +
 			':<div id="slider'+index +'_' + i + '" data-attrib="'+slider.name+'"></div></div>').appendTo($("#sliders"+index));
     var onchange = (function(this_, slider) { return function(event, ui) {
 	   	this_[slider.name] = ui.value;

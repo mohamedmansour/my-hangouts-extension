@@ -24,12 +24,12 @@ CaptureGalleryDownloader = function(controller) {
  */
 CaptureGalleryDownloader.prototype.prepareDownload = function(data) {
   this.openDownloadDialog();
-  
+
   // Cleanup the images.
   this.thumbnailImageContainer.children().remove();
   var thumbnailImage = new Image();
   thumbnailImage.src = data.thumbnail;
-  this.thumbnailImageContainer.append(thumbnailImage); 
+  this.thumbnailImageContainer.append(thumbnailImage);
   var prevLink = $('a', this.downloadDialog);
   if (prevLink) {
     this.URL.revokeObjectURL(prevLink.href);

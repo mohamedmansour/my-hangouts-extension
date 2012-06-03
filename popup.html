@@ -16,6 +16,8 @@
   <script src="/js/modules/maps/map_api.js"></script>
   <script src="/js/modules/maps/map_controller.js"></script>
   <script src="/js/modules/options/options_controller.js"></script>
+  <script src="/js/modules/capture_moments/capture_gallery_downloader.js"></script>
+  <script src="/js/modules/capture_moments/capture_gallery_events.js"></script>
   <script src="/js/modules/capture_moments/capture_gallery_popup.js"></script>
   <script src="/js/popup_controller.js"></script>
 </head>
@@ -53,7 +55,7 @@
 
     <div id="gallery-container" class="popup-page">
       <h2>Captured Moments Gallery</h2>
-      <div id="gallery"> </div>
+      <ul id="gallery"> </ul>
       <button id="gallery-button" title="Open gallery in new window.">Launch Gallery</button>
     </div>
     <div id="maps-container" class="popup-page">
@@ -90,14 +92,16 @@
   </div>
 
   <script type="text/x-jquery-tmpl" id="moments-item-template">
-    <div id="${_id}" class="capture-card">
-      <img class="preview" src="${thumbnail}" alt="${time}"/>
-      <span>${time}</span>
-      <ul class='ribbon'>
-        <li><span class="delete tip" title="Delete capture">&nbsp;</span></li>
-        <li><span class="download tip" title="Download capture">&nbsp;</span></li>
-      </ul>
-    </div>
+    <li id="${_id}">
+      <div class="capture-card">
+        <img class="preview" src="${thumbnail}" alt="${time}"/>
+        <span>${time}</span>
+        <ul class='ribbon'>
+          <li><span class="delete tip" title="Delete capture">&nbsp;</span></li>
+          <li><span class="download tip" title="Download capture">&nbsp;</span></li>
+        </ul>
+      </div>
+    </li>
   </script>
   <script type="text/x-jquery-tmpl" id="moments-none-template">
     <div id="no-captures">

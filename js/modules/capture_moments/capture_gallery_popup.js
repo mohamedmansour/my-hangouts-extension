@@ -1,5 +1,8 @@
 /**
  * The controller for the capture moments within the popup.
+ *
+ * @author Mohamed Mansour 2012 (http://mohamedmansour.com)
+ * @constructor
  */
 CaptureGalleryPopup = function(parent) {
   this.controller = parent;
@@ -7,6 +10,9 @@ CaptureGalleryPopup = function(parent) {
   this.momentsTemplate = null;
   this.momentsNoneTemplate = null;
   this.gallery = null;
+  this.eventController = new CaptureGalleryEvents(this);
+  this.bkg = chrome.extension.getBackgroundPage();
+  this.mimeType = this.bkg.settings.download_mimetype;
 };
 
 /**
@@ -17,6 +23,31 @@ CaptureGalleryPopup.prototype.init = function() {
   this.momentsNoneTemplate = $('#moments-none-template');
   this.gallery = $('#gallery');
   $('#gallery-button').click(this.onLaunchGallery.bind(this));
+};
+
+/**
+ * Get the MimeType.
+ * @todo Do not repeat, share this method.
+ */
+CaptureGalleryPopup.prototype.getMimeType = function(removePath) {
+  return removePath ? this.mimeType : 'image/' + this.mimeType;
+};
+
+/**
+ * Query the backend and find the capture to render.
+ *
+ * @todo Do not repeat, share this method.
+ * @param {number} id The ID for the capture.
+ * @param {Function<Object>} callback Gets fired when a response arrives.
+ */
+CaptureGalleryPopup.prototype.findCapture = function(id, callback) {
+  chrome.extension.sendRequest({
+    service: 'Capture',
+    method: 'findCapture',
+    arguments: [id]
+  }, function(res) {
+      callback(res.data);
+  }.bind(this));
 };
 
 /**
@@ -49,6 +80,7 @@ CaptureGalleryPopup.prototype.onDisplay = function() {
     else {
       self.momentsNoneTemplate.tmpl().appendTo(self.gallery);
     }
+    self.eventController.bindUIControls();
     self.gallery.show();
   });
 };
