@@ -1,5 +1,5 @@
 
-body { 
+body {
   background: #fff url(/img/wood-bg.jpg);
   font: normal 13px arial,sans-serif;
   margin: 5px;
@@ -29,11 +29,11 @@ button[disabled] {
   color: #ccc;
 }
 
-#header { 
-  background: rgba(0,0,0,.75); 
-  border: solid rgba(0,0,0,.75); 
-  border-width: 1px 1px 0; 
-  border-radius: 3px; 
+#header {
+  background: rgba(0,0,0,.75);
+  border: solid rgba(0,0,0,.75);
+  border-width: 1px 1px 0;
+  border-radius: 3px;
   box-shadow: 0 1px 1px rgba(255,255,255,.5);
   white-space: nowrap;
 }
@@ -53,11 +53,11 @@ button[disabled] {
   font-size: 10px;
   color: white;
 }
-#footer { 
-  padding: 0 0 36px; 
+#footer {
+  padding: 0 0 36px;
 }
 
-pre { 
+pre {
   background: #f5f5f5;
   margin: 0 0 18px;
   padding: 13px 18px 14px;
@@ -65,169 +65,6 @@ pre {
   text-shadow: 0 1px 1px #fff;
   font-size: 11px;
   line-height: 16px;
-}
-
-
-/* Gallery */
-
-#gallery {
-  padding: 20px;
-  margin: 0;
-  overflow-x: hidden;
-  display: none;
-  position: relative;
-}
-#gallery li { 
-  display: inline-block;
-}
-#gallery .capture-card {
-  position: relative;
-  background: #fff; 
-  display: inline; 
-  float: left; 
-  margin: 0 0 27px 30px; 
-  width: auto; 
-  padding: 10px 10px 15px; 
-  text-align: center; 
-  font-family: "Marker Felt", sans-serif; 
-  text-decoration: none; 
-  color: #333; 
-  font-size: 18px; 
-  box-shadow: 0 3px 6px rgba(0,0,0,.25); 
-  -webkit-transform: rotate(-2deg); 
-  -webkit-transition: -webkit-transform .15s linear; 
-}
-#gallery .preview { 
-  display: block; 
-  width: 190px; 
-  margin-bottom: 12px;
-  cursor: pointer;
-}
-#gallery .capture-card:after { 
-  content: attr(title);
-}
-
-#gallery li:nth-child(even) .capture-card { 
-  -webkit-transform: rotate(2deg);
-}
-
-#gallery li:nth-child(3n) .capture-card { 
-  -webkit-transform: none; 
-}
-
-#gallery li:nth-child(5n) .capture-card { 
-  -webkit-transform: rotate(5deg);
-}
-
-#gallery li:nth-child(8n) .capture-card { 
-  -webkit-transform: rotate(-5deg);
-}
-
-#gallery li:nth-child(11n) .capture-card { 
-  -webkit-transform: rotate(2deg);
-}
-
-#gallery li .capture-card:hover { 
-  box-shadow: 0 3px 16px rgba(0,0,0,.7); 
-  z-index: 5; 
-}
-
-/* Ribbon */
-
-.ribbon {
-  position:absolute;
-  bottom: -15px;
-  left: 30px;
-  opacity: 0;
-  -webkit-transition: opacity 0.5s;
-  margin: 0;
-  padding: 0;
-}
-
-.capture-card:hover .ribbon {
-  opacity: 1;
-}
-
-.ribbon:after, .ribbon:before {
-  margin-top: 5px;
-  content: "";
-  float:left;
-  border: 15px solid #333;
-}
- 
-.ribbon:after {
-  border-right-color:transparent;
-}
- 
-.ribbon:before {
-  border-left-color:transparent;
-}
-.ribbon li { 
-  color: Black;
-  text-decoration:none;
-  float:left;
-  height:35px;
-  overflow:hidden;
-  font-size: 14px;
-}
-.ribbon span {
-  background-color: #333;
-  background-repeat: no-repeat;
-  background-position: center center;
-  display:inline-block;
-  line-height:30px;
-  padding:0 10px;
-  margin-top:5px;
-  position:relative;
-  -webkit-transition: background, margin 0.2s; 
-  width: 30px;
-  cursor: pointer;
-}
- 
-.ribbon li:hover span {
-  background-color: Gold;
-  margin-top:0;
-}
-
-.ribbon .delete, .ribbon li:hover .delete {
-  background-image: url(/img/delete.png);
-}
-.ribbon .download, .ribbon li:hover .download {
-  background-image: url(/img/download.png);
-}
-
-.ribbon span:before, .ribbon span:after {
-  content: "";
-  position:absolute;
-  top: 30px;
-}
-
-.ribbon span:before {
-  left:0;
-  border-right:5px solid GoldenRod ;
-  border-bottom:5px solid #333;
-}
- 
-.ribbon span:after {
-  right:0;
-  border-left:5px solid GoldenRod ;
-  border-bottom:5px solid #333;
-}
-
-
-/* no captures dialog */
-#no-captures {
-  margin:0 auto;
-  width: 800px;
-  display: none;
-}
-
-#no-captures h2 {
-  color:rgba(0,0,0,0.75);
-  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
-  text-align:center;
-  margin-bottom:0;
-  font-size: 30px;
 }
 
 /* preview dialog */
@@ -321,7 +158,7 @@ pre {
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0.7);
-  z-index: 100; 
+  z-index: 100;
   -webkit-transition: opacity 0.5s linear;
 }
 
@@ -394,8 +231,8 @@ pre {
 	position:absolute;
   top:0;
   left:0;
-  z-index:10; 
-	display:none; 
+  z-index:10;
+	display:none;
 	overflow:hidden;
 }
 #dialog-controls {
@@ -420,13 +257,13 @@ pre {
 	color:rgba(0,0,0,0.8);
 	text-shadow:1px 1px 1px rgba(0,0,0,0.5);
 }
-#edit-body { 
+#edit-body {
   position:absolute;
   top:65px;
   width:100%;
 }
 
-#canvas-container { 
+#canvas-container {
   position:absolute;
   top:0;
   right:0;
@@ -438,7 +275,7 @@ pre {
 	overflow-x:hidden;
 	overflow-y:scroll;
 }
-#fx-container h2 { 
+#fx-container h2 {
 	display: block;
 	height: 36px;
 	background: #d5b267;
@@ -487,7 +324,7 @@ span.close {visibility:hidden; width:16px; height:16px; background:url(../img/ch
 
 ::-webkit-scrollbar {
   background-color: #eee;
-  
+
   cursor: pointer;
   width: 10px;
   height: 16px;

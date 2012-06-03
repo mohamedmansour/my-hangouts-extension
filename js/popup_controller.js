@@ -244,16 +244,18 @@ PopupController.prototype.relayout = function() {
     return;
   }
   var height = 300;
-  var minHeight = 300;
-  if (this.currentPage == 'hangouts') {
-    height = this.hangouts.length == 0 ? 20 : (this.hangouts.length * 70) + 5;
-    minHeight = (this.hangouts.length > 8 ? 8 : this.hangouts.length) * 70 - 50;
+  switch (this.currentPage) {
+    case 'hangouts':
+      height = (this.hangouts.length > 8 ? 8 : this.hangouts.length) * 70 - 50;
+      break;
+    case 'maps':
+      height = 301;
+      break;
+    case 'gallery':
+      height = 500;
+      break;
   }
-  else if (this.currentPage == 'maps') {
-    height = 301;
-    minHeight = 301;
-  }
-  $('#popup-container').height(minHeight);
+  $('#popup-container').height(height);
 };
 
 /**

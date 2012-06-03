@@ -16,7 +16,7 @@ CaptureGalleryPopup.prototype.init = function() {
   this.momentsTemplate = $('#moments-item-template');
   this.momentsNoneTemplate = $('#moments-none-template');
   this.gallery = $('#gallery');
-  $('#galleryButton').click(this.onLaunchGallery.bind(this));
+  $('#gallery-button').click(this.onLaunchGallery.bind(this));
 };
 
 /**
@@ -36,7 +36,7 @@ CaptureGalleryPopup.prototype.onDisplay = function() {
     service: 'Capture',
     method: 'find',
     arguments: [{
-      '_count': 3,
+      '_count': 4,
       '_orderBy': ['_id DESC']
     }]
   }, function(res) {
@@ -49,8 +49,8 @@ CaptureGalleryPopup.prototype.onDisplay = function() {
     else {
       self.momentsNoneTemplate.tmpl().appendTo(self.gallery);
     }
+    self.gallery.show();
   });
-
 };
 
 CaptureGalleryPopup.prototype.onLaunchGallery = function(e) {

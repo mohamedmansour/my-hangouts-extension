@@ -1,0 +1,161 @@
+/* Gallery */
+
+#gallery {
+  padding: 20px;
+  margin: 0;
+  overflow-x: hidden;
+  display: none;
+  position: relative;
+}
+#gallery li {
+  display: inline-block;
+}
+#gallery .capture-card {
+  position: relative;
+  background: #fff;
+  display: inline;
+  float: left;
+  margin: 0 0 27px 30px;
+  width: auto;
+  padding: 10px 10px 15px;
+  text-align: center;
+  font-family: "Marker Felt", sans-serif;
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  box-shadow: 0 3px 6px rgba(0,0,0,.25);
+  -webkit-transform: rotate(-2deg);
+  -webkit-transition: -webkit-transform .15s linear;
+}
+#gallery .preview {
+  display: block;
+  width: 190px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+#gallery .capture-card:after {
+  content: attr(title);
+}
+
+#gallery li:nth-child(even) .capture-card {
+  -webkit-transform: rotate(2deg);
+}
+
+#gallery li:nth-child(3n) .capture-card {
+  -webkit-transform: none;
+}
+
+#gallery li:nth-child(5n) .capture-card {
+  -webkit-transform: rotate(5deg);
+}
+
+#gallery li:nth-child(8n) .capture-card {
+  -webkit-transform: rotate(-5deg);
+}
+
+#gallery li:nth-child(11n) .capture-card {
+  -webkit-transform: rotate(2deg);
+}
+
+#gallery li .capture-card:hover {
+  box-shadow: 0 3px 16px rgba(0,0,0,.7);
+  z-index: 5;
+}
+
+/* Ribbon */
+
+.ribbon {
+  position:absolute;
+  bottom: -15px;
+  left: 30px;
+  opacity: 0;
+  -webkit-transition: opacity 0.5s;
+  margin: 0;
+  padding: 0;
+}
+
+.capture-card:hover .ribbon {
+  opacity: 1;
+}
+
+.ribbon:after, .ribbon:before {
+  margin-top: 5px;
+  content: "";
+  float:left;
+  border: 15px solid #333;
+}
+
+.ribbon:after {
+  border-right-color:transparent;
+}
+
+.ribbon:before {
+  border-left-color:transparent;
+}
+.ribbon li {
+  color: Black;
+  text-decoration:none;
+  float:left;
+  height:35px;
+  overflow:hidden;
+  font-size: 14px;
+}
+.ribbon span {
+  background-color: #333;
+  background-repeat: no-repeat;
+  background-position: center center;
+  display:inline-block;
+  line-height:30px;
+  padding:0 10px;
+  margin-top:5px;
+  position:relative;
+  -webkit-transition: background, margin 0.2s;
+  width: 30px;
+  cursor: pointer;
+}
+
+.ribbon li:hover span {
+  background-color: Gold;
+  margin-top:0;
+}
+
+.ribbon .delete, .ribbon li:hover .delete {
+  background-image: url(/img/delete.png);
+}
+.ribbon .download, .ribbon li:hover .download {
+  background-image: url(/img/download.png);
+}
+
+.ribbon span:before, .ribbon span:after {
+  content: "";
+  position:absolute;
+  top: 30px;
+}
+
+.ribbon span:before {
+  left:0;
+  border-right:5px solid GoldenRod ;
+  border-bottom:5px solid #333;
+}
+
+.ribbon span:after {
+  right:0;
+  border-left:5px solid GoldenRod ;
+  border-bottom:5px solid #333;
+}
+
+
+/* no captures dialog */
+#no-captures {
+  margin:0 auto;
+  width: 800px;
+  display: none;
+}
+
+#no-captures h2 {
+  color:rgba(0,0,0,0.75);
+  text-shadow:1px 1px 2px rgba(255,255,255,0.75);
+  text-align:center;
+  margin-bottom:0;
+  font-size: 30px;
+}
