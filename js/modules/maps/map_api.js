@@ -1,5 +1,5 @@
 var isPopup = false;
-var DISABLE_MAPS = true;
+var DISABLE_MAPS = false;
 
 MapAPI = function(callback) {
   window.addEventListener('mapsAPILoadedEvent', callback);

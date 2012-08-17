@@ -270,3 +270,6 @@ PopupController.prototype.togglePage = function(newpage) {
   this.relayout();
 };
 
+
+var popupController = new PopupController();
+popupController.init();
