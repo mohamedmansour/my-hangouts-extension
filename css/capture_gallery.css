@@ -2,9 +2,10 @@
 body {
   background: #fff url(/img/wood-bg.jpg);
   font: normal 13px arial,sans-serif;
-  margin: 5px;
   height: 100%;
   -webkit-user-select: none;
+  padding: 0;
+  margin: 0;
 }
 
 h3 {
@@ -30,23 +31,19 @@ button[disabled] {
 }
 
 #header {
-  background: rgba(0,0,0,.75);
-  border: solid rgba(0,0,0,.75);
-  border-width: 1px 1px 0;
-  border-radius: 3px;
   box-shadow: 0 1px 1px rgba(255,255,255,.5);
   white-space: nowrap;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.87);
 }
 #header h1 {
   font-weight: bold;
   font-size: 30px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, .75);
-  color: #999;
-  padding-left: 40px;
+  color: white;
   margin: 0 32px;
   height: 60px;
   line-height: 60px;
-  background: url(/img/icon32.png) center left no-repeat;
 }
 
 #header h1 span, #header h1 span  a {

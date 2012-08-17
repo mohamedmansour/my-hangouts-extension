@@ -40,6 +40,7 @@ PopupController.prototype.bindUI = function() {
 
   $('#' + this.currentPage + '-container').show();
   $('.menu-item').click(this.onMenuItemClick.bind(this));
+  $('#menu-extensionpage').click(this.onMenuItemClick.bind(this));
   $(document).on('click', '.detail', this.onHangoutDetailClick.bind(this));
 
   if (window.location.hash == '#window') {
@@ -57,7 +58,7 @@ PopupController.prototype.onMenuItemClick = function(e) {
       this.togglePage('gallery');
       this.gallery.onDisplay();
       break;
-    case 'menu-maps':
+  case 'menu-maps':
       this.togglePage('maps');
       this.map.onDisplay();
       break;
