@@ -78,7 +78,8 @@ CaptureGalleryPopup.prototype.onDisplay = function() {
       });
     }
     else {
-      self.momentsNoneTemplate.tmpl().appendTo(self.gallery);
+      $('#popup-container').height(400);
+      $('#gallery-container').html(self.momentsNoneTemplate.tmpl());
     }
     self.eventController.bindUIControls();
     self.gallery.show();
@@ -92,5 +93,5 @@ CaptureGalleryPopup.prototype.onLaunchGallery = function(e) {
 CaptureGalleryPopup.prototype.renderMoment = function(moment) {
   moment.time = $.timeago(new Date(moment.time));
   var newMoment = this.momentsTemplate.tmpl(moment);
-  newMoment.appendTo('#gallery');
+  newMoment.appendTo(this.gallery);
 };
