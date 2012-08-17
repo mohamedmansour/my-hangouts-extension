@@ -44,8 +44,13 @@ GooglePlusAPI = function(opt) {
   
 	//------------------------ Private Fields --------------------------
   this._opt = opt || {};
-  this._db = this._opt.use_mockdb ? new MockDB() : new PlusDB();
+  this._pageid = this._opt.pageid;
   this._googleid = this._opt.googleid || 0;
+  var dbPostfix = this._googleid + (this._pageid ? '_' + this._pageid : '');
+  if (dbPostfix == '0') {
+    dbPostfix = '';
+  }
+  this._db = this._opt.use_mockdb ? new MockDB() : new PlusDB(dbPostfix);
 
   this._session = null;
   this._info = null;
@@ -88,8 +93,8 @@ GooglePlusAPI.prototype._parseJSON = function(input) {
  */
 GooglePlusAPI.prototype._parseURL = function(urlTemplate) {
   var pagetoken = 'u/' + this._googleid;
-  if (this._pageid) { // TODO: Not Yet Supported!
-    pagetoken += '/b/' + this.pageid;
+  if (this._pageid) {
+    pagetoken += '/b/' + this._pageid;
   }
   return urlTemplate.replace(/\${pagetoken}/g, pagetoken);
 };
@@ -306,7 +311,7 @@ GooglePlusAPI.prototype._getSession = function(opt_reset) {
   if (opt_reset || !this._session) {
     var xhr = $.ajax({
       type: 'GET',
-      url: 'https://plus.google.com',
+      url: this._parseURL('https://plus.google.com/${pagetoken}/'),
       data: null,
       async: false
     });
@@ -321,7 +326,7 @@ GooglePlusAPI.prototype._getSession = function(opt_reset) {
     // freezes the entire browser. For now, we will just discover it since
     // indexOf doesn't freeze while search/match/exec freezes.
     var isLogged = false;
-    var searchForString = ',"https://www.google.com/csi","';
+    var searchForString = ',"https://csi.gstatic.com/csi","';
     var responseText = xhr.responseText;
     if (responseText != null) {
       var startIndex = responseText.indexOf(searchForString);
@@ -508,66 +513,21 @@ GooglePlusAPI.prototype._createMediaItem = function(item) {
  *     or a user's id for ACL.SPECIFIED_PERSON)
  */
 GooglePlusAPI.prototype._parseAclItems = function(aclItems) {
-  var resultAclEntries = [];
-  aclItems.forEach(function(aclItem) {
-    var scope;
+  var resultAclEntries = aclItems.map(function(aclItem) {
     var selfId = this.getInfo().id;
     if (aclItem.type == GooglePlusAPI.AclType.PUBLIC) {
-      scope = {
-        scopeType: 'anyone',
-        name: 'Anyone',
-        id: 'anyone',
-        me: true,
-        requiresKey: false
-      };
+      return [null, null, 1];
     } else if (aclItem.type == GooglePlusAPI.AclType.EXTENDED_CIRCLES) {
-      scope = {
-        scopeType: 'focusGroup',
-        groupType: 'e',
-        name: 'Extended Circles',
-        id: selfId + '.1f',
-        me: false,
-        requiresKey: false
-      };
+      return [null, null, 4];
     } else if (aclItem.type == GooglePlusAPI.AclType.YOUR_CIRCLES) {
-      scope = {
-        scopeType: 'focusGroup',
-        groupType: 'a',
-        name: 'Your Circles',
-        id: selfId + '.1c',
-        me: false,
-        requiresKey: false
-      };
+      return [null, null, 3];
     } else if (aclItem.type == GooglePlusAPI.AclType.SPECIFIED_CIRCLE) {
-      scope = {
-        scopeType: 'focusGroup',
-        groupType: 'p',
-        // Against all common sense, Google+ also sends:
-        //   name: Circle's name
-        //   membershipCount: Number of circle members
-        id: selfId + '.' + aclItem.id,
-        me: false,
-        requiresKey: false
-      };
+      return [null, aclItem.id];
     } else if (aclItem.type == GooglePlusAPI.AclType.SPECIFIED_PERSON) {
-      scope = {
-        scopeType: 'user',
-        // Against all common sense, Google+ also sends:
-        //   iconUrl: Url to the avatar of the user.
-        // Even weirder than that - A post will fail with error 500 if the name string isn't set.
-        name: '',
-        id: aclItem.id,
-        me: false,
-        isMe: false,
-        requiresKey: false
-      };
+      return [[null, null, aclItem.id]];
     }
-
-    // No idea why, but each scope has to be sent twice: Once with role 20, once with role 60.
-    resultAclEntries.push({scope: scope, role: 20});
-    resultAclEntries.push({scope: scope, role: 60});
   }.bind(this));
-  return {aclEntries: resultAclEntries};
+  return [resultAclEntries];
 };
 
 
@@ -791,11 +751,14 @@ GooglePlusAPI.prototype.refreshInfo = function(callback) {
     // Just get the fist result of the Map.
     for (var i in responseMap) {
       var detail = responseMap[i];
-      var emailParse = detail[20].match(/(.+) <(.+)>/);
-      self._info.full_email = emailParse[0];
-      self._info.name = emailParse[1];
-      self._info.email = emailParse[2];
+      var emailParse = detail[20] && detail[20].match && detail[20].match(/(.+) <(.+)>/);
+      if (emailParse) {
+        self._info.full_email = emailParse[0];
+        self._info.email = emailParse[2];
+      }
+      self._info.name = detail[1][4][3];
       self._info.id = detail[0];
+      self._info.image_url = 'https:' + detail[1][3];
       // TODO: ACL was removes from this request.
       //self._info.acl = '"' + (detail[1][14][0][0]).replace(/"/g, '\\"') + '"';
       self._info.circles = detail[10][1].map(function(element) {
@@ -1134,18 +1097,23 @@ GooglePlusAPI.prototype.lookupUsers = function(callback, ids) {
 };
 
 /**
- * Lookups the activities for the circle.
+ * Lookups the activities for the circle or person.
  *
  * @param {function(data)} callback The response for the call, where
- *                                  the parameter is the data for the circles.
+ *                                  the parameter is the data for the activities.
  * @param {string} circleID The ID of the circle.
+ * @param {string} personID The ID of the person (only used if circleID is not provided).
+ * @param {string} pageToken A token recieved in a previous call. A call with this token will fetch
+ *                           the next page of activities.
  */
-GooglePlusAPI.prototype.lookupActivities = function(callback, circleID) {
+GooglePlusAPI.prototype.lookupActivities = function(callback, circleID, personID, pageToken) {
   if (!this._verifySession('lookupActivities', arguments)) {
     return;
   }
   var self = this;
-  var params = '?sp=' + encodeURIComponent('[1,2,null,"' + circleID + '",null,null,null,"social.google.com",[],null,null,null,null,null,null,[]]');
+  pageToken = pageToken || 'null';
+  var personCirclePair = (circleID ? 'null,"' + circleID + '"' : '"' + personID + '",null');
+  var params = '?f.req=' + encodeURIComponent('[[1,2,' + personCirclePair + ',null,null,null,"social.google.com",[],null,null,null,null,null,null,[]],' + pageToken + ']');
   this._requestService(function(response) {
     var errorExists = !response[1];
     if (errorExists) {
@@ -1162,7 +1130,8 @@ GooglePlusAPI.prototype.lookupActivities = function(callback, circleID) {
       }
       self._fireCallback(callback, {
         status: true,
-        data: cleanPosts
+        data: cleanPosts,
+        pageToken: response[1][1]
       });
     }
   }, this.ACTIVITIES_API + params);
@@ -1421,6 +1390,7 @@ GooglePlusAPI.prototype.search = function(callback, query, opt_extra) {
  *                                                      audience of the post. See _parseAclItems
  *                                                      for description.
  *                                                      Defaults to [{type: PUBLIC}] if not present.
+ *                            String[]:notify - An array of user IDs to be notified about this post.
  */
 GooglePlusAPI.prototype.newPost = function(callback, postObj) {
   if (!this._verifySession('newPost', arguments)) {
@@ -1431,6 +1401,7 @@ GooglePlusAPI.prototype.newPost = function(callback, postObj) {
   var sharedPostId = postObj.share_id || null;
   var media = postObj.media || null;
   var rawMedia = postObj.rawMedia;
+  var notify = postObj.notify || [];
 
   var self = this;
   if (!content && !sharedPostId && !media && !rawMedia) {
@@ -1455,20 +1426,22 @@ GooglePlusAPI.prototype.newPost = function(callback, postObj) {
   data[1] = 'oz:' + this.getInfo().id + '.' + new Date().getTime().toString(16) + '.0';
   data[2] = sharedPostId;
   data[6] = JSON.stringify(postObj.rawMedia || sMedia);
-  data[8] = JSON.stringify(acl);
   data[9] = true;
-  data[10] = [];
+  data[10] = notify.map(function(userId) {
+    return [null, userId];
+  });
   data[11] = false;
   data[12] = false;
   data[14] = [];
-  data[15] = false;
+  data[15] = null;
   data[16] = false;
   data[27] = false;
   data[28] = false;
   data[29] = false;
   data[36] = [];
+  data[37] = acl;
 
-  var params = 'spar=' + encodeURIComponent(JSON.stringify(data)) +
+  var params = 'f.req=' + encodeURIComponent(JSON.stringify(data)) +
       '&at=' + encodeURIComponent(this._getSession());
 
   this._requestService(function(response) {
@@ -1501,6 +1474,31 @@ GooglePlusAPI.prototype.fetchLinkMedia = function(callback, url) {
   }, this.LINK_DETAILS_API + params, data);
 };
 
+/**
+ * Factory method, creates api instances for all user's identities, including pages.
+ *
+ * @param function(Object[]) callback
+ *
+ */
+GooglePlusAPI.prototype.getAllIdentitiesApis = function(callback) {
+  if (!this.isAuthenticated()) {
+    callback([]);
+  } else {
+    var result = [this];
+    var self = this;
+    this.getPages(function(response){
+      if (response.status) {
+        response.data.forEach(function(page) {
+          result.push(new GooglePlusAPI({
+            googleid: self._googleid,
+            pageid: page.id
+          }));
+        });
+      }
+      callback(result);
+    });
+  }
+}
 
 /**
  * @return {Object.<string, string>} The information from the user.
