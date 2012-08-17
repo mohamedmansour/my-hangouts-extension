@@ -19,7 +19,7 @@ BackgroundController = function() {
   this.myFollowersMap = {};
   this.myCirclesMap = {};
   this.myCirclesList = [];
- 
+
   this.onExtensionLoaded();
   this.plus = new GooglePlusAPI();
   this.updaterBackend = new HangoutUpdater(this);
@@ -176,7 +176,7 @@ BackgroundController.prototype.refreshCircles = function() {
       self.plus.getCircles(function(res) {
         if (res.status) {
           self.myCirclesList = res.data;
-          
+
           // The position for circles are using strange hex format, so
           // we will maintain the position ourselves here.
           var position = 0;
@@ -248,3 +248,8 @@ BackgroundController.prototype.openSpecialWindow = function(target, href) {
     chrome.tabs.create({url: href});
   }
 };
+
+
+// Start it. We need the controller so we refer to it in different pages.
+var controller = new BackgroundController();
+controller.init();

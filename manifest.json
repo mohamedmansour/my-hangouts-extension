@@ -1,6 +1,7 @@
 {
   "name": "My Hangouts for Google Plus",
   "version": "5.0.2",
+  "manifest_version": 2,
   "description": "A better way to enjoy Hangouts on Google+ with Screen Captures and Editing, Maps, Circle Watching, for public and limited hangouts!",
   "icons": {
     "16": "img/icon16.png",
@@ -8,8 +9,32 @@
     "48": "img/icon48.png",
     "128": "img/icon128.png"
   },
-  "permissions": ["unlimitedStorage", "notifications", "https://plus.google.com/*"],
-  "background_page": "background.html",
+  "permissions": [
+    "unlimitedStorage",
+    "notifications",
+    "https://plus.google.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "/js/modules/options/settings.js",
+      "/js/libs/jquery-1.7.1.min.js",
+      "/js/libs/underscore-1.1.6.js",
+      "/js/libs/jquery.timeago.js",
+      "/js/jsapi/jsapi_helper.js",
+      "/js/jsapi/jsapi_abstract_database.js",
+      "/js/jsapi/jsapi_database.js",
+      "/js/jsapi/jsapi_for_google_plus.js",
+      "/js/jsapi_database_override.js",
+      "/js/modules/statistics/statistics_backend.js",
+      "/js/modules/capture_moments/capture_backend.js",
+      "/js/modules/circle_notifier/circle_notifier.js",
+      "/js/modules/maps/map_api.js",
+      "/js/modules/maps/map_backend.js",
+      "/js/hangout_updater.js",
+      "/js/browser_action_controller.js",
+      "/js/background_controller.js"
+    ]
+  },
   "browser_action": {
     "default_title": "My Hangouts",
     "default_popup": "popup.html"
@@ -19,5 +44,6 @@
     "js": ["js/my_hangout_injection.js"],
     "run_at": "document_end",
     "all_frames": true
-  }]
+  }],
+  "content_security_policy": "script-src 'self' http://maps.google.com; object-src 'self'"
 }
