@@ -1,5 +1,5 @@
 var isPopup = false;
-var DISABLE_MAPS = false;
+var DISABLE_MAPS = true;
 
 MapAPI = function(callback) {
   window.addEventListener('mapsAPILoadedEvent', callback);
@@ -13,7 +13,7 @@ MapAPI.prototype.load = function(loadPopup) {
     return false;
   }
   isPopup = loadPopup;
-  var mapsURL = 'http://maps.google.com/maps/api/js?key=AIzaSyDnMniG_y2Fo35Tw28QnR4OeUTVBMXIWi4&sensor=true&callback=mapsLoadedCallback';
+  var mapsURL = 'https://maps.google.com/maps/api/js?key=AIzaSyDnMniG_y2Fo35Tw28QnR4OeUTVBMXIWi4&sensor=true&callback=mapsLoadedCallback';
   loadScript('gapi', mapsURL);
   return true;
 };

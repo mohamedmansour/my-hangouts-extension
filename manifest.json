@@ -41,9 +41,9 @@
   },
   "content_scripts": [{
     "matches": ["https://plus.google.com/hangouts/*", "https://talkgadget.google.com/hangouts/*"],
-    "js": ["js/my_hangout_injection.js"],
+    "js": ["/js/my_hangout_injection.js"],
     "run_at": "document_end",
     "all_frames": true
   }],
-  "content_security_policy": "script-src 'self' http://maps.google.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://maps.google.com; object-src 'self'"
 }
