@@ -15,7 +15,7 @@ OptionsController.prototype.init = function() {
 
 OptionsController.prototype.bindUI = function() {
   var self = this;
-  
+
   // Setup circle notification preference.
   var circleChooserDOM = $('#option-circles');
   this.bkg.getCircles().forEach(function(circle, index) {
@@ -27,7 +27,7 @@ OptionsController.prototype.bindUI = function() {
     self.settings.circles_to_notify = $(e.target).val() || [];
     self.popup.resetNotifications();
   });
-  
+
   // Notify circles preference.
   var circleNotifyDOM = $('#option-circles-notify');
   circleNotifyDOM.prop('checked', this.settings.notify_circles);
@@ -51,7 +51,7 @@ OptionsController.prototype.bindUI = function() {
   hangoutOpenWindowDOM.change(function(e) {
     self.settings.open_hangout_new_window = $(e.target).is(':checked');
   });
-  
+
   // Skip dialog moment captures
   var momentSkipDialogCaptureDOM = $('#option-moment-quick');
   momentSkipDialogCaptureDOM.prop('checked', this.settings.moment_skip_dialog);
@@ -66,11 +66,22 @@ OptionsController.prototype.bindUI = function() {
     self.settings.only_show_circle_hangouts = $(e.target).is(':checked');
     self.popup.updateHangouts();
   });
-  
+
   //
   var defaultPopupTabDOM = $('#option-default-popup-tab');
   defaultPopupTabDOM.val(this.settings.default_popup_tab);
   defaultPopupTabDOM.change(function(e) {
     self.settings.default_popup_tab = $(e.target).val() || 'hangouts';
   });
+
+  $('#donate').click(this.onDonate);
+  $('#charity').click(this.onCharity);
+};
+
+OptionsController.prototype.onDonate = function() {
+  chrome.tabs.create({url: 'http://mohamedmansour.com/donate'});
+};
+
+OptionsController.prototype.onCharity = function() {
+  chrome.tabs.create({url: 'http://www.crowdrise.com/code-for-charity'});
 };

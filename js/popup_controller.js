@@ -255,6 +255,9 @@ PopupController.prototype.relayout = function() {
     case 'gallery':
       height = 500;
       break;
+    case 'options':
+      height = 500;
+      break;
   }
   $('#popup-container').height(height);
 };

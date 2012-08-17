@@ -63,7 +63,7 @@ button {
   -webkit-border-radius: 2px;
   -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
   -webkit-user-select: none;
-  background-color: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+  background-image: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
   border: 1px solid #AAA;
   color: #444;
   font-size: inherit;
@@ -85,11 +85,11 @@ button:active {
   color: #333;
 }
 
-button.save { 
+button.save {
   background: #3079ed -webkit-linear-gradient(#3079ed, #2a6bd1 40%, #2a6bd1);
   color:#fff;
 }
-button.save:hover { 
+button.save:hover {
   background: #6fa1f2 -webkit-linear-gradient(#6fa1f2, #6a98df 40%, #6fa1f2);
   color:#fff;
 }
